@@ -1,0 +1,79 @@
+// Media-queries screen width
+$xxl-dim: 1530px;
+$xl-dim: 1200px;
+$lg-dim: 992px;
+$md-dim: 768px;
+$sm-dim: 576px;
+
+
+// Container width
+$xxl-container: 1360px;
+$xl-container: 1148px;
+$lg-container: 968px;
+$md-container: 728px;
+$sm-container: 548px;
+$xs-container: 100%;
+
+
+// using max-width
+@mixin laptop-big {
+  @media screen and (max-width: calc(#{$xxl-dim} - 1px)) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media screen and (max-width: calc(#{$xl-dim} - 1px)) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media screen and (max-width: calc(#{$lg-dim} - 1px)) {
+    @content;
+  }
+}
+
+@mixin phone-big {
+  @media screen and (max-width: calc(#{$md-dim} - 1px)) {
+    @content;
+  }
+}
+
+@mixin phone {
+  @media screen and (max-width: calc(#{$sm-dim} - 1px)) {
+    @content;
+  }
+}
+
+
+// using min-width
+@mixin phone-big-alt {
+  @media screen and (min-width: $sm-dim) {
+    @content;
+  }
+}
+
+@mixin tablet-alt {
+  @media screen and (min-width: $md-dim) {
+    @content;
+  }
+}
+
+@mixin laptop-alt {
+  @media screen and (min-width: $lg-dim) {
+    @content;
+  }
+}
+
+@mixin laptop-big-alt {
+  @media screen and (min-width: $xl-dim) {
+    @content;
+  }
+}
+
+@mixin desktop-alt {
+  @media screen and (min-width: $xxl-dim) {
+    @content;
+  }
+}

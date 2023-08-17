@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .main-section-layout {
+    @apply relative z-[4] flex-grow
+  }
+
+  .app-modal {
+    @apply hidden fixed inset-[-40px] p-55 pb-100 z-[9999] bg-white pt-50
+  }
+
+  .app-modal-content {
+    @apply flex flex-col w-full
+  }
+}
