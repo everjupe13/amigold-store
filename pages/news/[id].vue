@@ -1,5 +1,6 @@
+<!-- eslint-disable import/no-named-as-default-member -->
 <script lang="ts" setup>
-import dayjs, { extend, locale } from 'dayjs'
+import dayjs from 'dayjs'
 import ru from 'dayjs/locale/ru'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
@@ -10,10 +11,10 @@ const pageData = {
   image: '/images/news/dog.jpg'
 }
 
-locale(ru)
-extend(localizedFormat)
-extend(customParseFormat)
-extend(advancedFormat)
+dayjs.locale(ru)
+dayjs.extend(localizedFormat)
+dayjs.extend(customParseFormat)
+dayjs.extend(advancedFormat)
 const dateStamp = dayjs(pageData.date).format('D MMM, YYYY')
 </script>
 
