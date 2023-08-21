@@ -50,6 +50,7 @@ module.exports = {
 
     'vue/no-multiple-template-root': 'off',
     'vue/no-v-for-template-key': 'off',
+    'vue/no-v-html': 'off',
 
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': [

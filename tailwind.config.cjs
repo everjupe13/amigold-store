@@ -15,6 +15,14 @@ const fallbackSansSerifFonts = [
 ]
 
 const typography = {
+  '.text-extrabold-64': {
+    fontSize: '64px',
+    fontWeight: 800
+  },
+  '.text-extrabold-52': {
+    fontSize: '52px',
+    fontWeight: 800
+  },
   '.text-extrabold-48': {
     fontSize: '48px',
     fontWeight: 800
@@ -83,6 +91,10 @@ const typography = {
     fontSize: '14px',
     fontWeight: 500
   },
+  '.text-medium-12': {
+    fontSize: '12px',
+    fontWeight: 500
+  },
   '.text-regular-22': {
     fontSize: '22px',
     fontWeight: 400
@@ -138,10 +150,18 @@ module.exports = {
       white: '#FFFFFF',
       transparent: 'transparent',
       current: 'currentColor',
+
+      dark: '#3F3F47',
+      yellow: '#ED7622',
       
-      gray: '#3f3f3f',
+      gray: '#EEEFEF',
+      milky: '#F3F1EC',
       green: '#336F3F',
       pale: '#FFDD82',
+      
+      button: {
+        DEFAULT: '#EEEFEF'
+      },
 
       tapestry: '#fcf9ed',
     },

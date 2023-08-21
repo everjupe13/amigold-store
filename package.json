@@ -16,14 +16,23 @@
   },
   "dependencies": {
     "@pinia/nuxt": "^0.4.11",
-    "sass": "^1.65.1"
+    "@vuelidate/core": "^2.0.3",
+    "@vuelidate/validators": "^2.0.3",
+    "dayjs": "^1.11.9",
+    "lodash-es": "^4.17.21",
+    "sass": "^1.65.1",
+    "swiper": "^10.2.0",
+    "uuid": "^9.0.0",
+    "vue-final-modal": "^4.4.5"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/eslint-module": "^4.1.0",
     "@nuxtjs/tailwindcss": "^6.8.0",
+    "@types/lodash-es": "^4.17.8",
     "@types/node": "^18.17.3",
+    "@types/uuid": "^9.0.2",
     "@typescript-eslint/parser": "^6.4.0",
     "add": "^2.0.6",
     "autoprefixer": "^10.4.15",

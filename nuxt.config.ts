@@ -1,33 +1,64 @@
+import { fileURLToPath } from 'node:url'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
-  modules: ['@nuxtjs/eslint-module', '@nuxtjs/tailwindcss', '@pinia/nuxt'],
-
-  // plugins: [
-  //   '~/plugins/foo.client.js', // only in client side
-  //   '~/plugins/bar.server.js', // only in server side
-  //   '~/plugins/baz.js', // both client & server
-  //   { src: '~/plugins/both-sides.js' },
-  //   { src: '~/plugins/client-only.js', mode: 'client' }, // only on client side
-  //   { src: '~/plugins/server-only.js', mode: 'server' } // only on server side
-  // ]
-  css: ['~/assets/scss/index.scss'],
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {}
-      // ...(process.env.NODE_ENV === "production" ? { cssnano: {} } : {}),
+  runtimeConfig: {
+    public: {
+      baseUrl: process.env.BASE_URL ?? 'https://api.nuxtjs.dev'
     }
   },
 
-  vite: {
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: '@use "@/assets/scss/core.scss" as *;'
-        }
-      }
+  modules: ['@nuxtjs/eslint-module', '@pinia/nuxt'],
+
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false
+    }
+  ],
+
+  alias: {
+    '~': fileURLToPath(new URL('./', import.meta.url)),
+    '@': fileURLToPath(new URL('./', import.meta.url)),
+    assets: fileURLToPath(new URL('assets', import.meta.url)),
+    public: fileURLToPath(new URL('public', import.meta.url))
+  },
+
+  // tailwindcss: {
+  //   cssPath: '~/assets/scss/tailwind.scss',
+  //   configPath: 'tailwind.config',
+  //   exposeConfig: false,
+  //   exposeLevel: 2,
+  //   config: {},
+  //   injectPosition: 'last',
+  //   viewer: true
+  // },
+  css: [
+    'vue-final-modal/style.css',
+
+    '~/assets/scss/index.scss',
+    '~/assets/scss/tailwind.scss',
+    '~/assets/scss/fonts.scss',
+    '~/assets/scss/custom-scrollbar.scss'
+  ],
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+      cssnano: {}
+      // ...(process.env.NODE_ENV === "production" ? { cssnano: {} } : {}),
     }
   }
+
+  // vite: {
+  //   css: {
+  //     preprocessorOptions: {
+  //       scss: {
+  //         additionalData: '@use "~/assets/scss/core.scss" as *;'
+  //       }
+  //     }
+  //   }
+  // }
 })

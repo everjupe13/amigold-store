@@ -1,0 +1,11 @@
+.swiper-slide {
+  opacity: 0;
+  transition-delay: 0s !important;
+  transition: opacity 0s ease !important;
+
+  &.swiper-slide-active {
+    transition-delay: 0.2s !important;
+    transition: opacity .4s 0.2s ease !important;
+    opacity: 1;
+  }
+}
