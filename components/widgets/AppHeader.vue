@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { debounce } from 'lodash-es'
+
 import IconBurger from '@/assets/img/burger-icon.svg'
 import IconBurgerOpened from '@/assets/img/burger-icon-opened.svg'
 import AppLogo from '@/components/shared/AppLogo.vue'
@@ -23,6 +25,12 @@ const openModal = () => {
     isModalOpened.value = true
   }
 }
+
+const searchModel = ref('')
+const handleSearchInput = debounce(e => {
+  searchModel.value = e.target.value
+  console.log(e.target.value)
+}, 500)
 </script>
 
 <template>
@@ -139,8 +147,32 @@ const openModal = () => {
                 </ul>
               </nav>
               <div
-                class="flex items-center gap-x-10 group-[.expanded]:hidden md:mb-30"
-              ></div>
+                class="ml-40 mr-20 flex flex-grow items-center gap-x-10 group-[.expanded]:hidden md:mb-30"
+              >
+                <div
+                  class="group flex w-full items-center rounded-full border border-black/20 leading-none"
+                >
+                  <div class="ml-12 mr-5 h-16 w-16">
+                    <img src="@/assets/img/icons/search.svg" alt="" />
+                  </div>
+                  <div class="relative w-full flex-grow">
+                    <input
+                      id="search-input"
+                      class="input peer block w-full bg-transparent p-12 pl-0 font-inter text-black outline-none transition text-bold-16 placeholder:opacity-0 focus:text-[#000] group-hover:text-[#000]"
+                      :value="searchModel"
+                      placeholder="Поиск"
+                      type="text"
+                      @input="handleSearchInput"
+                    />
+                    <label
+                      class="label absolute left-0 top-12 text-[12px] text-[#848A99] opacity-0 transition-all text-bold-16 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-[14px] peer-placeholder-shown:opacity-100 peer-hover:text-[#000] peer-focus:top-5 peer-focus:-translate-y-0 peer-focus:text-[10px] peer-focus:text-[#848A99] peer-focus:opacity-0"
+                      for="search-input"
+                    >
+                      Поиск
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <a
