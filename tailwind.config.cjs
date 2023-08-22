@@ -51,6 +51,10 @@ const typography = {
     fontSize: '16px',
     fontWeight: 800
   },
+  '.text-extrabold-10': {
+    fontSize: '10px',
+    fontWeight: 800
+  },
   '.text-bold-24': {
     fontSize: '24px',
     fontWeight: 700
@@ -160,7 +164,8 @@ module.exports = {
       pale: '#FFDD82',
       
       button: {
-        DEFAULT: '#EEEFEF'
+        DEFAULT: '#EEEFEF',
+        dark: '#E2E3E3'
       },
 
       tapestry: '#fcf9ed',
