@@ -34,88 +34,7 @@ const handleSearchInput = debounce(e => {
 </script>
 
 <template>
-  <header id="header" class="group flex flex-col justify-center">
-    <div class="bg-gray py-13 md:hidden">
-      <AppContainer>
-        <nav class="flex items-center justify-between">
-          <ul class="flex items-center gap-x-20">
-            <li>
-              <NuxtLink to="/" class="tracking-[-0.36px]">Новости</NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/" class="tracking-[-0.36px]">Отзывы</NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/" class="tracking-[-0.36px]">Где помыть</NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/" class="tracking-[-0.36px]">Статьи</NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/" class="tracking-[-0.36px]">Партнерам</NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/" class="tracking-[-0.36px]">
-                Доставка и оплата
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/" class="tracking-[-0.36px]">Видеоуроки</NuxtLink>
-            </li>
-          </ul>
-          <ul class="flex items-center gap-x-10">
-            <li>
-              <a
-                href=""
-                target="_blank"
-                rel="noopener norefferer nofollow"
-                class="flex items-center justify-center"
-              >
-                <img
-                  src="~/assets/img/icons/dzen.png"
-                  alt=""
-                  class="block h-28 w-28"
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                target="_blank"
-                rel="noopener norefferer nofollow"
-                class="flex items-center justify-center"
-              >
-                <img
-                  src="~/assets/img/icons/vk.png"
-                  alt=""
-                  class="block h-28 w-28"
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                target="_blank"
-                rel="noopener norefferer nofollow"
-                class="flex items-center justify-center"
-              >
-                <img src="~/assets/img/icons/tg.svg" alt="" class="block" />
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                target="_blank"
-                rel="noopener norefferer nofollow"
-                class="flex items-center justify-center"
-              >
-                <img src="~/assets/img/icons/yt.svg" alt="" class="block" />
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </AppContainer>
-    </div>
+  <div>
     <AppContainer>
       <div class="py-20 group-[.expanded]:py-10">
         <div class="flex items-center">
@@ -175,12 +94,33 @@ const handleSearchInput = debounce(e => {
               </div>
             </div>
 
-            <a
-              href="tel:+79915955199"
-              class="flex flex-shrink-0 flex-grow-0 items-center leading-none text-black text-extrabold-20 group-[.expanded]:hidden md:flex-col md:text-black md:text-extrabold-24"
-            >
-              +7 991 595-51-99
-            </a>
+            <div class="mr-20">
+              <a
+                href="tel:+79915955199"
+                class="flex flex-shrink-0 flex-grow-0 items-center leading-none text-black text-extrabold-20 group-[.expanded]:hidden md:flex-col md:text-black md:text-extrabold-24"
+              >
+                +7 991 595-51-99
+              </a>
+            </div>
+            <div class="flex items-center gap-x-10">
+              <NuxtLink
+                to="/cart"
+                class="relative flex h-38 w-38 items-center justify-center rounded-full bg-gray"
+              >
+                <span
+                  class="text-extrabold-10 min-w-14 absolute -right-3 -top-3 flex items-center justify-center rounded-full bg-[#F00] px-4 py-2 font-inter leading-none text-white"
+                >
+                  1
+                </span>
+                <LazyCartIcon />
+              </NuxtLink>
+              <NuxtLink
+                to="/profile"
+                class="flex h-38 w-38 items-center justify-center rounded-full bg-gray"
+              >
+                <LazyUserIcon />
+              </NuxtLink>
+            </div>
           </teleport>
           <ClientOnly>
             <div v-if="!isLgScreen" class="ml-auto">
@@ -194,7 +134,5 @@ const handleSearchInput = debounce(e => {
         </div>
       </div>
     </AppContainer>
-  </header>
+  </div>
 </template>
-
-<style lang="scss" scoped></style>
