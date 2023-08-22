@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import ProfileAddress from './ProfileAddress.vue'
+import ProfileHistory from './ProfileHistory.vue'
 import ProfilePartner from './ProfilePartner.vue'
 import ProfileUserForm from './ProfileUserForm.vue'
 
@@ -20,7 +21,7 @@ const categories = reactive([
   },
   {
     title: 'Заказы',
-    component: shallowRef(ProfileUserForm),
+    component: shallowRef(ProfileHistory),
     cssClasses: '',
     isActiveTab: false,
     id: 2
