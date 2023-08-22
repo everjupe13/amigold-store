@@ -1,10 +1,9 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
-import { RouterLinkProps } from 'vue-router'
+import { RouteLocationRaw } from 'vue-router'
 
 interface IAppBreadcrumbLink {
   label: string
-  toLink?: RouterLinkProps['to']
+  toLink?: RouteLocationRaw
 }
 
 interface IAppBreadcrumbsComponent {
@@ -29,9 +28,7 @@ const isLastCrumb = (index: number) => {
 }
 
 const determineCrumbsComponent = (index: number) => {
-  return !isLastCrumb(index) && breads.value.length !== 1
-    ? 'router-link'
-    : 'span'
+  return !isLastCrumb(index) && breads.value.length !== 1 ? 'NuxtLink' : 'span'
 }
 </script>
 
