@@ -57,7 +57,7 @@ const updateInput = (event: Event) => {
       @change="updateInput"
     />
     <span
-      class="bg-button-dark flex h-24 w-24 items-center justify-center rounded-[8px] border-2 border-[#E2E3E3] transition group-hover:border-yellow group-hover:bg-transparent peer-checked:border-yellow peer-checked:bg-yellow"
+      class="flex h-24 w-24 items-center justify-center rounded-[8px] border-2 border-[#E2E3E3] bg-button-dark transition group-hover:border-yellow group-hover:bg-transparent peer-checked:border-yellow peer-checked:bg-yellow"
     >
       <CheckIcon
         class="opacity-0 transition group-hover:fill-yellow group-hover:opacity-100"

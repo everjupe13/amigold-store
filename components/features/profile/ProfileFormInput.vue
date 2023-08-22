@@ -71,12 +71,18 @@ const slots = useSlots()
 const isAfterInputSlotEmpty = computed(
   () => slots?.['after-input'] === undefined
 )
+
+const isLoaded = ref(false)
+
+onMounted(() => {
+  isLoaded.value = true
+})
 </script>
 
 <template>
   <div>
     <div
-      class="group flex items-center rounded-[5px] border border-solid border-black/10 bg-white focus-within:border-black/50 hover:border-black/50"
+      class="group flex h-75 items-center rounded-[5px] bg-button focus-within:bg-button-dark hover:bg-button-dark"
       :class="[props.inputWrapperClasses]"
     >
       <div class="relative w-full flex-grow">
@@ -120,7 +126,7 @@ const isAfterInputSlotEmpty = computed(
       </div>
     </div>
     <AppCollapse
-      v-if="props.isValid !== undefined"
+      v-if="props.isValid !== undefined && isLoaded"
       v-model="isValidationMessageShown"
     >
       <div class="validation-message px-5 py-7 pb-0">
@@ -138,10 +144,7 @@ const isAfterInputSlotEmpty = computed(
 }
 
 .input {
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 100%;
+  @apply leading-none text-medium-16;
 }
 
 .validation-message {

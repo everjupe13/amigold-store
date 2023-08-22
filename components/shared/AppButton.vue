@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface IAppButton {
-  theme?: 'default' | 'alternative' | 'black'
+  theme?: 'default' | 'alternative' | 'black' | 'gray'
   size?: 'sm' | 'md'
   rounded?: boolean
   outlined?: boolean
@@ -48,6 +48,10 @@ const componentsClasses = computed(() => {
 
   &_theme-black {
     @apply border-black bg-black;
+  }
+
+  &_theme-gray {
+    @apply border-button-dark bg-button-dark text-black;
   }
 
   &_theme-alternative {

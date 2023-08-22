@@ -75,6 +75,10 @@ const typography = {
     fontSize: '14px',
     fontWeight: 700
   },
+  '.text-bold-12': {
+    fontSize: '12px',
+    fontWeight: 700
+  },
   '.text-semibold-14': {
     fontSize: '14px',
     fontWeight: 600
@@ -162,6 +166,7 @@ module.exports = {
       milky: '#F3F1EC',
       green: '#336F3F',
       pale: '#FFDD82',
+      red: '#e35050',
       
       button: {
         DEFAULT: '#EEEFEF',
