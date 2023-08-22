@@ -22,15 +22,15 @@ const onCreateOrder = () => {
 </script>
 
 <template>
-  <form class="rounded-[24px] bg-white p-40" @submit.prevent>
-    <div class="pb-24">
-      <p class="leading-none text-extrabold-32">Итого</p>
+  <form class="p-40 md:p-20" @submit.prevent>
+    <div class="mb-24">
+      <p class="leading-none text-extrabold-32 md:text-extrabold-32">Итого</p>
     </div>
 
-    <div class="rounded-[16px] border border-gray/20 p-28">
+    <div class="bg-button-dark rounded-[16px] p-28 md:rounded-[15px] md:p-20">
       <div>
         <div class="mb-18 flex items-center justify-between">
-          <p class="leading-none text-gray/80 text-regular-18">
+          <p class="leading-none text-black/80 text-regular-18">
             Товара на сумму:
           </p>
           <div v-if="props.isLoading" class="flex items-center justify-center">
@@ -42,7 +42,7 @@ const onCreateOrder = () => {
         </div>
 
         <div class="mb-18 flex items-center justify-between">
-          <p class="leading-none text-gray/80 text-regular-18">Доставка:</p>
+          <p class="leading-none text-black/80 text-regular-18">Доставка:</p>
           <div v-if="props.isLoading" class="flex items-center justify-center">
             <AppSpinner :size="18" />
           </div>

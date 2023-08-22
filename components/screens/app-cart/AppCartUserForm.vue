@@ -3,8 +3,8 @@ import { useVuelidate } from '@vuelidate/core'
 import { email, required } from '@vuelidate/validators'
 import { VueFinalModal } from 'vue-final-modal'
 
-import { useCartStore } from '@/api/modules/cart'
 import AppSpinner from '@/components/shared/AppSpinner.vue'
+import { useCartStore } from '@/store/cart'
 
 const formData = reactive({
   email: '',
@@ -86,7 +86,7 @@ const closeModal = () => {
           :disabled="isSuccess || isLoading"
           :is-valid="v$.name.$dirty ? !v$.name.$invalid : true"
           :is-dirty="v$.name.$dirty"
-          :validation-message="v$.name.$silentErrors[0]?.$message"
+          :validation-message="unref(v$.name.$silentErrors[0]?.$message)"
         />
         <AppInput
           v-model="v$.phone.$model"
@@ -95,7 +95,7 @@ const closeModal = () => {
           :disabled="isSuccess || isLoading"
           :is-valid="v$.phone.$dirty ? !v$.phone.$invalid : true"
           :is-dirty="v$.phone.$dirty"
-          :validation-message="v$.phone.$silentErrors[0]?.$message"
+          :validation-message="unref(v$.phone.$silentErrors[0]?.$message)"
         />
         <AppInput
           v-model="v$.email.$model"
@@ -104,7 +104,7 @@ const closeModal = () => {
           :disabled="isSuccess || isLoading"
           :is-valid="v$.email.$dirty ? !v$.email.$invalid : true"
           :is-dirty="v$.email.$dirty"
-          :validation-message="v$.email.$silentErrors[0]?.$message"
+          :validation-message="unref(v$.email.$silentErrors[0]?.$message)"
         />
         <AppInput
           v-model="formData.comment"

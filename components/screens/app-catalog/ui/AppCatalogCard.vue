@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ICatalogProducts } from '@/api/modules/catalog/catalog.types'
+import { ICatalogProducts } from '@/store/catalog/catalog.types'
 
 const props = defineProps<ICatalogProducts>()
 </script>
