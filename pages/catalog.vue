@@ -80,9 +80,12 @@ const cardData = [
 
   <section class="pb-100">
     <AppContainer>
-      <div class="mb-20 grid grid-cols-3">
-        <h1 class="title">Каталог</h1>
-        <div class="flex items-center justify-center gap-10">
+      <div class="header-grid mb-20 grid grid-cols-3">
+        <div class="heading-title md:mb-20"><h1 class="title">Каталог</h1></div>
+
+        <div
+          class="filters flex items-center justify-center gap-10 md:flex-col md:items-start"
+        >
           <button
             class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-black px-20 py-16 leading-none text-white transition text-bold-16"
           >
@@ -99,9 +102,9 @@ const cardData = [
             Попугаем
           </button>
         </div>
-        <div class="self-center justify-self-end"></div>
+        <div class="controls self-center justify-self-end"></div>
       </div>
-      <div class="grid grid-cols-5 gap-x-20 gap-y-60">
+      <div class="grid grid-cols-5 gap-x-20 gap-y-60 md:grid-cols-2">
         <AppProductCard
           v-for="card in cardData"
           :key="card.id"
@@ -112,3 +115,26 @@ const cardData = [
     </AppContainer>
   </section>
 </template>
+
+<style lang="scss" scoped>
+.header-grid {
+  grid-template-areas: 'a a' 'b c';
+
+  .heading-title {
+    @media (max-width: 991.99px) {
+      grid-area: 'a';
+    }
+  }
+  .filters {
+    @media (max-width: 991.99px) {
+      grid-area: b;
+    }
+  }
+
+  .controls {
+    @media (max-width: 991.99px) {
+      grid-area: c;
+    }
+  }
+}
+</style>
