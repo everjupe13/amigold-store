@@ -46,7 +46,7 @@ const updateInput = (event: Event) => {
 
 <template>
   <label class="group relative flex select-none items-center gap-x-10">
-    <span v-if="label" class="leading-none text-gray text-bold-14">
+    <span v-if="label" class="leading-none text-black text-bold-14">
       {{ label }}
     </span>
     <input
@@ -57,11 +57,11 @@ const updateInput = (event: Event) => {
       @change="updateInput"
     />
     <span
-      class="flex h-24 w-24 items-center justify-center rounded-[8px] border-2 border-[#E2E3E3] bg-[#EEEFEF] transition group-hover:border-green group-hover:bg-transparent peer-checked:border-green peer-checked:bg-green"
+      class="bg-button-dark flex h-24 w-24 items-center justify-center rounded-[8px] border-2 border-[#E2E3E3] transition group-hover:border-yellow group-hover:bg-transparent peer-checked:border-yellow peer-checked:bg-yellow"
     >
       <CheckIcon
-        class="opacity-0 transition group-hover:opacity-100"
-        :class="{ 'fill-white opacity-100': isChecked }"
+        class="opacity-0 transition group-hover:fill-yellow group-hover:opacity-100"
+        :class="{ 'fill-white opacity-100 group-hover:fill-white': isChecked }"
       />
     </span>
   </label>

@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
     :width="props.size"
     :height="props.size"
     :viewBox="`0 0 90 90`"
-    class="animate-spin text-green"
+    class="animate-spin text-yellow"
     fill="none"
   >
     <g clip-path="url(#clip0_314_34)">
