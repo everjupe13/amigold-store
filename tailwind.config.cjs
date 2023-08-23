@@ -35,6 +35,10 @@ const typography = {
     fontSize: '36px',
     fontWeight: 800
   },
+  '.text-extrabold-28': {
+    fontSize: '28px',
+    fontWeight: 800
+  },
   '.text-extrabold-24': {
     fontSize: '24px',
     fontWeight: 800

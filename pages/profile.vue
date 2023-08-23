@@ -1,16 +1,7 @@
 <script lang="ts" setup>
-// import { useModal } from 'vue-final-modal'
-
-// import AppCartUserForm from '@/components/screens/app-cart/AppCartUserForm.vue'
-
-// const { open, close } = useModal({
-//   component: AppCartUserForm,
-//   attrs: {
-//     onConfirm() {
-//       close()
-//     }
-//   }
-// })
+useHead({
+  title: 'Профиль'
+})
 </script>
 
 <template>
@@ -27,5 +18,3 @@
     </AppContainer>
   </section>
 </template>
-
-<style lang="scss" scoped></style>

@@ -2,7 +2,9 @@
 <script lang="ts" setup>
 import { useVuelidate } from '@vuelidate/core'
 import { email, required } from '@vuelidate/validators'
+import { useModal } from 'vue-final-modal'
 
+import ProfileUserEditModal from '@/components/features/profile/ProfileUserEditModal.vue'
 import { useCartStore } from '@/store/cart'
 
 const formData = reactive({
@@ -27,6 +29,15 @@ const v$ = useVuelidate(rules, formData)
 const cartStore = useCartStore()
 const isLoading = ref(false)
 const isSuccess = ref(false)
+
+const { open, close } = useModal({
+  component: ProfileUserEditModal,
+  attrs: {
+    onConfirm() {
+      close()
+    }
+  }
+})
 
 const successScreen = ref(false)
 
@@ -90,6 +101,7 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
       class="mb-15"
       :disabled="isSuccess || isLoading || true"
       v-bind="inputPropsMapper(v$.email)"
+      @click="open"
     />
     <ProfileFormInput
       v-model="v$.phone.$model"
@@ -97,6 +109,7 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
       class="mb-15"
       :disabled="isSuccess || isLoading || true"
       v-bind="inputPropsMapper(v$.phone)"
+      @click="open"
     />
     <ProfileFormInput
       v-model="v$.name.$model"
@@ -104,6 +117,7 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
       class="mb-15"
       :disabled="isSuccess || isLoading || true"
       v-bind="inputPropsMapper(v$.name)"
+      @click="open"
     />
     <ProfileFormInput
       v-model="v$.password.$model"
@@ -112,6 +126,7 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
       class="mb-15"
       :disabled="isSuccess || isLoading || true"
       v-bind="inputPropsMapper(v$.password)"
+      @click="open"
     />
   </form>
 </template>
