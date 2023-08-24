@@ -1,6 +1,6 @@
 import { ofetch } from 'ofetch'
 
-import { useAuthStore } from '@/store/auth'
+import { useAuthStore } from '@/store/auth/useAuthStore'
 
 export default defineNuxtPlugin(_nuxtApp => {
   globalThis.$fetch = ofetch.create({

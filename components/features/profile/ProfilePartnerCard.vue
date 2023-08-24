@@ -13,13 +13,14 @@ const props = withDefaults(defineProps<Props>(), {
   inn: '',
   bik: () => []
 })
+const emits = defineEmits(['edit', 'delete'])
 </script>
 
 <template>
   <form class="rounded-[24px] bg-gray p-20" @submit.prevent>
     <div class="flex">
       <div class="flex-grow flex-col">
-        <p class="mb-20 leading-none text-bold-24">{{ '#' + props.id + 1 }}</p>
+        <p class="mb-20 leading-none text-bold-24">{{ `#${props.id + 1}` }}</p>
         <div class="max-w-[500px]">
           <div class="mb-24 flex items-center gap-x-10">
             <h3 class="font-inter leading-none text-medium-16">
@@ -57,10 +58,18 @@ const props = withDefaults(defineProps<Props>(), {
       <div class="flex-shrink-0">
         <div class="flex gap-x-10">
           <template v-if="props.name">
-            <AppButton theme="gray" class="!px-20 !py-12">
+            <AppButton
+              theme="gray"
+              class="!px-20 !py-12"
+              @click="emits('edit', props.id)"
+            >
               Редактировать
             </AppButton>
-            <AppButton theme="gray" class="!h-46 !w-46 !p-16">
+            <AppButton
+              theme="gray"
+              class="!h-46 !w-46 !p-16"
+              @click="emits('delete', props.id)"
+            >
               <CrossIcon></CrossIcon>
             </AppButton>
           </template>

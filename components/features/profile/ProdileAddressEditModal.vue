@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useVuelidate } from '@vuelidate/core'
-import { email, required } from '@vuelidate/validators'
+import { required } from '@vuelidate/validators'
 import { VueFinalModal } from 'vue-final-modal'
 
 const emit = defineEmits<{
@@ -15,17 +15,15 @@ onMounted(() => {
 })
 
 const formData = reactive({
-  email: 'example@mailbox.io',
-  name: 'John',
-  phone: '8 999 999 99 99',
-  password: '12113123'
+  title: 'Иван Иваныч',
+  city: 'г. Санкт-Петербург 570078 ',
+  street: 'ул. Пушкина 12, кв-2'
 })
 
 const rules = {
-  email: { required, email },
-  name: { required },
-  phone: { required },
-  password: { required }
+  title: { required },
+  city: { required },
+  street: { required }
 }
 
 const v$ = useVuelidate(rules, formData)
@@ -64,29 +62,21 @@ const onSubmitForm = () => {
       <form @submit.prevent="onSubmitForm">
         <div class="mb-20">
           <AppInput
-            v-model="v$.email.$model"
-            placeholder="Е-mail"
-            class="mb-15"
-            v-bind="inputPropsMapper(v$.email)"
-          />
-          <AppInput
-            v-model="v$.phone.$model"
-            placeholder="Номер телефона"
-            class="mb-15"
-            v-bind="inputPropsMapper(v$.phone)"
-          />
-          <AppInput
-            v-model="v$.name.$model"
+            v-model="v$.title.$model"
             placeholder="ФИО"
             class="mb-15"
-            v-bind="inputPropsMapper(v$.name)"
+            v-bind="inputPropsMapper(v$.title)"
           />
           <AppInput
-            v-model="v$.password.$model"
-            placeholder="Пароль"
-            type="password"
+            v-model="v$.city.$model"
+            placeholder="Город / Индекс"
             class="mb-15"
-            v-bind="inputPropsMapper(v$.password)"
+            v-bind="inputPropsMapper(v$.city)"
+          />
+          <AppInput
+            v-model="v$.street.$model"
+            placeholder="Адрес"
+            v-bind="inputPropsMapper(v$.street)"
           />
         </div>
         <div class="flex flex-col items-center">

@@ -3,9 +3,9 @@ import { useVuelidate } from '@vuelidate/core'
 import { email, required } from '@vuelidate/validators'
 import { VueFinalModal } from 'vue-final-modal'
 
-const emit = defineEmits<{
-  (e: 'confirm'): void
-}>()
+import { useAuthStore } from '@/store/auth/useAuthStore'
+
+const authStore = useAuthStore()
 
 onMounted(() => {
   nextTick(() => {
@@ -23,8 +23,8 @@ const formData = reactive({
 
 const rules = {
   email: { required, email },
-  name: { required },
   phone: { required },
+  name: { required },
   password: { required }
 }
 
@@ -34,10 +34,8 @@ const isSuccess = ref(false)
 
 onMounted(() => {
   isLoading.value = true
-  isSuccess.value = false
   v$.value.$validate()
   isLoading.value = false
-  isSuccess.value = true
 })
 
 const inputPropsMapper = (props: { [x: string]: any }) => {
@@ -47,7 +45,13 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
     validationMessage: unref(props.$silentErrors[0]?.$message)
   }
 }
-const onSubmitForm = () => {
+
+const emit = defineEmits<{
+  (e: 'confirm'): void
+}>()
+
+const onSubmitForm = async () => {
+  await authStore.signUp()
   emit('confirm')
 }
 </script>
@@ -59,39 +63,43 @@ const onSubmitForm = () => {
   >
     <div>
       <h2 class="mb-40 leading-none text-extrabold-36 md:text-extrabold-28">
-        Введите новые данные
+        Авторизация
       </h2>
       <form @submit.prevent="onSubmitForm">
-        <div class="mb-20">
-          <AppInput
+        <div>
+          <ProfileFormInput
             v-model="v$.email.$model"
             placeholder="Е-mail"
             class="mb-15"
+            :disabled="isSuccess || isLoading"
             v-bind="inputPropsMapper(v$.email)"
           />
-          <AppInput
+          <ProfileFormInput
             v-model="v$.phone.$model"
             placeholder="Номер телефона"
             class="mb-15"
+            :disabled="isSuccess || isLoading"
             v-bind="inputPropsMapper(v$.phone)"
           />
-          <AppInput
+          <ProfileFormInput
             v-model="v$.name.$model"
             placeholder="ФИО"
             class="mb-15"
+            :disabled="isSuccess || isLoading"
             v-bind="inputPropsMapper(v$.name)"
           />
-          <AppInput
+          <ProfileFormInput
             v-model="v$.password.$model"
             placeholder="Пароль"
             type="password"
             class="mb-15"
+            :disabled="isSuccess || isLoading"
             v-bind="inputPropsMapper(v$.password)"
           />
         </div>
         <div class="flex flex-col items-center">
           <AppButton class="w-full max-w-[250px]" type="submit">
-            Изменить
+            Отправить
           </AppButton>
         </div>
       </form>

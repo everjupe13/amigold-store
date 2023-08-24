@@ -4,8 +4,14 @@ import { debounce } from 'lodash-es'
 import IconBurger from '@/assets/img/burger-icon.svg'
 import IconBurgerOpened from '@/assets/img/burger-icon-opened.svg'
 import AppLogo from '@/components/shared/AppLogo.vue'
+import { useAuthStore } from '@/store/auth/useAuthStore'
 
 const isLgScreen: boolean | undefined = inject('isLgScreen', true)
+
+const openAuthModal = inject('openAuth') as () => void
+const authStore = useAuthStore()
+
+onMounted(async () => await authStore.setSavedToken())
 
 const isModalOpened = ref(false)
 const openModal = () => {
@@ -108,18 +114,28 @@ const handleSearchInput = debounce(e => {
                 class="relative flex h-38 w-38 items-center justify-center rounded-full bg-gray"
               >
                 <span
-                  class="text-extrabold-10 min-w-14 absolute -right-3 -top-3 flex items-center justify-center rounded-full bg-[#F00] px-4 py-2 font-inter leading-none text-white"
+                  class="min-w-14 absolute -right-3 -top-3 flex items-center justify-center rounded-full bg-[#F00] px-4 py-2 font-inter leading-none text-white text-extrabold-10"
                 >
                   1
                 </span>
                 <LazyCartIcon />
               </NuxtLink>
-              <NuxtLink
-                to="/profile"
-                class="flex h-38 w-38 items-center justify-center rounded-full bg-gray"
-              >
-                <LazyUserIcon />
-              </NuxtLink>
+              <ClientOnly>
+                <NuxtLink
+                  v-if="authStore.isAuth"
+                  to="/profile"
+                  class="flex h-38 w-38 items-center justify-center rounded-full bg-gray"
+                >
+                  <LazyUserIcon />
+                </NuxtLink>
+                <div
+                  v-else
+                  class="flex h-38 w-38 cursor-pointer items-center justify-center rounded-full bg-gray"
+                  @click="() => openAuthModal()"
+                >
+                  <LazyUserIcon />
+                </div>
+              </ClientOnly>
             </div>
           </teleport>
           <ClientOnly>

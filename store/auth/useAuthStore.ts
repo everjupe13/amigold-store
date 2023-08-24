@@ -1,12 +1,22 @@
-import { useHttp } from 'composables/useHttp'
 import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
+
+import { useHttp } from '@/composables/useHttp'
 
 export const TOKEN_LOCAL_STORAGE_KEY = 'x-token'
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
   const isAuth = computed(() => token.value !== null)
+
+  const setSavedToken = async () => {
+    const storagedToken = localStorage.getItem(TOKEN_LOCAL_STORAGE_KEY)
+    if (storagedToken !== null) {
+      token.value = storagedToken
+    }
+
+    return await new Promise<void>(resolve => resolve())
+  }
 
   const signUp = async () => {
     const generatedToken = uuidv4()
@@ -46,5 +56,5 @@ export const useAuthStore = defineStore('auth', () => {
     return await new Promise<void>(resolve => resolve())
   }
 
-  return { isAuth, signUp, signIn, signOut }
+  return { isAuth, token, signUp, signIn, signOut, setSavedToken }
 })

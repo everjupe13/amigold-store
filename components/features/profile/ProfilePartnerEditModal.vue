@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useVuelidate } from '@vuelidate/core'
-import { email, required } from '@vuelidate/validators'
+import { required } from '@vuelidate/validators'
 import { VueFinalModal } from 'vue-final-modal'
 
 const emit = defineEmits<{
@@ -15,17 +15,17 @@ onMounted(() => {
 })
 
 const formData = reactive({
-  email: 'example@mailbox.io',
-  name: 'John',
-  phone: '8 999 999 99 99',
-  password: '12113123'
+  organization: 'ИП Иванов Иван',
+  inn: '937118153215',
+  bik: '4613 5361 5367 1289',
+  bik2: '4616179'
 })
 
 const rules = {
-  email: { required, email },
-  name: { required },
-  phone: { required },
-  password: { required }
+  organization: { required },
+  inn: { required },
+  bik: { required },
+  bik2: { required }
 }
 
 const v$ = useVuelidate(rules, formData)
@@ -64,29 +64,28 @@ const onSubmitForm = () => {
       <form @submit.prevent="onSubmitForm">
         <div class="mb-20">
           <AppInput
-            v-model="v$.email.$model"
-            placeholder="Е-mail"
+            v-model="v$.organization.$model"
+            placeholder="Название организации"
             class="mb-15"
-            v-bind="inputPropsMapper(v$.email)"
+            v-bind="inputPropsMapper(v$.organization)"
           />
           <AppInput
-            v-model="v$.phone.$model"
-            placeholder="Номер телефона"
+            v-model="v$.inn.$model"
+            placeholder="ИНН"
             class="mb-15"
-            v-bind="inputPropsMapper(v$.phone)"
+            v-bind="inputPropsMapper(v$.inn)"
           />
           <AppInput
-            v-model="v$.name.$model"
-            placeholder="ФИО"
+            v-model="v$.bik.$model"
+            placeholder="БИК"
             class="mb-15"
-            v-bind="inputPropsMapper(v$.name)"
+            v-bind="inputPropsMapper(v$.bik)"
           />
           <AppInput
-            v-model="v$.password.$model"
-            placeholder="Пароль"
-            type="password"
+            v-model="v$.bik2.$model"
+            placeholder="БИК"
             class="mb-15"
-            v-bind="inputPropsMapper(v$.password)"
+            v-bind="inputPropsMapper(v$.bik2)"
           />
         </div>
         <div class="flex flex-col items-center">

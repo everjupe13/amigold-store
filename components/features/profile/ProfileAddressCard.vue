@@ -1,14 +1,17 @@
 <script lang="ts" setup>
 type Props = {
+  id?: number
   title?: string
   city?: string
   street?: string
 }
 const props = withDefaults(defineProps<Props>(), {
+  id: -1,
   title: '',
   city: '',
   street: ''
 })
+const emits = defineEmits(['edit', 'delete'])
 </script>
 
 <template>
@@ -39,10 +42,18 @@ const props = withDefaults(defineProps<Props>(), {
       <div class="flex-shrink-0">
         <div class="flex gap-x-10">
           <template v-if="props.title && props.street && props.city">
-            <AppButton theme="gray" class="!px-20 !py-12">
+            <AppButton
+              theme="gray"
+              class="!px-20 !py-12"
+              @click="emits('edit', props.id)"
+            >
               Редактировать
             </AppButton>
-            <AppButton theme="gray" class="!h-46 !w-46 !p-16">
+            <AppButton
+              theme="gray"
+              class="!h-46 !w-46 !p-16"
+              @click="emits('delete', props.id)"
+            >
               <CrossIcon></CrossIcon>
             </AppButton>
           </template>
