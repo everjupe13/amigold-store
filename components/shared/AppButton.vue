@@ -43,29 +43,29 @@ const componentsClasses = computed(() => {
   @apply disabled:opacity-50;
 
   &_theme-default {
-    @apply !border-yellow !bg-yellow;
+    @apply border-yellow bg-yellow !important;
   }
 
   &_theme-black {
-    @apply !border-black !bg-black;
+    @apply border-black bg-black !important;
   }
 
   &_theme-gray {
-    @apply !border-button-dark !bg-button-dark !text-black;
+    @apply border-button-dark bg-button-dark text-black !important;
   }
 
   &_theme-alternative {
-    @apply !bg-[#D9D9D9] !text-[#202022];
+    @apply bg-[#D9D9D9] text-[#202022] !important;
   }
 
   &_outlined {
-    @apply !bg-transparent;
+    @apply bg-transparent !important;
 
     &.app-btn_theme-default {
-      @apply !text-yellow hover:!bg-yellow hover:!text-white;
+      @apply text-yellow hover:bg-yellow hover:text-white !important;
     }
     &.app-btn_theme-black {
-      @apply !text-black;
+      @apply text-black !important;
     }
   }
 }
