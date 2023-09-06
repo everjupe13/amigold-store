@@ -12,7 +12,7 @@
     "lint": "yarn lint:js && yarn lint:prettier",
     "lint:js": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
     "lint:prettier": "prettier --check .",
-    "lintfix": "prettier --write --list-different . && yarn lint:js --fix"
+    "lint:fix": "prettier --write --list-different . && yarn lint:js --fix"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.4.11",

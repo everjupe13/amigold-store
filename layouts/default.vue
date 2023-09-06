@@ -2,7 +2,8 @@
 import { ModalsContainer, useModal } from 'vue-final-modal'
 
 import SigninModal from '@/components/widgets/SigninModal.vue'
-import { useAuthStore } from '@/store/auth/useAuthStore'
+import SignupModal from '@/components/widgets/SignupModal.vue'
+import { useUserStore } from '@/store/user/useUserStore'
 
 if (process.client) {
   const appWidth = ref(window.innerWidth)
@@ -26,14 +27,22 @@ if (process.client) {
   })
 
   const route = useRoute()
-  const authStore = useAuthStore()
-  await authStore.setSavedToken()
+  const userStore = useUserStore()
+
+  onMounted(async () => await userStore.initializeUser())
   const isLoaded = ref(false)
 
-  const deleteAuthFromQuery = () => {
+  const deleteAuthFromQuery = async () => {
+    if (authModal.options.modalValue || signupModal.options.modalValue) {
+      console.log(
+        authModal.options.modalValue || signupModal.options.modalValue
+      )
+      return
+    }
+
     const domainUrl = new URL(window.location.href)
-    domainUrl.searchParams.delete('signin-form')
-    navigateTo(domainUrl.pathname + domainUrl.search)
+    domainUrl.searchParams.delete('auth-action-form')
+    await navigateTo(domainUrl.pathname + domainUrl.search)
   }
 
   const authModal = useModal({
@@ -42,34 +51,47 @@ if (process.client) {
       onConfirm() {
         authModal.close()
       },
-      onClosed() {
-        deleteAuthFromQuery()
+      async onClosed() {
+        await deleteAuthFromQuery()
+      }
+    }
+  })
+
+  const signupModal = useModal({
+    component: SignupModal,
+    attrs: {
+      onConfirm() {
+        signupModal.close()
+      },
+      async onClosed() {
+        await deleteAuthFromQuery()
       }
     }
   })
 
   watch(
     () => route.query,
-    () => {
+    newQuery => {
       if (!isLoaded.value) {
         return
       }
 
-      if (route.query instanceof Object && route.query['signin-form']) {
-        if (authStore.isAuth) {
+      if (newQuery instanceof Object && newQuery['auth-action-form']) {
+        if (userStore.isAuth) {
           return deleteAuthFromQuery()
         }
 
-        try {
-          const isOpen = JSON.parse(
-            (route.query['signin-form'] as string) || 'false'
-          )
-
-          if (isOpen && !authStore.isAuth) {
+        const action = newQuery['auth-action-form'] as string
+        if (action === 'signin') {
+          nextTick(() => {
             authModal.open()
-          }
-        } catch (error) {
-          console.log(error)
+          })
+          return
+        }
+        if (action === 'signup') {
+          nextTick(() => {
+            signupModal.open()
+          })
         }
       }
     },
@@ -78,34 +100,40 @@ if (process.client) {
 
   onMounted(() => {
     isLoaded.value = true
-    nextTick(() => {
-      if (route.query instanceof Object && route.query['signin-form']) {
-        if (authStore.isAuth) {
-          return deleteAuthFromQuery()
-        }
-
-        try {
-          const isOpen = JSON.parse(
-            (route.query['signin-form'] as string) || 'false'
-          )
-
-          if (isOpen && !authStore.isAuth) {
-            authModal.open()
-          }
-        } catch (error) {
-          console.log(error)
-        }
+    if (route.query instanceof Object && route.query['auth-action-form']) {
+      if (userStore.isAuth) {
+        return deleteAuthFromQuery()
       }
-    })
+
+      const action = route.query['auth-action-form'] as string
+      if (action === 'signin') {
+        nextTick(() => {
+          authModal.open()
+        })
+        return
+      }
+      if (action === 'signup') {
+        nextTick(() => {
+          signupModal.open()
+        })
+      }
+    }
   })
 
-  const openAuthModal = () => {
+  const openAuthModal = async () => {
     const domainUrl = new URL(window.location.href)
-    domainUrl.searchParams.set('signin-form', 'true')
-    navigateTo(domainUrl.pathname + domainUrl.search)
+    domainUrl.searchParams.set('auth-action-form', 'signin')
+    await navigateTo(domainUrl.pathname + domainUrl.search)
+  }
+
+  const openSignupModal = async () => {
+    const domainUrl = new URL(window.location.href)
+    domainUrl.searchParams.set('auth-action-form', 'signup')
+    await navigateTo(domainUrl.pathname + domainUrl.search)
   }
 
   provide('openAuth', openAuthModal)
+  provide('openSignup', openSignupModal)
 }
 </script>
 

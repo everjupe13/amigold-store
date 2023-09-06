@@ -1,41 +1,11 @@
 <script lang="ts" setup>
-import 'swiper/css'
-import 'swiper/css/free-mode'
-
 // import { useCatalogController } from '@/composables/useCatalogController'
 import { storeToRefs } from 'pinia'
-import type { Swiper as ISwiper } from 'swiper'
-import { FreeMode } from 'swiper/modules'
-import { Swiper, SwiperSlide } from 'swiper/vue'
 import { computed, ref, watch } from 'vue'
 
 import { type ICategory, useCatalogStore } from '@/store/catalog'
 
-const modules = [FreeMode]
-
-// TODO сделать фильтрацию по сабкаталогам, скелетон лоадер
-
-const isSwiperEnd = ref(false)
-const isSwiperBeginning = ref(true)
-
-provide('swiperOptions', {
-  isSwiperEnd,
-  isSwiperBeginning
-})
-
-const onSlideChange = (swiper: typeof ISwiper) => {
-  isSwiperEnd.value = swiper.isEnd
-  isSwiperBeginning.value = swiper.isBeginning
-  swiperActiveIndex.value = swiper.activeIndex
-}
-const onSwiper = (swiper: typeof ISwiper) => {
-  swiperRef.value = swiper
-}
-
-const swiperRef: Ref<typeof ISwiper | null> = ref(null)
-const swiperActiveIndex = ref(0)
-const swiperSlidesPerGroup = ref(1)
-
+const route = useRoute()
 const options = {
   categorySlug: '',
   withHashUrlState: true
@@ -103,7 +73,6 @@ const setCurrentSubcategorySlug = async (slug: string) => {
 }
 
 if (options?.withHashUrlState) {
-  const route = useRoute()
   const SUBCATEGORY_URL_QUERY = 'subcategory'
 
   const parseSubcategoryFromUrl = () =>
@@ -145,31 +114,30 @@ const onSubcatalogChange = async (slug: string) => {
 </script>
 
 <template>
-  <div class="wrapper">
-    <swiper
-      v-if="!isLoading && !isProductsLoading"
-      :style="{
-        '--swiper-navigation-color': '#969EAB',
-        '--swiper-pagination-color': '#969EAB'
-      }"
-      :space-between="20"
-      :navigation="true"
-      :slides-per-view="'auto'"
-      :slides-per-group="swiperSlidesPerGroup"
-      :modules="modules"
-      class="w-full"
-      @swiper="onSwiper"
-      @slide-change="onSlideChange"
-    >
-      <template #container-start>
-        <div
-          class="header-grid relative z-[2] mb-40 grid grid-cols-3 md:grid-cols-[1fr_auto]"
-        >
+  <section class="py-40">
+    <AppContainer>
+      <AppBreadcrumbs
+        :crumbs="[{ label: 'Корма для животных' }]"
+      ></AppBreadcrumbs>
+    </AppContainer>
+  </section>
+
+  <template v-if="isLoading">
+    <div class="flex h-[400px] items-center justify-center">
+      <AppSpinner />
+    </div>
+  </template>
+
+  <template v-else>
+    <section class="pb-100">
+      <AppContainer>
+        <div class="header-grid mb-20 grid grid-cols-3">
           <div class="heading-title md:mb-20">
-            <slot name="title"></slot>
+            <h1 class="title">Каталог</h1>
           </div>
+
           <div
-            class="filters flex items-center justify-center gap-10 md:flex-col md:items-start md:justify-normal"
+            class="filters flex items-center justify-center gap-10 md:flex-col md:items-start"
           >
             <template v-if="subcategories.length > 0">
               <button
@@ -186,80 +154,37 @@ const onSubcatalogChange = async (slug: string) => {
               </button>
             </template>
           </div>
+          <div class="controls self-center justify-self-end"></div>
+        </div>
+        <template v-if="!isProductsLoading">
           <div
-            class="controls self-center justify-self-end md:self-stretch md:justify-self-auto"
+            v-if="products.length > 0"
+            class="grid grid-cols-5 gap-x-20 gap-y-60 md:grid-cols-2"
           >
-            <div
-              class="flex items-center gap-x-20 md:h-full md:flex-col-reverse md:justify-between md:gap-y-10"
-            >
-              <HomeSliderButtons />
-              <NuxtLink
-                class="flex rounded-full border-2 border-gray bg-gray px-20 py-16 font-inter leading-none text-bold-16"
-                to="/catalog"
-              >
-                Показать все
-              </NuxtLink>
+            <AppProductCard
+              v-for="product in products"
+              :key="product.id"
+              v-bind="product"
+            ></AppProductCard>
+          </div>
+          <template v-else>
+            <div class="flex h-60 items-center justify-center">
+              <p class="py-30 text-center text-bold-24">Пусто</p>
             </div>
-          </div>
-        </div>
-      </template>
-      <swiper-slide
-        v-for="product in products"
-        :key="product.id"
-        class="max-w-[calc((100%-20px*4)/5)] md:max-w-full"
-      >
-        <AppProductCard v-bind="product"></AppProductCard>
-      </swiper-slide>
-    </swiper>
-    <div v-else>
-      <div
-        class="header-grid relative z-[2] mb-40 grid grid-cols-3 md:grid-cols-[1fr_auto]"
-      >
-        <div class="heading-title md:mb-20">
-          <slot name="title"></slot>
-        </div>
-        <div
-          class="filters flex items-center justify-center gap-10 md:flex-col md:items-start md:justify-normal"
-        >
-          <template v-if="subcategories.length > 0">
-            <button
-              v-for="subcategory in subcategories"
-              :key="subcategory.id"
-              class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16"
-              :class="{
-                '!bg-black !text-white':
-                  currentSubcategory!.slug === subcategory.slug
-              }"
-              @click="onSubcatalogChange(subcategory.slug)"
-            >
-              {{ subcategory.name }}
-            </button>
           </template>
-        </div>
-        <div
-          class="controls self-center justify-self-end md:self-stretch md:justify-self-auto"
-        >
-          <div
-            class="flex items-center gap-x-20 md:h-full md:flex-col-reverse md:justify-between md:gap-y-10"
-          >
-            <NuxtLink
-              class="flex rounded-full border-2 border-gray bg-gray px-20 py-16 font-inter leading-none text-bold-16"
-              to="/catalog"
-            >
-              Показать все
-            </NuxtLink>
+        </template>
+        <template v-else>
+          <div class="grid grid-cols-5 gap-x-20 gap-y-60 md:grid-cols-2">
+            <AppProductCard></AppProductCard>
+            <AppProductCard></AppProductCard>
+            <AppProductCard></AppProductCard>
+            <AppProductCard></AppProductCard>
+            <AppProductCard></AppProductCard>
           </div>
-        </div>
-      </div>
-      <div class="grid grid-cols-5 gap-x-20 gap-y-60 md:grid-cols-2">
-        <HomeCatalogSliderCard></HomeCatalogSliderCard>
-        <HomeCatalogSliderCard></HomeCatalogSliderCard>
-        <HomeCatalogSliderCard></HomeCatalogSliderCard>
-        <HomeCatalogSliderCard></HomeCatalogSliderCard>
-        <HomeCatalogSliderCard></HomeCatalogSliderCard>
-      </div>
-    </div>
-  </div>
+        </template>
+      </AppContainer>
+    </section>
+  </template>
 </template>
 
 <style lang="scss" scoped>

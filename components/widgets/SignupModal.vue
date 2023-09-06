@@ -42,20 +42,20 @@ const emit = defineEmits<{
 }>()
 
 const onSubmitForm = async () => {
-  await userStore.authUser({
-    login: formData.email,
-    password: formData.password
+  await userStore.createUser({
+    password: formData.password,
+    login: formData.email
   })
   emit('confirm')
 }
 
 const clientModal = ref()
 onMounted(() => {
-  const openSignupModal = inject('openSignup') as () => void
-  clientModal.value = openSignupModal
+  const openAuthModal = inject('openAuth') as () => void
+  clientModal.value = openAuthModal
 })
 
-const openSignupModalUrl = () => {
+const openAuthModal = () => {
   emit('confirm')
   clientModal.value()
 }
@@ -76,10 +76,10 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
   >
     <div>
       <h2 class="mb-40 leading-none text-extrabold-36 md:text-extrabold-28">
-        Авторизация
+        Регистрация
       </h2>
       <form @submit.prevent="onSubmitForm">
-        <div class="mb-30">
+        <div>
           <ProfileFormInput
             v-model="v$.email.$model"
             placeholder="Е-mail"
@@ -87,10 +87,12 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
             :disabled="isSuccess || isLoading"
             v-bind="inputPropsMapper(v$.email)"
           />
+
           <ProfileFormInput
             v-model="v$.password.$model"
             placeholder="Пароль"
             type="password"
+            class="mb-15"
             :disabled="isSuccess || isLoading"
             v-bind="inputPropsMapper(v$.password)"
           />
@@ -102,13 +104,9 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
         </div>
         <div class="flex justify-center">
           <p class="mt-15 text-medium-16">
-            Еще нет аккаунта?
-            <button
-              type="button"
-              class="text-[rgb(44,82,255)] transition-all hover:drop-shadow-xl"
-              @click="openSignupModalUrl"
-            >
-              Зарегестрируйтесь
+            Есть аккаунт?
+            <button class="text-[#2c52ff]" type="button" @click="openAuthModal">
+              Войдите
             </button>
           </p>
         </div>

@@ -1,11 +1,8 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { formatRubles } from '@/utils/cost'
 
-type PropsType = {
+type Props = {
   image?: string
-  name?: string
-  vendorCode?: string
-  slug?: string
   prices?: {
     id: number
     weight: string
@@ -13,14 +10,16 @@ type PropsType = {
     cost: string
     product: number
   }[]
+  name?: string
+  slug?: string
+  vendorCode?: string
 }
-
-const props = withDefaults(defineProps<PropsType>(), {
+const props = withDefaults(defineProps<Props>(), {
   image: '',
   vendorCode: '',
-  slug: undefined,
+  prices: () => [],
   name: '',
-  prices: () => []
+  slug: undefined
 })
 
 const toLink = computed(() => `/product/${props.slug}`)
@@ -36,7 +35,7 @@ const isLoaded = computed<boolean>(() => !!props.slug && !!props.name)
 <template>
   <article>
     <div
-      class="group relative mb-15 flex aspect-square items-center justify-center overflow-hidden rounded-[24px] bg-button p-15"
+      class="group relative mb-15 flex aspect-square items-center justify-center overflow-hidden rounded-[24px] bg-gray p-15"
       :class="{ 'animate-pulse': !props.image }"
     >
       <img
@@ -60,7 +59,9 @@ const isLoaded = computed<boolean>(() => !!props.slug && !!props.name)
       </p>
       <h3
         class="mb-8 font-inter leading-tight text-medium-16"
-        :class="{ 'h-32 animate-pulse rounded-[5px] bg-gray': !isLoaded }"
+        :class="{
+          'h-32 animate-pulse rounded-[5px] bg-gray': !isLoaded
+        }"
       >
         <NuxtLink :to="toLink">{{ props.name }}</NuxtLink>
       </h3>
@@ -68,13 +69,8 @@ const isLoaded = computed<boolean>(() => !!props.slug && !!props.name)
         v-if="props.vendorCode"
         class="mb-8 font-inter leading-none text-dark opacity-60 text-medium-12"
       >
-        {{ `Артикул ${props.vendorCode}` }}
+        Артикул: {{ props.vendorCode }}
       </div>
-    </div>
-    <div class="flex flex-col">
-      <AppButton :class="{ 'pointer-events-none invisible': !isLoaded }">
-        В корзину
-      </AppButton>
     </div>
   </article>
 </template>

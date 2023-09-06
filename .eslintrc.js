@@ -3,37 +3,28 @@ module.exports = {
   env: {
     browser: true,
     node: true,
-    es2020: true,
+    es2020: true
   },
 
-  parser: "vue-eslint-parser",
+  parser: 'vue-eslint-parser',
   parserOptions: {
-    "ecmaVersion": "latest",
-    parser: "@typescript-eslint/parser",
+    ecmaVersion: 'latest',
+    parser: '@typescript-eslint/parser'
   },
 
-  ignorePatterns: [
-    "dist",
-    ".eslintrc.js",
-    "tailwind.config.cjs",
-  ],
+  ignorePatterns: ['dist', '.eslintrc.js', 'tailwind.config.cjs'],
 
   extends: [
-    "eslint:recommended",
-    "plugin:vue/strongly-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "@nuxtjs/eslint-config-typescript",
-    
-    "plugin:unicorn/recommended",
-    "plugin:prettier/recommended",
-    "prettier"
+    'eslint:recommended',
+    'plugin:vue/strongly-recommended',
+    'plugin:@typescript-eslint/recommended',
+    '@nuxtjs/eslint-config-typescript',
+
+    'plugin:unicorn/recommended',
+    'plugin:prettier/recommended',
+    'prettier'
   ],
-  plugins: [
-    "@typescript-eslint",
-    "simple-import-sort",
-    "import",
-    "prettier"
-  ],
+  plugins: ['@typescript-eslint', 'simple-import-sort', 'import', 'prettier'],
   rules: {
     // 'no-console': 'warn',
     curly: 'error',
@@ -66,5 +57,5 @@ module.exports = {
     'import/newline-after-import': 'error',
     'simple-import-sort/exports': 'error',
     'import/first': 'error'
-  },
-};
+  }
+}

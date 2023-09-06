@@ -2,7 +2,7 @@
   <div class="relative h-[580px] py-80 md:h-[580px]">
     <div class="relative z-[2] max-w-[800px]">
       <h1
-        class="text-extrabold-52 mb-35 leading-none tracking-[-1.28px] text-black md:text-extrabold-32"
+        class="mb-35 leading-none tracking-[-1.28px] text-black text-extrabold-52 md:text-extrabold-32"
       >
         <slot name="title"></slot>
       </h1>

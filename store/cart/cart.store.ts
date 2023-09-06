@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
 import { type Ref, ref } from 'vue'
 
-import { useHttp } from '@/composables/useHttp'
+import { useApiRequest } from '@/composables/useApiRequest'
 
 import { ICart } from './cart.types'
 
@@ -108,25 +108,29 @@ export const useCartStore = defineStore('cart', () => {
   const userSession = process.server ? '' : cartStorageProvider.getSession()
 
   async function fetchCartItems() {
+    if (!userSession) {
+      return { data: ref(undefined), error: true }
+    }
     try {
-      const _fetchReturn = await useHttp(`/cart/${userSession}`, {
-        method: 'GET'
-      })
+      const { data, error, refresh, execute } = await useApiRequest<ICart>(
+        `/api/cart/${userSession}`,
+        { server: false, immediate: false }
+      )
 
-      if (_fetchReturn.data?.value) {
-        cart.value = _fetchReturn.data?.value as ICart
-        return _fetchReturn.data?.value as ICart
+      if (data?.value && !error.value) {
+        cart.value = data.value as ICart
       }
-      return false
+
+      return { error, refresh, execute }
     } catch (error) {
       console.log(error)
-      return false
+      return { error }
     }
   }
 
   async function addItem(id: number, weightId: number) {
     try {
-      await useHttp(`/cart/update`, {
+      await useApiRequest(`/api/cart/update`, {
         method: 'POST',
         body: {
           session_id: userSession,
@@ -146,7 +150,7 @@ export const useCartStore = defineStore('cart', () => {
 
   async function removeItem(id: number, weightId: number) {
     try {
-      await useHttp(`/cart/update`, {
+      await useApiRequest(`/api/cart/update`, {
         method: 'POST',
         body: {
           session_id: userSession,
@@ -166,7 +170,7 @@ export const useCartStore = defineStore('cart', () => {
 
   async function deleteItem(id: number, weightId: number) {
     try {
-      await useHttp(`/cart/update`, {
+      await useApiRequest(`/api/cart/update`, {
         method: 'POST',
         body: {
           session_id: userSession,
@@ -184,26 +188,12 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
-  async function createOrder({
-    email,
-    name,
-    phone,
-    comment
-  }: {
-    email: string
-    name: string
-    phone: string
-    comment: string
-  }) {
+  async function createOrder() {
     try {
-      await useHttp('/order/create', {
+      await useApiRequest('/api/order/create', {
         method: 'POST',
         body: {
-          session_id: userSession,
-          email,
-          phone,
-          userName: name,
-          ...(comment ? { orderComment: comment } : {})
+          session_id: userSession
         }
       })
 

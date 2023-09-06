@@ -83,6 +83,10 @@ const typography = {
     fontSize: '12px',
     fontWeight: 700
   },
+  '.text-semibold-16': {
+    fontSize: '16px',
+    fontWeight: 600
+  },
   '.text-semibold-14': {
     fontSize: '14px',
     fontWeight: 600
@@ -126,7 +130,7 @@ const typography = {
   '.text-regular-12': {
     fontSize: '12px',
     fontWeight: 400
-  },
+  }
 }
 
 module.exports = {
@@ -137,12 +141,12 @@ module.exports = {
   ],
 
   content: [
-    "./components/**/*.{js,vue,ts}",
-    "./layouts/**/*.vue",
-    "./pages/**/*.vue",
-    "./plugins/**/*.{js,ts}",
-    "./nuxt.config.{js,ts}",
-    "./app.vue",
+    './components/**/*.{js,vue,ts}',
+    './layouts/**/*.vue',
+    './pages/**/*.vue',
+    './plugins/**/*.{js,ts}',
+    './nuxt.config.{js,ts}',
+    './app.vue'
   ],
 
   corePlugins: {
@@ -155,7 +159,7 @@ module.exports = {
       lg: { max: '1199.99px' },
       md: { max: '991.99px' },
       sm: { max: '767.99px' },
-      xs: { max: '575.99px' },
+      xs: { max: '575.99px' }
     },
     colors: {
       black: '#000000',
@@ -165,26 +169,26 @@ module.exports = {
 
       dark: '#3F3F47',
       yellow: '#ED7622',
-      
+
       gray: '#EEEFEF',
       milky: '#F3F1EC',
       green: '#336F3F',
       pale: '#FFDD82',
       red: '#e35050',
-      
+
       button: {
         DEFAULT: '#EEEFEF',
         dark: '#E2E3E3'
       },
 
-      tapestry: '#fcf9ed',
+      tapestry: '#fcf9ed'
     },
 
     spacing: object0to100px,
 
     fontFamily: {
       sans: ['Value Sans Pro', ...fallbackSansSerifFonts],
-      inter: ['Inter', ...fallbackSansSerifFonts],
+      inter: ['Inter', ...fallbackSansSerifFonts]
     }
   }
 }

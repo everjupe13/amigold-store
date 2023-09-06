@@ -4,7 +4,6 @@ import { email, required } from '@vuelidate/validators'
 import { VueFinalModal } from 'vue-final-modal'
 
 import AppSpinner from '@/components/shared/AppSpinner.vue'
-import { useCartStore } from '@/store/cart'
 
 const formData = reactive({
   email: '',
@@ -25,13 +24,12 @@ const emit = defineEmits<{
 }>()
 
 const v$ = useVuelidate(rules, formData)
-const cartStore = useCartStore()
 const isLoading = ref(false)
 const isSuccess = ref(false)
 
 const successScreen = ref(false)
 
-const onSubmitForm = async () => {
+const onSubmitForm = () => {
   isLoading.value = true
   isSuccess.value = false
   if (v$.value.$invalid) {
@@ -39,13 +37,6 @@ const onSubmitForm = async () => {
     isLoading.value = false
     return
   }
-
-  await cartStore.createOrder({
-    email: formData.email,
-    name: formData.name,
-    phone: formData.phone,
-    comment: formData.comment
-  })
 
   isLoading.value = false
   isSuccess.value = true

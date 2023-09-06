@@ -27,7 +27,7 @@ const onCreateOrder = () => {
       <p class="leading-none text-extrabold-32 md:text-extrabold-32">Итого</p>
     </div>
 
-    <div class="bg-button-dark rounded-[16px] p-28 md:rounded-[15px] md:p-20">
+    <div class="rounded-[16px] bg-button-dark p-28 md:rounded-[15px] md:p-20">
       <div>
         <div class="mb-18 flex items-center justify-between">
           <p class="leading-none text-black/80 text-regular-18">
@@ -77,7 +77,8 @@ const onCreateOrder = () => {
 
     <div class="mt-24">
       <AppButton
-        class="w-full"
+        type="submit"
+        class="h-65 w-full !rounded-[8px]"
         :disabled="!Number(props.totalPrice) || props.isLoading"
         @click="onCreateOrder"
       >

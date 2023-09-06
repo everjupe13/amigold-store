@@ -1,14 +1,16 @@
 <script lang="ts" setup>
 type Props = {
   image?: string
-  title?: string
-  toLinkFn?: () => string
+  name?: string
+  slug?: string
 }
 const props = withDefaults(defineProps<Props>(), {
   image: '',
-  title: '',
-  toLinkFn: () => ''
+  name: '',
+  slug: ''
 })
+
+const toLink = computed(() => `/catalog${props.slug ? `/${props.slug}` : ''}`)
 </script>
 
 <template>
@@ -16,12 +18,12 @@ const props = withDefaults(defineProps<Props>(), {
     class="group relative flex aspect-square flex-col gap-y-20 overflow-hidden rounded-[24px] bg-white p-20 md:aspect-auto md:h-[180px]"
     :class="{
       'animate-pulse !bg-[var(--skeleton-loader-bg,_rgb(238,239,239))]':
-        !props.title || !props.image,
-      'transition hover:bg-yellow': props.title || props.image
+        !props.name || !props.image,
+      'transition hover:bg-yellow': props.name || props.image
     }"
   >
     <NuxtLink
-      :to="props.toLinkFn()"
+      :to="toLink"
       class="absolute inset-0 z-[2] block transition duration-500"
     ></NuxtLink>
     <div
@@ -38,7 +40,7 @@ const props = withDefaults(defineProps<Props>(), {
       <h3
         class="text-center leading-tight text-black transition text-bold-18 group-hover:text-white"
       >
-        {{ props.title }}
+        {{ props.name }}
       </h3>
     </div>
   </article>
