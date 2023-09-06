@@ -1,6 +1,5 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
-import AppCollapse from '@/components/shared/AppCollapse.vue'
 import { CheckIconForm } from '@/components/shared/icons'
 
 function useEvents(context: (e: any, value: any) => void) {
@@ -107,16 +106,18 @@ onMounted(() => {
       <div
         class="flex-shrink-0 flex-grow-0"
         :class="{
-          'py-10 pr-10': !isAfterInputSlotEmpty || isValid !== undefined
+          'py-10 pr-10': !isAfterInputSlotEmpty || props.isValid !== undefined
         }"
       >
         <template v-if="!isAfterInputSlotEmpty">
           <slot name="after-input"></slot>
         </template>
-        <template v-else-if="isAfterInputSlotEmpty && isValid !== undefined">
+        <template
+          v-else-if="isAfterInputSlotEmpty && props.isValid !== undefined"
+        >
           <div>
             <span
-              v-if="isValid && isDirty"
+              v-if="props.isValid && props.isDirty"
               class="flex items-center justify-center pr-10"
             >
               <CheckIconForm />
@@ -125,14 +126,16 @@ onMounted(() => {
         </template>
       </div>
     </div>
-    <AppCollapse
-      v-if="props.isValid !== undefined && isLoaded"
-      v-model="isValidationMessageShown"
-    >
-      <div class="validation-message px-5 py-7 pb-0">
+    <transition name="slightly-fade">
+      <div
+        v-if="
+          props.isValid !== undefined && isLoaded && isValidationMessageShown
+        "
+        class="validation-message px-5 pt-7"
+      >
         {{ validationMessage }}
       </div>
-    </AppCollapse>
+    </transition>
   </div>
 </template>
 
@@ -143,11 +146,26 @@ onMounted(() => {
   line-height: 100%;
 }
 
+.slightly-fade-enter-active,
+.slightly-fade-leave-active {
+  @apply transition-all;
+}
+
+.slightly-fade-enter-from,
+.slightly-fade-leave-to {
+  @apply translate-y-5 pt-0 leading-[0px] opacity-0;
+}
+
+.slightly-fade-enter-to,
+.slightly-fade-leave-from {
+  @apply translate-y-0 py-7 leading-none opacity-100;
+}
+
 .input {
   @apply leading-none text-medium-16;
 }
 
 .validation-message {
-  @apply leading-none text-red text-bold-12;
+  @apply leading-none text-red transition-all text-bold-12;
 }
 </style>
