@@ -10,7 +10,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      baseUrl: process.env.BASE_URL ?? 'https://api.nuxtjs.dev'
+      baseUrl: 'http://185.18.55.254:8000/'
     }
   },
 

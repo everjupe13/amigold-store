@@ -32,7 +32,7 @@ const currentCategory: Ref<ICategory> = computed(
     categories.value[0]
 )
 const subcategories: Ref<ICategory['sub_categories']> = computed(
-  () => currentCategory.value.sub_categories
+  () => currentCategory.value?.sub_categories
 )
 const currentSubcategorySlug = ref(subcategories.value[0].slug)
 const currentSubcategory = computed(() =>
