@@ -28,7 +28,9 @@ const isLastCrumb = (index: number) => {
 }
 
 const determineCrumbsComponent = (index: number) => {
-  return !isLastCrumb(index) && breads.value.length !== 1 ? 'NuxtLink' : 'span'
+  return !isLastCrumb(index) && breads.value.length !== 1
+    ? defineNuxtLink({})
+    : 'span'
 }
 </script>
 
