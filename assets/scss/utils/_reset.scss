@@ -12,7 +12,7 @@
 // }
 
 #__nuxt {
-  @apply relative flex h-full w-full flex-col flex-grow min-h-screen;
+  @apply relative flex h-full min-h-screen w-full flex-grow flex-col;
 }
 
 html {
@@ -24,7 +24,7 @@ body {
   min-height: 100vh;
 
   background: #fff;
-  
+
   color: #000000;
   line-height: 1.2;
   font-size: 16px;
@@ -35,11 +35,13 @@ body {
   -webkit-text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
+
   -webkit-tap-highlight-color: transparent;
 
   overflow-x: hidden;
-  transition: color 0.3s, background-color 0.3s;
+  transition:
+    color 0.3s,
+    background-color 0.3s;
 
   @include phone {
     overscroll-behavior-y: contain;

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useHttp } from '@/composables/useHttp'
+import { useApiRequest } from '@/composables/useApiRequest'
 
 export const TOKEN_LOCAL_STORAGE_KEY = 'x-token'
 
@@ -27,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
     // todo fetcher
 
     try {
-      const { data } = await useHttp('/auth/signup')
+      const { data } = await useApiRequest('/auth/signup')
       if (data) {
         console.log(data)
       }
@@ -43,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
     return await new Promise<void>(resolve => resolve())
 
     try {
-      const { data } = await useHttp('/auth/signin')
+      const { data } = await useApiRequest('/auth/signin')
       if (data) {
         console.log(data)
       }

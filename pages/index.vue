@@ -1,9 +1,19 @@
 <script setup lang="ts">
+import { useCatalogStore } from '@/store/catalog'
+
 useHead({
-  title: 'Домашняя страница'
+  title: 'Главная'
 })
 
-const cardData = {
+const catalogStore = useCatalogStore()
+const isCategoriesFetching = ref(false)
+
+isCategoriesFetching.value = true
+await catalogStore.fetchCategories()
+isCategoriesFetching.value = false
+
+// TODO temporary static data
+const newsCards = {
   image: '/images/news/img_plug.jpg',
   title: 'Enim convallis',
   textBody:
@@ -12,7 +22,8 @@ const cardData = {
   toLinkFn: (id: string | number = 0) => `/news/${id}`
 }
 
-const cardTopicData = [
+// TODO temporary static data
+const topicCards = [
   {
     image: '/images/home/topics/plug.png',
     title: 'Домашний уход за шерстью шелти',
@@ -29,72 +40,6 @@ const cardTopicData = [
     toLinkFn: (id: string | number = 0) => `/topic/${id}`
   }
 ]
-
-const categoriesData = [
-  {
-    image: '/images/home/categories/1.png',
-    title: 'Мячи',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/2.png',
-    title: 'Корма',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/3.png',
-    title: 'Тарелки',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/4.png',
-    title: 'Миски',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/5.png',
-    title: 'Кости жвачки',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/6.png',
-    title: 'Кости жвачки с ароматом',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/7.png',
-    title: 'Игрушки',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/8.png',
-    title: 'Миски',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/9.png',
-    title: 'Кости жвачки',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/10.png',
-    title: 'Кости жвачки с ароматом',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/11.png',
-    title: 'Расчески',
-    toLinkFn: () => `/catalog`
-  },
-  {
-    image: '/images/home/categories/12.png',
-    title: 'Тарелки',
-    toLinkFn: () => `/catalog`
-  }
-]
-
-// const todos = await useFetch('https://jsonplaceholder.typicode.com/todos/1')
-// console.log(todos.data.value)
 </script>
 
 <template>
@@ -126,19 +71,26 @@ const categoriesData = [
     <section class="bg-waved-t bg-waved-b !py-60">
       <AppContainer>
         <h2 class="title relative z-[2] mb-40">Категории</h2>
-        <div class="mb-40 grid grid-cols-6 gap-20 md:grid-cols-1 md:gap-15">
-          <CategoriesCard
-            v-for="(category, index) in categoriesData"
-            :key="index"
-            v-bind="category"
-            style="--skeleton-loader-bg: #dbdbdb"
-          ></CategoriesCard>
-        </div>
-        <div class="flex items-center justify-center">
+        <template v-if="isCategoriesFetching">
+          <div class="flex justify-center">
+            <AppSpinner />
+          </div>
+        </template>
+        <template v-else>
+          <div class="mb-40 grid grid-cols-6 gap-20 md:grid-cols-1 md:gap-15">
+            <HomeCategoriesCard
+              v-for="(category, index) in catalogStore.categories"
+              :key="index"
+              v-bind="category"
+              style="--skeleton-loader-bg: #dbdbdb"
+            ></HomeCategoriesCard>
+          </div>
+        </template>
+        <!-- <div class="flex items-center justify-center">
           <AppButton outlined class="md:w-full" @click="navigateTo('/catalog')">
             Загрузить ещё
           </AppButton>
-        </div>
+        </div> -->
       </AppContainer>
     </section>
 
@@ -190,11 +142,11 @@ const categoriesData = [
         <h2 class="title relative z-[2] mb-40">Новости</h2>
         <div class="grid grid-cols-3 gap-20 md:grid-cols-1">
           <AppCard
-            v-bind="cardData"
+            v-bind="newsCards"
             style="--skeleton-loader-bg: #dbdbdb"
           ></AppCard>
           <AppCard
-            v-bind="cardData"
+            v-bind="newsCards"
             style="--skeleton-loader-bg: #dbdbdb"
           ></AppCard>
           <AppCard style="--skeleton-loader-bg: #dbdbdb"></AppCard>
@@ -207,7 +159,7 @@ const categoriesData = [
         <h2 class="title relative z-[2] mb-40">Полезное</h2>
         <div class="mb-40 grid grid-cols-3 gap-20 md:grid-cols-1">
           <AppTopicCard
-            v-for="(data, index) in cardTopicData"
+            v-for="(data, index) in topicCards"
             :key="index"
             v-bind="data"
           ></AppTopicCard>

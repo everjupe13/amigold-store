@@ -1,27 +1,25 @@
 <script lang="ts" setup>
-import { useAuthStore } from '@/store/auth/useAuthStore'
+import { useUserStore } from '@/store/user/useUserStore'
 
 useHead({
   title: 'Профиль'
 })
 
-const authStore = useAuthStore()
+const userStore = useUserStore()
 const isLoading = ref(true)
-onMounted(async () => {
-  await authStore.setSavedToken()
-
-  if (!authStore.isAuth) {
-    return navigateTo('/?signin-form=true')
+onMounted(() => {
+  if (!userStore.isAuth) {
+    return navigateTo('/?auth-action-form=signin')
   }
 
   isLoading.value = false
 })
 
 watch(
-  () => authStore.isAuth,
+  () => userStore.isAuth,
   () => {
-    if (!authStore.isAuth) {
-      navigateTo('/?signin-form=true')
+    if (!userStore.isAuth) {
+      navigateTo('/?auth-action-form=signin')
     }
   }
 )

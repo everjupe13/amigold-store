@@ -2,5 +2,5 @@
   "compilerOptions": {
     "outDir": "./dist"
   },
-  "extends": "../.nuxt/tsconfig.server.json",
+  "extends": "../.nuxt/tsconfig.server.json"
 }

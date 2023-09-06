@@ -8,37 +8,40 @@ const route = useRoute()
 const catalogStore = useCatalogStore()
 const cartStore = useCartStore()
 const isProductLoading = ref(true)
-const product = ref<IProduct>()
+const product = ref<IProduct | null>(null)
 const pricesArray = ref<IProduct['prices'] | []>([])
+const currentPriceIndex = ref()
+const tabs = ref<string[]>([])
 
-onMounted(async () => {
-  isProductLoading.value = true
-  const result = await catalogStore.fetchProduct(
-    route.params.productSlug as string
-  )
+isProductLoading.value = true
+const { data } = await catalogStore.fetchProduct(
+  route.params.productSlug as string
+)
 
-  if (result) {
-    product.value = result
-  } else {
-    // await navigateTo('/error')
-  }
+if (data.value) {
+  product.value = data.value as IProduct
+} else {
+  await navigateTo('/error')
+}
+// isProductLoading.value = false
+
+pricesArray.value = [...product.value!.prices]?.map(price => ({
+  ...price,
+  isActive: false
+}))
+pricesArray.value[0].isActive = true
+currentPriceIndex.value = pricesArray.value.findIndex(price => price.isActive)
+
+tabs.value = [
+  product.value!.description,
+  product.value!.feedingRate,
+  product.value!.delivery
+]
+
+onMounted(() => {
   isProductLoading.value = false
-
-  pricesArray.value = [...product.value!.prices].map(price => ({
-    ...price,
-    isActive: false
-  }))
-  pricesArray.value[0].isActive = true
-  currentPriceIndex.value = pricesArray.value.findIndex(price => price.isActive)
-
-  tabs.value = [
-    product.value!.description,
-    product.value!.feedingRate,
-    product.value!.delivery
-  ]
 })
 
-const currentPriceIndex = ref()
 const currentPrice = computed(() => {
   const total =
     currentPriceIndex.value >= 0
@@ -57,7 +60,6 @@ const onWeightChange = (index: number) => {
   pricesArray.value[index].isActive = true
 }
 
-const tabs = ref<string[]>([])
 const currentTabIndex = ref(0)
 const onTabChange = (index: number) => (currentTabIndex.value = index)
 
@@ -98,7 +100,7 @@ const addToCart = async () => {
         </div>
       </template>
       <template v-else>
-        <AppProductPromotionBanner v-if="product?.isPromotionActive || true">
+        <AppProductPromotionBanner v-if="product?.isPromotionActive">
           {{
             product?.promotionText ||
             'Данный товар участвует в акции! При покупке 2х товаров - третий бесплатно!'
@@ -188,7 +190,7 @@ const addToCart = async () => {
     </AppContainer>
   </section>
 
-  <section class="bg-gray py-40">
+  <section class="bg-waved-t bg-waved-b">
     <AppContainer>
       <div class="rounded-[24px]">
         <div class="max-w-max border-black/20">
@@ -228,6 +230,8 @@ const addToCart = async () => {
       </div>
     </AppContainer>
   </section>
+
+  <hr class="invisible py-10" aria-hidden />
 </template>
 
 <style lang="scss">

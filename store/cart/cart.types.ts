@@ -20,7 +20,7 @@ export interface ICart {
     amount: number
     totalPrice: string
     cart: number
-    isActive: unknown
+    isActive: boolean
   }[]
   sessionID: string
   totalPrice: string

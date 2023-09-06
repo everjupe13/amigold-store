@@ -15,5 +15,7 @@ export const useScroll: (elementSelector?: string, offset?: number) => void = (
       (offset || 0)
   }
 
-  window.scrollTo(scrollOptions)
+  if (process.client) {
+    window.scrollTo(scrollOptions)
+  }
 }

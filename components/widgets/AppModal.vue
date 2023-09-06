@@ -1,28 +1,13 @@
 <script setup lang="ts">
 import { VueFinalModal } from 'vue-final-modal'
-
-defineProps<{
-  title?: string
-}>()
-
-const emit = defineEmits<{
-  (e: 'confirm'): void
-}>()
 </script>
 
 <template>
   <VueFinalModal
     class="flex items-center justify-center"
-    content-class="p-30 bg-white rounded-[24px] max-w-[500px] w-full"
+    content-class="px-40 py-50 bg-white rounded-[24px] max-w-[600px] w-full md:px-20 md:py-50 md:rounded-[12px] md:mx-10"
   >
     <slot></slot>
-    <h1 class="mb-24 text-extrabold-36">Заполните данные</h1>
-    <button
-      class="ml-auto mt-1 rounded-lg border px-2"
-      @click="emit('confirm')"
-    >
-      Confirm
-    </button>
   </VueFinalModal>
 </template>
 

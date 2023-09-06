@@ -4,6 +4,10 @@ import { fileURLToPath } from 'node:url'
 export default defineNuxtConfig({
   devtools: { enabled: false },
 
+  experimental: {
+    renderJsonPayloads: false
+  },
+
   runtimeConfig: {
     public: {
       baseUrl: process.env.BASE_URL ?? 'https://api.nuxtjs.dev'
