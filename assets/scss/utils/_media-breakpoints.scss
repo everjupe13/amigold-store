@@ -5,7 +5,6 @@ $lg-dim: 992px;
 $md-dim: 768px;
 $sm-dim: 576px;
 
-
 // Container width
 $xxl-container: 1360px;
 $xl-container: 1148px;
@@ -13,7 +12,6 @@ $lg-container: 968px;
 $md-container: 728px;
 $sm-container: 548px;
 $xs-container: 100%;
-
 
 // using max-width
 @mixin laptop-big {
@@ -45,7 +43,6 @@ $xs-container: 100%;
     @content;
   }
 }
-
 
 // using min-width
 @mixin phone-big-alt {
