@@ -43,29 +43,36 @@ const componentsClasses = computed(() => {
   @apply disabled:opacity-50;
 
   &_theme-default {
-    @apply border-yellow bg-yellow;
+    border-color: rgb(237 118 34) !important;
+    background-color: rgb(237 118 34) !important;
   }
 
   &_theme-black {
-    @apply border-black bg-black;
+    background-color: rgb(0 0 0) !important;
+    border-color: rgb(0 0 0) !important;
   }
 
   &_theme-gray {
-    @apply border-button-dark bg-button-dark text-black;
+    border-color: rgb(226 227 227) !important;
+    background-color: rgb(226 227 227) !important;
+    color: rgb(0 0 0) !important;
   }
 
   &_theme-alternative {
-    @apply bg-[#D9D9D9] text-[#202022];
+    background-color: rgb(217 217 217) !important;
+    color: rgb(32 32 34) !important;
   }
 
   &_outlined {
-    @apply bg-transparent;
+    background-color: transparent !important;
 
     &.app-btn_theme-default {
-      @apply text-yellow hover:bg-yellow hover:text-white;
+      color: rgb(237 118 34) !important;
+      background-color: rgb(237 118 34) !important;
+      color: rgb(255 255 255) !important;
     }
     &.app-btn_theme-black {
-      @apply text-black;
+      color: rgb(0 0 0) !important;
     }
   }
 }
