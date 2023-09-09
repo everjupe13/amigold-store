@@ -175,7 +175,7 @@ const onSubcatalogChange = async (slug: string) => {
               <button
                 v-for="subcategory in subcategories"
                 :key="subcategory.id"
-                class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16"
+                class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
                 :class="{
                   '!bg-black !text-white':
                     currentSubcategory!.slug === subcategory.slug
