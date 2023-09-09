@@ -128,7 +128,35 @@ export const useAuthStore = defineStore('auth', () => {
   const signOut = async () => {
     localStorage.removeItem(TOKEN_LOCAL_STORAGE_KEY)
     token.value = null
-    return await new Promise<void>(resolve => resolve())
+    // return await new Promise<void>(resolve => resolve())
+
+    try {
+      const { data, error, refresh, execute } = await useApiRequest(
+        '/auth/token/logout/',
+        { method: 'POST' }
+      )
+
+      if (data.value && !error.value) {
+        return {
+          data: data as Ref<any>,
+          error: null,
+          refresh,
+          execute,
+          status: true
+        }
+      }
+
+      return {
+        data: data as Ref<null>,
+        error: error.value as Error | null,
+        refresh,
+        execute,
+        status: true
+      }
+    } catch (error) {
+      console.log(error)
+      return { error: error as string, status: false, data: ref(null) }
+    }
   }
 
   return { isAuth, token, signUp, signIn, signOut }
