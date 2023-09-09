@@ -1,9 +1,21 @@
 <script setup lang="ts">
+import { useModal } from 'vue-final-modal'
+
+import FeedbackFormModal from '@/components/widgets/modals/feedback/FeedbackFormModal.vue'
 import { useBlogStore } from '@/store/blog/blog.store'
 import { useCatalogStore } from '@/store/catalog'
 
 useHead({
   title: 'Главная'
+})
+
+const { open: openFeedbackModal, close: closeFeedbackModal } = useModal({
+  component: FeedbackFormModal,
+  attrs: {
+    onConfirm() {
+      closeFeedbackModal()
+    }
+  }
 })
 
 const catalogStore = useCatalogStore()
@@ -44,7 +56,9 @@ const news = computed(() => blogStore.blog?.slice(0, 3) || [])
       <AppContainer>
         <HomePromoSlider>
           <template #controls>
-            <AppButton theme="default">Получить консультацию</AppButton>
+            <AppButton theme="default" @click="openFeedbackModal">
+              Получить консультацию
+            </AppButton>
           </template>
         </HomePromoSlider>
       </AppContainer>
@@ -128,7 +142,9 @@ const news = computed(() => blogStore.blog?.slice(0, 3) || [])
           ></ServicesCard>
         </div>
         <div class="flex items-center justify-center">
-          <AppButton outlined class="md:w-full">Оставить заявку</AppButton>
+          <AppButton outlined class="md:w-full" @click="openFeedbackModal">
+            Оставить заявку
+          </AppButton>
         </div>
       </AppContainer>
     </section>

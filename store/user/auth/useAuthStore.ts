@@ -19,7 +19,8 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
   const authData = ref<IAuthData>({ login: undefined, password: undefined })
   const isAuth = computed<boolean>(
-    () => Object.keys(authData.value).every(field => !!field) && token !== null
+    () =>
+      Object.values(authData.value).every(field => !!field) && token !== null
   )
 
   const signUp = async ({
@@ -128,7 +129,8 @@ export const useAuthStore = defineStore('auth', () => {
   const signOut = async () => {
     localStorage.removeItem(TOKEN_LOCAL_STORAGE_KEY)
     token.value = null
-    // return await new Promise<void>(resolve => resolve())
+    authData.value = { login: undefined, password: undefined }
+    return await new Promise<void>(resolve => resolve())
 
     try {
       const { data, error, refresh, execute } = await useApiRequest(

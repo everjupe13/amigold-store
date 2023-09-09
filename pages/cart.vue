@@ -95,10 +95,16 @@ const { open: openConfirmModal, close: closeConfirmModal } = useModal({
   }
 })
 
+const clientOpenAuth = ref()
+onMounted(() => {
+  const openAuth = inject('openAuth') as () => void
+  clientOpenAuth.value = openAuth
+})
+
 const handleOrderCreate = async () => {
   if (!userStore.isAuth) {
-    const openAuth = inject('openAuth') as () => void
-    openAuth()
+    clientOpenAuth.value()
+    return
   }
 
   await cartStore.createOrder()
