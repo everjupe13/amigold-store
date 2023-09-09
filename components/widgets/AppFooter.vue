@@ -10,7 +10,7 @@ import AppLogo from '@/components/shared/AppLogo.vue'
           <div class="flex flex-shrink-0 flex-grow md:mb-20">
             <AppLogo :width="100" :height="78"></AppLogo>
           </div>
-          <div class="flex max-w-[200px] flex-grow gap-40">
+          <div class="flex max-w-[200px] flex-grow gap-40 md:max-w-none">
             <nav>
               <p class="mb-20 text-bold-18">Каталог</p>
               <ul class="flex flex-col gap-y-10 leading-tight">

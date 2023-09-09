@@ -61,18 +61,23 @@ const onChangeTab = (id: number) => {
 </script>
 
 <template>
-  <div class="md:md-20 mb-45 flex gap-x-10">
+  <div
+    class="scroll-x-hidden mb-45 flex flex-wrap gap-x-6 sm:mb-40 sm:flex-nowrap sm:gap-x-5 sm:overflow-x-scroll sm:px-10 sm:py-10 xs:mx-[-16px]"
+  >
     <template
       v-for="category in categories"
       :key="category.id + '-' + Date.now()"
     >
-      <AppButton
-        theme="black"
-        :outlined="!category.isActiveTab"
-        @click="onChangeTab(category.id)"
-      >
-        {{ category.title }}
-      </AppButton>
+      <div class="w-full min-w-min max-w-max flex-shrink-0 flex-grow">
+        <AppButton
+          theme="black"
+          class="w-full sm:!rounded-[5px]"
+          :outlined="!category.isActiveTab"
+          @click="onChangeTab(category.id)"
+        >
+          {{ category.title }}
+        </AppButton>
+      </div>
     </template>
   </div>
   <div>

@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { useModal } from 'vue-final-modal'
+
+import ProfileLogoutConfrimModal from '@/components/features/profile/ProfileLogoutConfrimModal.vue'
 import { useUserStore } from '@/store/user/useUserStore'
 
 useHead({
@@ -23,12 +26,36 @@ watch(
     }
   }
 )
+
+const { open: openLogout, close: closeLogout } = useModal({
+  component: ProfileLogoutConfrimModal,
+  attrs: {
+    onCancel() {
+      closeLogout()
+    },
+    async onConfirm() {
+      await userStore.forget()
+      navigateTo('/?auth-action-form=signin')
+    }
+  }
+})
 </script>
 
 <template>
-  <section class="py-40">
+  <section class="py-40 md:pt-0">
     <AppContainer>
-      <AppBreadcrumbs :crumbs="[{ label: 'Новости' }]"></AppBreadcrumbs>
+      <div
+        class="flex items-center justify-between md:flex-col-reverse md:items-start md:justify-start"
+      >
+        <div>
+          <AppBreadcrumbs :crumbs="[{ label: 'Новости' }]"></AppBreadcrumbs>
+        </div>
+        <div class="md:mb-10 md:ml-auto">
+          <AppButton size="sm" class="!rounded-[8px]" @click="openLogout">
+            Выйти
+          </AppButton>
+        </div>
+      </div>
     </AppContainer>
   </section>
 

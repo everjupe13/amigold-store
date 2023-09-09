@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useBlogStore } from '@/store/blog/blog.store'
 import { useCatalogStore } from '@/store/catalog'
 
 useHead({
@@ -11,16 +12,6 @@ const isCategoriesFetching = ref(false)
 isCategoriesFetching.value = true
 await catalogStore.fetchCategories()
 isCategoriesFetching.value = false
-
-// TODO temporary static data
-const newsCards = {
-  image: '/images/news/img_plug.jpg',
-  title: 'Enim convallis',
-  textBody:
-    'Eu leo pellentesque sit aliquet scelerisque mauris. Enim convallis sed est dolor.',
-  date: new Date().toISOString(),
-  toLinkFn: (id: string | number = 0) => `/news/${id}`
-}
 
 // TODO temporary static data
 const topicCards = [
@@ -40,6 +31,11 @@ const topicCards = [
     toLinkFn: (id: string | number = 0) => `/topic/${id}`
   }
 ]
+
+const blogStore = useBlogStore()
+await blogStore.fetchBlog()
+
+const news = computed(() => blogStore.blog?.slice(0, 3) || [])
 </script>
 
 <template>
@@ -139,18 +135,25 @@ const topicCards = [
 
     <section class="bg-waved-t bg-waved-b !py-60">
       <AppContainer>
-        <h2 class="title relative z-[2] mb-40">Новости</h2>
-        <div class="grid grid-cols-3 gap-20 md:grid-cols-1">
-          <AppCard
-            v-bind="newsCards"
-            style="--skeleton-loader-bg: #dbdbdb"
-          ></AppCard>
-          <AppCard
-            v-bind="newsCards"
-            style="--skeleton-loader-bg: #dbdbdb"
-          ></AppCard>
-          <AppCard style="--skeleton-loader-bg: #dbdbdb"></AppCard>
+        <div class="flex items-center justify-between gap-10 md:flex-col">
+          <h2 class="title relative z-[2] mb-40">Новости</h2>
+          <NuxtLink
+            class="flex rounded-full border-2 border-white bg-white px-20 py-16 font-inter leading-none text-bold-16 active:translate-y-2"
+            to="/news"
+          >
+            Показать все
+          </NuxtLink>
         </div>
+        <template v-if="Array.isArray(news) && news.length > 0">
+          <div class="grid grid-cols-3 gap-x-20 gap-y-60 md:grid-cols-1">
+            <AppBlogCard
+              v-for="blog in news"
+              :key="blog.id"
+              v-bind="blog"
+              style="--skeleton-loader-bg: #dbdbdb"
+            ></AppBlogCard>
+          </div>
+        </template>
       </AppContainer>
     </section>
 
