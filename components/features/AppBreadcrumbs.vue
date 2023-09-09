@@ -41,11 +41,14 @@ const determineCrumbsComponent = (index: number) => {
         <component
           :is="determineCrumbsComponent(index)"
           :to="!isLastCrumb(index) ? crumb?.toLink : ''"
-          :class="[{ 'text-black/50': !isLastCrumb(index) }]"
+          :class="[!isLastCrumb(index) ? 'text-black/50' : 'cursor-default']"
         >
           {{ crumb.label }}
         </component>
-        <span v-if="!isLastCrumb(index)" class="px-3 text-black/50">
+        <span
+          v-if="!isLastCrumb(index)"
+          class="cursor-default px-3 text-black/50"
+        >
           {{ ' – ' }}
         </span>
       </span>
