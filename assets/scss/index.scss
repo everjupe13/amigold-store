@@ -1,1 +1,9 @@
 @import 'core';
+
+.scroll-x-hidden {
+  scrollbar-width: none;
+  &::-webkit-scrollbar{
+    display: none;
+    height: 0 !important
+  }
+}
