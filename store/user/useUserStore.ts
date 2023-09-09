@@ -77,12 +77,14 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const forget = async () => {
-    const { data, error, status } = await authStore.signOut()
-    if (status) {
-      return { data, error, status }
-    }
+    // const { data, error, status } = await authStore.signOut()
+    // if (status) {
+    //   return { data, error, status }
+    // }
 
-    return HttpCatchedError({ error })
+    await authStore.signOut()
+    user.value = undefined
+    return HttpCatchedError({ error: false, status: true })
   }
 
   return { isAuth, user, createUser, authUser, initializeUser, forget }

@@ -2,8 +2,8 @@
 
 .scroll-x-hidden {
   scrollbar-width: none;
-  &::-webkit-scrollbar{
+  &::-webkit-scrollbar {
     display: none;
-    height: 0 !important
+    height: 0 !important;
   }
 }

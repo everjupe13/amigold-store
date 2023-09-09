@@ -45,6 +45,10 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
     validationMessage: unref(props.$silentErrors[0]?.$message)
   }
 }
+const handleOpenModal = () => {
+  open()
+  close()
+}
 </script>
 
 <template>
@@ -55,7 +59,7 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
       class="mb-15"
       :readonly="true"
       v-bind="inputPropsMapper(v$.email)"
-      @click="open"
+      @click="handleOpenModal"
     />
     <ProfileFormInput
       v-model="v$.phone.$model"
@@ -63,7 +67,7 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
       class="mb-15"
       :readonly="true"
       v-bind="inputPropsMapper(v$.phone)"
-      @click="open"
+      @click="handleOpenModal"
     />
     <ProfileFormInput
       v-model="v$.name.$model"
@@ -71,7 +75,7 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
       class="mb-15"
       :readonly="true"
       v-bind="inputPropsMapper(v$.name)"
-      @click="open"
+      @click="handleOpenModal"
     />
     <ProfileFormInput
       v-model="v$.password.$model"
@@ -79,7 +83,7 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
       type="password"
       :readonly="true"
       v-bind="inputPropsMapper(v$.password)"
-      @click="open"
+      @click="handleOpenModal"
     />
   </form>
 </template>
