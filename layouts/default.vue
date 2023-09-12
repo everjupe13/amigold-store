@@ -48,8 +48,12 @@ if (process.client) {
   const authModal = useModal({
     component: SigninModal,
     attrs: {
-      onConfirm() {
-        authModal.close()
+      async onConfirm() {
+        await authModal.close()
+        await navigateTo('/catalog')
+      },
+      async onClose() {
+        await authModal.close()
       },
       async onClosed() {
         await deleteAuthFromQuery()
