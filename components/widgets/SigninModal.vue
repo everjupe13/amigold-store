@@ -26,7 +26,6 @@ const rules = {
 
 const v$ = useVuelidate(rules, formData)
 const isLoading = ref(false)
-const isSuccess = ref(false)
 
 onMounted(() => {
   isLoading.value = true
@@ -41,12 +40,17 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
+const isSuccess = ref(false)
 const onSubmitForm = async () => {
   await userStore.authUser({
     login: formData.email,
     password: formData.password
   })
-  emit('confirm')
+  isSuccess.value = true
+}
+
+const onSuccessClose = () => {
+  emit('close')
 }
 
 const clientModal = ref()
@@ -57,7 +61,6 @@ onMounted(() => {
 
 const openSignupModalUrl = () => {
   emit('confirm')
-  clientModal.value()
 }
 
 const inputPropsMapper = (props: { [x: string]: any }) => {
@@ -75,44 +78,54 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
     content-class="px-40 py-50 bg-white rounded-[24px] max-w-[600px] w-full md:px-20 md:py-50 md:rounded-[12px] md:mx-10"
   >
     <div>
-      <h2 class="mb-40 leading-none text-extrabold-36 md:text-extrabold-28">
-        Авторизация
-      </h2>
-      <form @submit.prevent="onSubmitForm">
-        <div class="mb-30">
-          <ProfileFormInput
-            v-model="v$.email.$model"
-            placeholder="Е-mail"
-            class="mb-15"
-            :disabled="isSuccess || isLoading"
-            v-bind="inputPropsMapper(v$.email)"
-          />
-          <ProfileFormInput
-            v-model="v$.password.$model"
-            placeholder="Пароль"
-            type="password"
-            :disabled="isSuccess || isLoading"
-            v-bind="inputPropsMapper(v$.password)"
-          />
-        </div>
-        <div class="flex flex-col items-center">
-          <AppButton class="h-65 w-full !rounded-[5px]" type="submit">
-            Отправить
-          </AppButton>
-        </div>
-        <div class="flex justify-center">
-          <p class="mt-15 text-medium-16">
-            Еще нет аккаунта?
-            <button
-              type="button"
-              class="text-[rgb(44,82,255)] transition-all hover:drop-shadow-xl"
-              @click="openSignupModalUrl"
-            >
-              Зарегестрируйтесь
-            </button>
-          </p>
-        </div>
-      </form>
+      <template v-if="!isSuccess">
+        <h2 class="mb-40 leading-none text-extrabold-36 md:text-extrabold-28">
+          Авторизация
+        </h2>
+        <form @submit.prevent="onSubmitForm">
+          <div class="mb-30">
+            <ProfileFormInput
+              v-model="v$.email.$model"
+              placeholder="Е-mail"
+              class="mb-15"
+              :disabled="isLoading"
+              v-bind="inputPropsMapper(v$.email)"
+            />
+            <ProfileFormInput
+              v-model="v$.password.$model"
+              placeholder="Пароль"
+              type="password"
+              :disabled="isLoading"
+              v-bind="inputPropsMapper(v$.password)"
+            />
+          </div>
+          <div class="flex flex-col items-center">
+            <AppButton class="h-65 w-full !rounded-[5px]" type="submit">
+              Отправить
+            </AppButton>
+          </div>
+          <div class="flex justify-center">
+            <p class="mt-15 text-center text-medium-16">
+              Еще нет аккаунта? Совершите первую покупку и мы вас зарегистрируем
+              <button
+                type="button"
+                class="text-[rgb(44,82,255)] transition-all hover:drop-shadow-xl"
+                @click="openSignupModalUrl"
+              >
+                Сделать заказ
+              </button>
+            </p>
+          </div>
+        </form>
+      </template>
+      <template v-else>
+        <h2 class="mb-40 leading-none text-extrabold-36 md:text-extrabold-28">
+          Вы авторизованы
+        </h2>
+        <AppButton class="h-65 w-full !rounded-[5px]" @click="onSuccessClose">
+          Закрыть
+        </AppButton>
+      </template>
     </div>
   </VueFinalModal>
 </template>
