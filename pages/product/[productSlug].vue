@@ -82,6 +82,52 @@ const addToCart = async () => {
     }, 1000)
   }
 }
+
+const currentProductCount = computed(() => {
+  return (
+    cartStore.cart?.products.find(
+      cartProduct =>
+        cartProduct.product.id === product.value?.id &&
+        cartProduct.productPrice.id ===
+          pricesArray.value[currentPriceIndex.value].id
+    )?.amount || 0
+  )
+})
+async function increaseCount() {
+  if (!product.value) {
+    return false
+  }
+  isCartActionLoading.value = true
+  isCartActionSuccess.value = false
+
+  try {
+    await cartStore.addItem(
+      product.value.id,
+      pricesArray.value[currentPriceIndex.value].id
+    )
+  } finally {
+    isCartActionLoading.value = false
+    setTimeout(() => {
+      isCartActionSuccess.value = true
+    }, 1000)
+  }
+}
+async function decreaseCount() {
+  if (!product.value) {
+    return false
+  }
+
+  isCartActionLoading.value = true
+
+  try {
+    await cartStore.removeItem(
+      product.value.id,
+      pricesArray.value[currentPriceIndex.value].id
+    )
+  } finally {
+    isCartActionLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -156,8 +202,19 @@ const addToCart = async () => {
                   {{ currentPrice }}
                 </div>
                 <div class="flex flex-wrap items-center gap-10">
+                  <div class="rounded-full border-2 border-black/20 p-12">
+                    <ProductCounter
+                      :amount="currentProductCount"
+                      :disabled-when-count="0"
+                      :is-disabled="isCartActionLoading || !isCartActionSuccess"
+                      button-classes="bg-yellow hover:border-yellow hover:bg-yellow"
+                      wrapper-classes="h-24"
+                      @decrease="decreaseCount"
+                      @increase="increaseCount"
+                    />
+                  </div>
                   <AppButton
-                    class="w-[200px] whitespace-nowrap"
+                    class="h-52 w-[200px] whitespace-nowrap"
                     theme="black"
                     :disabled="isCartActionLoading || !isCartActionSuccess"
                     @click="addToCart"
@@ -176,7 +233,7 @@ const addToCart = async () => {
                       }}
                     </template>
                   </AppButton>
-                  <AppButton class="whitespace-nowrap" theme="default">
+                  <AppButton class="h-52 whitespace-nowrap" theme="default">
                     <RouterLink to="/cart" class="block h-full w-full">
                       Перейти в корзину
                     </RouterLink>
@@ -193,9 +250,9 @@ const addToCart = async () => {
   <section class="bg-waved-t bg-waved-b">
     <AppContainer>
       <div class="rounded-[24px]">
-        <div class="max-w-max border-black/20">
+        <div class="max-w-max">
           <div
-            class="-m-1 flex max-w-max items-center gap-x-10 rounded-full border border-black/20 lg:rounded-[24px] md:flex-wrap"
+            class="flex max-w-max items-center gap-x-10 rounded-full lg:rounded-[24px] md:flex-wrap"
           >
             <AppButton
               theme="black"
