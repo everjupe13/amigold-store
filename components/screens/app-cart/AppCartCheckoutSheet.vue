@@ -22,7 +22,7 @@ const onCreateOrder = () => {
 </script>
 
 <template>
-  <form class="p-40 md:p-20" @submit.prevent>
+  <form class="p-30 md:p-20" @submit.prevent>
     <div class="mb-24">
       <p class="leading-none text-extrabold-32 md:text-extrabold-32">Итого</p>
     </div>

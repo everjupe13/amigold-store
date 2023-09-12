@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 import AppCheckbox from '@/components/shared/AppCheckbox.vue'
-import { CrossIcon, MinusIcon, PlusIcon } from '@/components/shared/icons'
+import { CrossIcon } from '@/components/shared/icons'
 import { formatRubles } from '@/utils/cost'
 
 interface ICartOrder {
@@ -20,11 +20,15 @@ interface ICartOrder {
   totalPrice: string
   isActive: boolean
 }
-const props = withDefaults(defineProps<ICartOrder>(), {
-  amount: 0,
-  totalPrice: formatRubles(0),
-  isActive: true
-})
+const props = withDefaults(
+  defineProps<ICartOrder & { isDisabled?: boolean }>(),
+  {
+    amount: 0,
+    totalPrice: formatRubles(0),
+    isActive: true,
+    isDisabled: false
+  }
+)
 const emit = defineEmits([
   'incrementCount',
   'decrementCount',
@@ -82,25 +86,12 @@ const onDeleteItem = () => {
       </div>
 
       <div class="flex items-center justify-between gap-x-20">
-        <div class="flex items-center gap-x-12">
-          <button
-            class="group flex h-24 w-24 items-center justify-center rounded-full border-[2px] border-gray transition hover:border-green hover:bg-green disabled:cursor-default disabled:opacity-20"
-            :disabled="props.amount === 1"
-            @click="decCount"
-          >
-            <MinusIcon class="text-gray transition group-hover:text-white" />
-          </button>
-          <div class="min-w-30 leading-nonde font-inter text-bold-24">
-            {{ props.amount }}
-          </div>
-          <button
-            class="group flex h-24 w-24 items-center justify-center rounded-full border-[2px] border-gray transition hover:border-green hover:bg-green"
-            @click="incCount"
-          >
-            <PlusIcon class="text-gray transition group-hover:text-white" />
-          </button>
-        </div>
-
+        <ProductCounter
+          :amount="props.amount"
+          :is-disabled="props.isDisabled"
+          @decrease="decCount"
+          @increase="incCount"
+        />
         <div>
           <p
             class="whitespace-nowrap text-center leading-none text-green text-extrabold-18"

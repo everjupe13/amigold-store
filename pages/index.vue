@@ -151,8 +151,8 @@ const news = computed(() => blogStore.blog?.slice(0, 3) || [])
 
     <section class="bg-waved-t bg-waved-b !py-60">
       <AppContainer>
-        <div class="flex items-center justify-between gap-10 md:flex-col">
-          <h2 class="title relative z-[2] mb-40">Новости</h2>
+        <div class="mb-40 flex items-center justify-between gap-10">
+          <h2 class="title relative z-[2]">Новости</h2>
           <NuxtLink
             class="flex rounded-full border-2 border-white bg-white px-20 py-16 font-inter leading-none text-bold-16 active:translate-y-2"
             to="/news"

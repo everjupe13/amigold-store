@@ -9,6 +9,7 @@ import { FreeMode } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { computed, ref, watch } from 'vue'
 
+import { useCartStore } from '@/store/cart'
 import { type ICategory, useCatalogStore } from '@/store/catalog'
 
 const modules = [FreeMode]
@@ -142,6 +143,26 @@ if (options?.withHashUrlState) {
 const onSubcatalogChange = async (slug: string) => {
   await setCurrentSubcategorySlug(slug)
 }
+
+const cartStore = useCartStore()
+const cartLoadingProductId = ref()
+const isCartStoreFetching = ref(false)
+const isCartStoreFinish = ref(true)
+const onAddProductToCart = async (id: number, priceId: number) => {
+  cartLoadingProductId.value = id
+  isCartStoreFetching.value = true
+  isCartStoreFinish.value = false
+
+  try {
+    await cartStore.addItem(id, priceId)
+  } finally {
+    isCartStoreFetching.value = false
+    setTimeout(() => {
+      isCartStoreFinish.value = true
+      cartLoadingProductId.value = undefined
+    }, 1000)
+  }
+}
 </script>
 
 <template>
@@ -208,7 +229,18 @@ const onSubcatalogChange = async (slug: string) => {
         :key="product.id"
         class="max-w-[calc((100%-20px*4)/5)] md:max-w-full"
       >
-        <AppProductCard v-bind="product"></AppProductCard>
+        <AppProductCard
+          v-bind="product"
+          :is-loading="
+            cartLoadingProductId === product.id
+              ? isCartStoreFetching
+              : undefined
+          "
+          :is-finished="
+            cartLoadingProductId === product.id ? isCartStoreFinish : undefined
+          "
+          @add-product="onAddProductToCart(product.id, product.prices[0].id)"
+        ></AppProductCard>
       </swiper-slide>
     </swiper>
     <div v-else>
