@@ -13,6 +13,8 @@ type PropsType = {
     cost: string
     product: number
   }[]
+  isLoading?: boolean
+  isFinished?: boolean
 }
 
 const props = withDefaults(defineProps<PropsType>(), {
@@ -23,6 +25,14 @@ const props = withDefaults(defineProps<PropsType>(), {
   prices: () => []
 })
 
+const emits = defineEmits<{
+  (e: 'add-product'): () => {}
+}>()
+
+const onAddClick = () => {
+  emits('add-product')
+}
+
 const toLink = computed(() => `/product/${props.slug}`)
 const currentPrice = computed(() =>
   props.prices[0]?.cost
@@ -30,7 +40,7 @@ const currentPrice = computed(() =>
     : ''
 )
 
-const isLoaded = computed<boolean>(() => !!props.slug && !!props.name)
+const isLoadedInner = computed<boolean>(() => !!props.slug && !!props.name)
 </script>
 
 <template>
@@ -54,13 +64,13 @@ const isLoaded = computed<boolean>(() => !!props.slug && !!props.name)
     <div class="mb-15" :title="props.name">
       <p
         class="mb-8 leading-none text-yellow text-semibold-16"
-        :class="{ 'h-24 animate-pulse rounded-[5px] bg-gray': !isLoaded }"
+        :class="{ 'h-24 animate-pulse rounded-[5px] bg-gray': !isLoadedInner }"
       >
         {{ currentPrice }}
       </p>
       <h3
         class="mb-8 font-inter leading-tight text-medium-16"
-        :class="{ 'h-32 animate-pulse rounded-[5px] bg-gray': !isLoaded }"
+        :class="{ 'h-32 animate-pulse rounded-[5px] bg-gray': !isLoadedInner }"
       >
         <NuxtLink :to="toLink">{{ props.name }}</NuxtLink>
       </h3>
@@ -72,8 +82,21 @@ const isLoaded = computed<boolean>(() => !!props.slug && !!props.name)
       </div>
     </div>
     <div class="flex flex-col">
-      <AppButton :class="{ 'pointer-events-none invisible': !isLoaded }">
-        В корзину
+      <AppButton
+        :class="{ 'pointer-events-none invisible': !isLoadedInner }"
+        :theme="'default'"
+        :disabled="props.isLoading === true || props.isFinished === false"
+        @click="onAddClick"
+      >
+        <div
+          v-if="props.isLoading === true"
+          class="flex items-center justify-center"
+        >
+          <AppSpinner :size="18" class="!text-white" />
+        </div>
+        <template v-else>
+          {{ props.isFinished === false ? 'Товар добавлен' : 'В корзину' }}
+        </template>
       </AppButton>
     </div>
   </article>
