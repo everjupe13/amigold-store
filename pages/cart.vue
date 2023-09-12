@@ -4,6 +4,7 @@ import { useModal, useModalSlot } from 'vue-final-modal'
 
 import AppCheckbox from '@/components/shared/AppCheckbox.vue'
 import AppModal from '@/components/widgets/AppModal.vue'
+import FeedbackFormModal from '@/components/widgets/modals/feedback/FeedbackFormModal.vue'
 import OrderConfirm from '@/components/widgets/OrderConfirm.vue'
 import { type ICart, useCartStore } from '@/store/cart'
 import { LOCAL_STORAGE_SESSION_KEY } from '@/store/cart/cart.store'
@@ -20,6 +21,7 @@ const products: Ref<ICart['products'] | never[]> = computed(
     })) || []
 )
 const isCartLoading = ref(true)
+const isPageLoaded = ref(false)
 
 const updateCartAction = async (mutateFn: any) => {
   isCartLoading.value = true
@@ -54,6 +56,7 @@ onMounted(async () => {
   cartStore.cart = data as ICart
 
   isCartLoading.value = false
+  isPageLoaded.value = true
 })
 
 const handleIncrementItem = async (itemId: number, weightId: number) => {
@@ -95,6 +98,18 @@ const { open: openConfirmModal, close: closeConfirmModal } = useModal({
   }
 })
 
+const { open: openFeedbackModal, close: closeFeedbackModal } = useModal({
+  component: FeedbackFormModal,
+  attrs: {
+    async onConfirm() {
+      closeFeedbackModal()
+
+      await cartStore.createOrder()
+      openConfirmModal()
+    }
+  }
+})
+
 const clientOpenAuth = ref()
 onMounted(() => {
   const openAuth = inject('openAuth') as () => void
@@ -103,7 +118,7 @@ onMounted(() => {
 
 const handleOrderCreate = async () => {
   if (!userStore.isAuth) {
-    clientOpenAuth.value()
+    openFeedbackModal()
     return
   }
 
@@ -116,7 +131,8 @@ const handleOrderCreate = async () => {
   <section class="pb-60 pt-20">
     <AppContainer>
       <AppBreadcrumbs :crumbs="[{ label: 'Корзина' }]" class="mb-40" />
-      <template v-if="isCartLoading">
+
+      <template v-if="!isPageLoaded">
         <div class="flex h-[400px] items-center justify-center">
           <AppSpinner />
         </div>
@@ -125,7 +141,7 @@ const handleOrderCreate = async () => {
         <div
           class="grid grid-cols-[calc(100%-520px)_500px] gap-x-20 xl:grid-cols-[calc(100%-420px)_400px] lg:grid-cols-1 lg:gap-y-20 md:grid-cols-1 md:gap-y-10"
         >
-          <div class="rounded-[24px] bg-gray p-40 md:rounded-[12px] md:p-20">
+          <div class="rounded-[18px] bg-gray p-30 md:rounded-[12px] md:p-20">
             <div class="mb-20 flex items-center justify-between">
               <div
                 class="leading-none text-black text-extrabold-48 md:text-extrabold-36"
@@ -149,6 +165,7 @@ const handleOrderCreate = async () => {
                   :total-price="item.totalPrice"
                   :amount="item.amount"
                   :is-active="item.isActive"
+                  :is-disabled="isCartLoading"
                   class="mb-20 last:mb-0"
                   @change-active="e => (item.isActive = e)"
                   @increment-count="
@@ -166,13 +183,14 @@ const handleOrderCreate = async () => {
                 ></AppCartOrder>
               </template>
             </template>
+
             <template v-else>
               <div class="text-regular-14 py-20 text-center opacity-30">
                 Корзина пуста
               </div>
             </template>
           </div>
-          <div class="rounded-[24px] bg-gray md:rounded-[12px]">
+          <div class="rounded-[18px] bg-gray md:rounded-[12px]">
             <AppCartCheckoutSheet
               :is-loading="isCartLoading"
               :total-price="cartStore.cart?.totalPrice"
