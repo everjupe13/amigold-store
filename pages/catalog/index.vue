@@ -3,6 +3,7 @@
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
 
+import { useCartStore } from '@/store/cart'
 import { type ICategory, useCatalogStore } from '@/store/catalog'
 
 const route = useRoute()
@@ -111,14 +112,32 @@ if (options?.withHashUrlState) {
 const onSubcatalogChange = async (slug: string) => {
   await setCurrentSubcategorySlug(slug)
 }
+
+const cartStore = useCartStore()
+const cartLoadingProductId = ref()
+const isCartStoreFetching = ref(false)
+const isCartStoreFinish = ref(true)
+const onAddProductToCart = async (id: number, priceId: number) => {
+  cartLoadingProductId.value = id
+  isCartStoreFetching.value = true
+  isCartStoreFinish.value = false
+
+  try {
+    await cartStore.addItem(id, priceId)
+  } finally {
+    isCartStoreFetching.value = false
+    setTimeout(() => {
+      isCartStoreFinish.value = true
+      cartLoadingProductId.value = undefined
+    }, 1000)
+  }
+}
 </script>
 
 <template>
   <section class="py-40">
     <AppContainer>
-      <AppBreadcrumbs
-        :crumbs="[{ label: 'Корма для животных' }]"
-      ></AppBreadcrumbs>
+      <AppBreadcrumbs :crumbs="[{ label: 'Каталог' }]"></AppBreadcrumbs>
     </AppContainer>
   </section>
 
@@ -165,6 +184,19 @@ const onSubcatalogChange = async (slug: string) => {
               v-for="product in products"
               :key="product.id"
               v-bind="product"
+              :is-loading="
+                cartLoadingProductId === product.id
+                  ? isCartStoreFetching
+                  : undefined
+              "
+              :is-finished="
+                cartLoadingProductId === product.id
+                  ? isCartStoreFinish
+                  : undefined
+              "
+              @add-product="
+                onAddProductToCart(product.id, product.prices[0].id)
+              "
             ></AppProductCard>
           </div>
           <template v-else>
