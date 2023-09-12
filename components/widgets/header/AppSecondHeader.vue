@@ -4,6 +4,7 @@ import { useModal } from 'vue-final-modal'
 
 import IconBurger from '@/assets/img/burger-icon.svg'
 import AppLogo from '@/components/shared/AppLogo.vue'
+import { useCartStore } from '@/store/cart'
 import { useUserStore } from '@/store/user/useUserStore'
 
 import HeaderNavModal from './HeaderNavModal.vue'
@@ -26,6 +27,7 @@ const burgerModal = useModal({
   }
 })
 
+const cartStore = useCartStore()
 const searchModel = ref('')
 const handleSearchInput = debounce(e => {
   searchModel.value = e.target.value
@@ -104,9 +106,10 @@ const handleSearchInput = debounce(e => {
               class="relative flex h-38 w-38 items-center justify-center rounded-full bg-gray md:hidden"
             >
               <span
+                v-if="cartStore.cart?.products?.length"
                 class="min-w-14 absolute -right-3 -top-3 flex items-center justify-center rounded-full bg-[#F00] px-4 py-2 font-inter leading-none text-white text-extrabold-10"
               >
-                1
+                {{ cartStore.cart.products.length }}
               </span>
               <LazyCartIcon />
             </NuxtLink>
