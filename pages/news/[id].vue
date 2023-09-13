@@ -85,7 +85,3 @@ const dateStamp = computed(() =>
     </AppContainer>
   </section>
 </template>
-
-<style lang="scss" scoped>
-@import './news.scss';
-</style>

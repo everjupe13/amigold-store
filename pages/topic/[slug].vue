@@ -85,11 +85,3 @@ const dateStamp = computed(() =>
     </AppContainer>
   </section>
 </template>
-
-<style lang="scss" scoped>
-.content {
-  p:not(:last-child) {
-    margin-bottom: 10px;
-  }
-}
-</style>
