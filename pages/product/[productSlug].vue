@@ -202,16 +202,20 @@ async function decreaseCount() {
                   {{ currentPrice }}
                 </div>
                 <div class="flex flex-wrap items-center gap-10">
-                  <div class="rounded-full border-2 border-black/20 p-12">
-                    <ProductCounter
-                      :amount="currentProductCount"
-                      :disabled-when-count="0"
-                      :is-disabled="isCartActionLoading || !isCartActionSuccess"
-                      button-classes="bg-yellow hover:border-yellow hover:bg-yellow"
-                      wrapper-classes="h-24"
-                      @decrease="decreaseCount"
-                      @increase="increaseCount"
-                    />
+                  <div class="flex w-[130px] items-center">
+                    <div class="rounded-full border-2 border-black/20 p-12">
+                      <ProductCounter
+                        :amount="currentProductCount"
+                        :disabled-when-count="0"
+                        :is-disabled="
+                          isCartActionLoading || !isCartActionSuccess
+                        "
+                        button-classes="bg-yellow hover:border-yellow hover:bg-yellow"
+                        wrapper-classes="h-24"
+                        @decrease="decreaseCount"
+                        @increase="increaseCount"
+                      />
+                    </div>
                   </div>
                   <AppButton
                     class="h-52 w-[200px] whitespace-nowrap"

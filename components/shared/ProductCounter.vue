@@ -50,7 +50,7 @@ const increaseCount = () => {
     >
       <MinusIcon class="text-gray transition group-hover:text-white" />
     </button>
-    <div class="min-w-30 leading-nonde font-inter text-bold-24">
+    <div class="leading-nonde min-w-[20px] text-center font-inter text-bold-24">
       {{ props.amount }}
     </div>
     <button
