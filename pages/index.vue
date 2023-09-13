@@ -54,7 +54,7 @@ const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
         >
           <HomeCatalogSlider>
             <template #title>
-              <h1 class="title">Каталог</h1>
+              <h1 class="title">Новинки</h1>
             </template>
           </HomeCatalogSlider>
         </div>
@@ -79,11 +79,6 @@ const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
             ></HomeCategoriesCard>
           </div>
         </template>
-        <!-- <div class="flex items-center justify-center">
-          <AppButton outlined class="md:w-full" @click="navigateTo('/catalog')">
-            Загрузить ещё
-          </AppButton>
-        </div> -->
       </AppContainer>
     </section>
 
