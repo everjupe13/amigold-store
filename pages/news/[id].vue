@@ -87,9 +87,5 @@ const dateStamp = computed(() =>
 </template>
 
 <style lang="scss" scoped>
-.content {
-  p:not(:last-child) {
-    margin-bottom: 10px;
-  }
-}
+@import './news.scss';
 </style>
