@@ -7,3 +7,13 @@
     height: 0 !important;
   }
 }
+
+.content {
+  p:not(:last-child) {
+    margin-bottom: 10px;
+  }
+
+  a {
+    @apply text-yellow underline decoration-solid decoration-from-font decoration-yellow  underline-offset-2 transition-all hover:underline-offset-4;
+  }
+}

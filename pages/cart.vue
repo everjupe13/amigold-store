@@ -13,12 +13,15 @@ import { useUserStore } from '@/store/user/useUserStore'
 const cartStore = useCartStore()
 const userStore = useUserStore()
 const config = useRuntimeConfig()
-const products: Ref<ICart['products'] | never[]> = computed(
-  () =>
-    cartStore.cart?.products?.map(product => ({
-      ...product,
-      isActive: true
-    })) || []
+const products: Ref<ICart['products'] | never[]> = computed(() =>
+  cartStore.cart?.products && cartStore.cart?.products.length > 0
+    ? [
+        ...cartStore.cart.products.map(product => ({
+          ...product,
+          isActive: true
+        }))
+      ].sort((a, b) => a.id - b.id)
+    : []
 )
 const isCartLoading = ref(true)
 const isPageLoaded = ref(false)
@@ -166,6 +169,7 @@ const handleOrderCreate = async () => {
                   :amount="item.amount"
                   :is-active="item.isActive"
                   :is-disabled="isCartLoading"
+                  :slug="item.product.slug"
                   class="mb-20 last:mb-0"
                   @change-active="e => (item.isActive = e)"
                   @increment-count="

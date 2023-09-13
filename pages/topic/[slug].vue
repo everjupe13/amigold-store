@@ -24,7 +24,7 @@ const blogStore = useBlogStore()
 const isCartLoading = ref(false)
 
 isCartLoading.value = true
-await blogStore.fetchCertainNews(route.params.id as string)
+await blogStore.fetchCertainNews(route.params.slug as string)
 isCartLoading.value = false
 
 const articleData: Ref<INews | null> = computed(() => blogStore.news)
@@ -41,7 +41,7 @@ const dateStamp = computed(() =>
     <AppContainer>
       <AppBreadcrumbs
         :crumbs="[
-          { label: 'Новости', toLink: '/news' },
+          { label: 'Полезное', toLink: '/topics' },
           { label: articleData?.name || '' }
         ]"
         class="mb-40"

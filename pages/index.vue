@@ -25,29 +25,12 @@ isCategoriesFetching.value = true
 await catalogStore.fetchCategories()
 isCategoriesFetching.value = false
 
-// TODO temporary static data
-const topicCards = [
-  {
-    image: '/images/home/topics/plug.png',
-    title: 'Домашний уход за шерстью шелти',
-    textBody:
-      'Содержание, груминг. Процедуры во время линьки и другие видеоуроки',
-    articleLabel: 'Видеоуроки',
-    toLinkFn: (id: string | number = 0) => `/topic/${id}`
-  },
-  {
-    image: '/images/home/topics/plug-2.png',
-    title: 'Лечимся дома или в клинике',
-    textBody: 'Понятная дерматология для спасения кошек',
-    articleLabel: 'Статьи от грумеров',
-    toLinkFn: (id: string | number = 0) => `/topic/${id}`
-  }
-]
-
 const blogStore = useBlogStore()
 await blogStore.fetchBlog()
+await blogStore.fetchTopics()
 
 const news = computed(() => blogStore.blog?.slice(0, 3) || [])
+const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
 </script>
 
 <template>
@@ -71,7 +54,7 @@ const news = computed(() => blogStore.blog?.slice(0, 3) || [])
         >
           <HomeCatalogSlider>
             <template #title>
-              <h1 class="title">Каталог</h1>
+              <h1 class="title">Новинки</h1>
             </template>
           </HomeCatalogSlider>
         </div>
@@ -96,11 +79,6 @@ const news = computed(() => blogStore.blog?.slice(0, 3) || [])
             ></HomeCategoriesCard>
           </div>
         </template>
-        <!-- <div class="flex items-center justify-center">
-          <AppButton outlined class="md:w-full" @click="navigateTo('/catalog')">
-            Загрузить ещё
-          </AppButton>
-        </div> -->
       </AppContainer>
     </section>
 
@@ -178,11 +156,15 @@ const news = computed(() => blogStore.blog?.slice(0, 3) || [])
         <h2 class="title relative z-[2] mb-40">Полезное</h2>
         <div class="mb-40 grid grid-cols-3 gap-20 md:grid-cols-1">
           <AppTopicCard
-            v-for="(data, index) in topicCards"
-            :key="index"
-            v-bind="data"
+            v-for="data in topics"
+            :key="data.id"
+            :image="data.image"
+            :read-time="data.readTime"
+            :title="data.name"
+            :text-body="data.shortDescription"
+            :article-label="data.category.name"
+            :slug="data.slug"
           ></AppTopicCard>
-          <AppTopicCard></AppTopicCard>
         </div>
       </AppContainer>
     </section>

@@ -7,15 +7,35 @@ import { INews } from './blog.types'
 
 export const useBlogStore = defineStore('blog', () => {
   const blog = ref<INews[] | []>([])
+  const topics = ref<INews[] | []>([])
   const news = ref<INews | null>(null)
 
   const fetchBlog = async () => {
     try {
-      const { data, error, refresh, execute, pending } =
-        await useApiRequest(`/api/data/news`)
+      const { data, error, refresh, execute, pending } = await useApiRequest(
+        `/api/data/news?item_type=news`
+      )
 
       if (Array.isArray(data?.value) && !error.value) {
         blog.value = data.value
+      }
+
+      return { data, error, refresh, execute, pending, status: true }
+    } catch (error) {
+      // TODO add notification observer center
+      console.log(error)
+      return { error, status: false }
+    }
+  }
+
+  const fetchTopics = async () => {
+    try {
+      const { data, error, refresh, execute, pending } = await useApiRequest(
+        `/api/data/news?item_type=other`
+      )
+
+      if (Array.isArray(data?.value) && !error.value) {
+        topics.value = data.value
       }
 
       return { data, error, refresh, execute, pending, status: true }
@@ -44,5 +64,5 @@ export const useBlogStore = defineStore('blog', () => {
     }
   }
 
-  return { blog, news, fetchBlog, fetchCertainNews }
+  return { blog, topics, news, fetchBlog, fetchCertainNews, fetchTopics }
 })

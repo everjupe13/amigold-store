@@ -19,6 +19,7 @@ interface ICartOrder {
   }
   totalPrice: string
   isActive: boolean
+  slug: string
 }
 const props = withDefaults(
   defineProps<ICartOrder & { isDisabled?: boolean }>(),
@@ -56,6 +57,8 @@ const decCount = () => {
 const onDeleteItem = () => {
   emit('deleteItem')
 }
+
+const toLink = computed(() => `/product/${props.slug}`)
 </script>
 
 <template>
@@ -63,29 +66,33 @@ const onDeleteItem = () => {
     <div
       class="relative flex items-stretch justify-between lg:flex-col lg:gap-y-20"
     >
-      <div class="flex items-center gap-x-14 md:flex-col md:gap-y-10">
+      <div class="flex flex-grow items-center gap-x-14 md:flex-col md:gap-y-10">
         <div
-          class="flex h-[140px] w-[140px] items-center justify-center rounded-[10px] bg-[#EEEFEF] p-10 lg:h-[100px] lg:w-[100px] lg:flex-shrink-0"
+          class="group relative flex h-[140px] w-[140px] items-center justify-center rounded-[10px] bg-button-dark p-10 lg:h-[100px] lg:w-[100px] lg:flex-shrink-0"
         >
-          <img
-            :src="props.image"
-            alt=""
-            class="block h-full w-full object-cover"
-          />
+          <div
+            class="relative z-[1] h-full w-full overflow-hidden rounded-[5px]"
+          >
+            <img
+              :src="props.image"
+              alt=""
+              class="block h-full w-full object-cover transition-all group-hover:scale-110"
+            />
+          </div>
+
+          <NuxtLink :to="toLink" class="absolute inset-0 z-[2]"></NuxtLink>
         </div>
         <div class="lg:pr-20">
-          <p
-            class="mb-10 text-extrabold-18 lg:leading-tight lg:text-extrabold-18"
-          >
+          <p class="text-extrabold-18 lg:leading-tight lg:text-extrabold-18">
             {{ props.name }}
           </p>
-          <div class="text-gray text-regular-18">
+          <div class="text-black text-regular-16">
             {{ `${props.price?.textLabel}` }}
           </div>
         </div>
       </div>
 
-      <div class="flex items-center justify-between gap-x-20">
+      <div class="flex flex-grow items-center justify-between gap-x-20">
         <ProductCounter
           :amount="props.amount"
           :is-disabled="props.isDisabled"

@@ -9,5 +9,5 @@ export const separateThousands = (number: number) => {
 }
 
 export const formatRubles = (number?: number) => {
-  return `$${separateThousands(number || 0)}`
+  return `${separateThousands(number || 0)} ₽`
 }

@@ -1,20 +1,22 @@
 <script lang="ts" setup>
 type Props = {
   image?: string
-  afterImageLabel?: string
+  readTime?: string
   title?: string
   textBody?: string
   articleLabel?: string
-  toLinkFn?: () => string
+  slug: string
 }
 const props = withDefaults(defineProps<Props>(), {
   image: '',
-  afterImageLabel: '5 минут',
-  toLinkFn: () => '',
+  readTime: '5 минут',
+  slug: '',
   title: '',
   textBody: '',
   articleLabel: ''
 })
+
+const toLink = computed(() => `/topic/${props.slug}`)
 </script>
 
 <template>
@@ -36,14 +38,14 @@ const props = withDefaults(defineProps<Props>(), {
         {{ props.articleLabel }}
       </p>
       <NuxtLink
-        :to="props.toLinkFn()"
+        :to="toLink"
         class="absolute inset-0 z-[2] block transition duration-500"
         :class="{ 'group-hover:bg-black/20': props.image }"
       ></NuxtLink>
     </div>
     <div>
       <div
-        v-if="props.afterImageLabel"
+        v-if="props.readTime"
         class="mb-8 flex items-center gap-x-4 font-inter text-dark opacity-60 text-bold-14"
         :class="{ 'pointer-events-none !opacity-0': !props.title }"
       >
@@ -79,7 +81,7 @@ const props = withDefaults(defineProps<Props>(), {
           </svg>
         </span>
         <span>
-          {{ props.afterImageLabel }}
+          {{ props.readTime }}
         </span>
       </div>
       <h3
@@ -88,7 +90,7 @@ const props = withDefaults(defineProps<Props>(), {
           { '!mb-10 h-32 animate-pulse rounded-[5px] bg-gray': !props.title }
         ]"
       >
-        <NuxtLink :to="props.toLinkFn()">{{ props.title }}</NuxtLink>
+        <NuxtLink :to="toLink">{{ props.title }}</NuxtLink>
       </h3>
       <p
         :class="[

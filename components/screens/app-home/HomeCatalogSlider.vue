@@ -184,36 +184,18 @@ const onAddProductToCart = async (id: number, priceId: number) => {
     >
       <template #container-start>
         <div
-          class="header-grid relative z-[2] mb-40 grid grid-cols-3 md:grid-cols-[1fr_auto]"
+          class="header-grid relative z-[2] mb-40 grid grid-cols-3 md:flex md:flex-wrap md:items-center md:justify-between"
         >
-          <div class="heading-title md:mb-20">
+          <div class="heading-title">
             <slot name="title"></slot>
           </div>
-          <div
-            class="filters flex items-center justify-center gap-10 md:flex-col md:items-start md:justify-normal"
-          >
-            <template v-if="subcategories.length > 0">
-              <button
-                v-for="subcategory in subcategories"
-                :key="subcategory.id"
-                class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-                :class="{
-                  '!bg-black !text-white':
-                    currentSubcategory!.slug === subcategory.slug
-                }"
-                @click="onSubcatalogChange(subcategory.slug)"
-              >
-                {{ subcategory.name }}
-              </button>
-            </template>
-          </div>
+          <div></div>
           <div
             class="controls self-center justify-self-end md:self-stretch md:justify-self-auto"
           >
             <div
               class="flex items-center gap-x-20 md:h-full md:flex-col-reverse md:justify-between md:gap-y-10"
             >
-              <HomeSliderButtons />
               <NuxtLink
                 class="flex rounded-full border-2 border-gray bg-gray px-20 py-16 font-inter leading-none text-bold-16"
                 to="/catalog"
