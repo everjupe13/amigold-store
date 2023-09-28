@@ -15,7 +15,7 @@ export const useApiRequest = <T>(url: string, options?: {}) => {
         Accept: 'application/json',
         ...(token.value ? { Authorization: `Token ${token.value}` } : {})
       }
-    }).catch(error => ({ error }))
+    })
   )
 }
 
@@ -35,5 +35,5 @@ export const useFetchApiRequest = (url: string, options?: {}) => {
       Accept: 'application/json',
       ...(token.value ? { Authorization: `Token ${token.value}` } : {})
     }
-  }).catch(error => ({ error }))
+  })
 }

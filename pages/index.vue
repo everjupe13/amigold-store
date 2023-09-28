@@ -30,7 +30,7 @@ await blogStore.fetchBlog()
 await blogStore.fetchTopics()
 
 const news = computed(() => blogStore.blog?.slice(0, 3) || [])
-const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
+// const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
 </script>
 
 <template>
@@ -151,7 +151,7 @@ const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
       </AppContainer>
     </section>
 
-    <section class="py-[120px]">
+    <!-- <section class="py-[120px]">
       <AppContainer>
         <h2 class="title relative z-[2] mb-40">Полезное</h2>
         <div class="mb-40 grid grid-cols-3 gap-20 md:grid-cols-1">
@@ -167,6 +167,6 @@ const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
           ></AppTopicCard>
         </div>
       </AppContainer>
-    </section>
+    </section> -->
   </div>
 </template>

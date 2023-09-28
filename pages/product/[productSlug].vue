@@ -45,7 +45,7 @@ onMounted(() => {
 const currentPrice = computed(() => {
   const total =
     currentPriceIndex.value >= 0
-      ? Number(pricesArray.value[currentPriceIndex.value]?.cost)
+      ? Number(pricesArray.value[currentPriceIndex.value]?.price)
       : 0
   return formatRubles(total)
 })
@@ -183,7 +183,7 @@ async function decreaseCount() {
               <div class="mt-auto rounded-[24px] bg-gray p-30">
                 <div class="mb-24">
                   <p class="mb-10 text-bold-18">Фасовка:</p>
-                  <div class="flex gap-8 md:flex-wrap">
+                  <div class="flex flex-wrap gap-8">
                     <AppButton
                       v-for="(price, index) in pricesArray"
                       :key="price.id"

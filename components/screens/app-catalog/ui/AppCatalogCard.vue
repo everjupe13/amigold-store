@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { ICatalogProducts } from '@/store/catalog/catalog.types'
+import { ICategoryProducts } from '@/store/catalog/catalog.types'
 
-const props = defineProps<ICatalogProducts>()
+const props = defineProps<ICategoryProducts>()
 </script>
 
 <template>

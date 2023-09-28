@@ -3,82 +3,21 @@ import { ref } from 'vue'
 
 import { useApiRequest } from '@/composables/useApiRequest'
 
-import { ICatalogProducts, ICategory, IProduct } from './catalog.types'
+import {
+  ICategory,
+  ICategoryProducts,
+  IFilter,
+  IProduct
+} from './catalog.types'
 
 export const useCatalogStore = defineStore('catalog', () => {
-  const catalog = ref<ICatalogProducts[] | []>([])
+  const catalog = ref<ICategoryProducts[] | []>([])
   const categories = ref<ICategory[] | []>([])
-
-  async function fetchProducts(options?: {
-    categorySlug?: string
-    subcategorySlug?: string
-  }) {
-    try {
-      const CATALOG_API_URLS = {
-        ALL: '/api/product/all',
-        BY_SUBCATALOG: `/api/product/by_subcategory/${
-          options?.subcategorySlug || ''
-        }`,
-        ALL_CATALOG_BY_SUBCATALOG: `/api/product/catalog/${
-          options?.categorySlug || ''
-        }/${options?.subcategorySlug || ''}`
-      }
-
-      let url: string = CATALOG_API_URLS.ALL
-
-      if (options?.categorySlug && options?.subcategorySlug) {
-        url = CATALOG_API_URLS.ALL_CATALOG_BY_SUBCATALOG
-      }
-
-      if (options?.subcategorySlug) {
-        url = CATALOG_API_URLS.BY_SUBCATALOG
-      }
-
-      // if (options?.categorySlug) {
-      //   // TODO dont supported
-      //   return { error: ref(true), data: ref<ICatalogProducts[] | []>([]) }
-      // }
-
-      const { data, error, refresh, execute } = await useApiRequest<
-        ICatalogProducts[]
-      >(url, { server: false })
-
-      if (Array.isArray(data?.value) && !error.value) {
-        catalog.value = data.value
-      }
-
-      return {
-        error,
-        refresh,
-        execute,
-        data: data as Ref<ICatalogProducts[] | []>
-      }
-    } catch (error) {
-      // TODO add notification observer center
-      console.log(error)
-      return { error, data: ref<ICatalogProducts[] | []>([]) }
-    }
-  }
-
-  async function fetchProduct(productSlug: string) {
-    try {
-      const { data, error, refresh, execute } = await useApiRequest<IProduct>(
-        `/api/product/${productSlug}`,
-        { server: false }
-      )
-
-      return { data, error, refresh, execute }
-    } catch (error) {
-      // TODO add notification observer center
-      console.log(error)
-      return { error, data: ref(null) }
-    }
-  }
 
   async function fetchCategories() {
     try {
       const { data, error, refresh, execute, pending } = await useApiRequest(
-        `/api/product/categories`
+        `/api/product/category`
       )
 
       if (Array.isArray(data?.value) && !error.value) {
@@ -93,33 +32,128 @@ export const useCatalogStore = defineStore('catalog', () => {
     }
   }
 
-  async function fetchCategoryProduct(
-    catalogSlug: string,
-    subcatalogSlug: string
-  ) {
-    if (!catalogSlug || !subcatalogSlug) {
-      return { error: ref(true), data: ref([]) }
-    }
-
+  const fetchFilters = async () => {
     try {
-      const { data, error, refresh, execute, pending } = await useApiRequest(
-        `/api/product/catalog/${catalogSlug}/${subcatalogSlug}`
-      )
+      const { data, error, refresh, execute, pending } =
+        await useApiRequest<IFilter[]>(`/api/product/filter`)
 
-      return { data, error, refresh, execute, pending }
+      if (!error.value) {
+        return {
+          data,
+          error,
+          refresh,
+          execute,
+          pending
+        }
+      }
+
+      return {
+        data: ref(null),
+        error,
+        refresh,
+        execute,
+        pending
+      }
     } catch (error) {
       // TODO add notification observer center
       console.log(error)
-      return { error, data: ref([]) }
+      return { data: ref(null), error }
+    }
+  }
+
+  const fetchCategoryProducts = async ({
+    categorySlug,
+    subcategorySlug
+  }: { categorySlug?: string; subcategorySlug?: string } = {}) => {
+    try {
+      const url = categorySlug
+        ? `/api/product/filter/${categorySlug}${
+            subcategorySlug ? `/${subcategorySlug}` : ''
+          }`
+        : '/api/product/filter'
+      const { data, error, refresh, execute, pending } =
+        await useApiRequest<ICategoryProducts[]>(url)
+
+      if (!error.value) {
+        return {
+          data: ref(data.value) || [],
+          error,
+          refresh,
+          execute,
+          pending
+        }
+      }
+
+      return {
+        data: ref(null),
+        error,
+        refresh,
+        execute,
+        pending
+      }
+    } catch (error) {
+      // TODO add notification observer center
+      console.log(error)
+      return { data: ref(null), error }
+    }
+  }
+
+  const fetchAllProducts = async () => {
+    try {
+      const { data, error, refresh, execute, pending } = await useApiRequest<{
+        count: number
+        next: string
+        previous: string
+        results: IProduct[]
+      }>(`/api/product/items`)
+
+      if (!error.value) {
+        return {
+          data: ref(data.value?.results) || [],
+          error,
+          refresh,
+          execute,
+          pending
+        }
+      }
+
+      return {
+        data: ref(null),
+        error,
+        refresh,
+        execute,
+        pending
+      }
+    } catch (error) {
+      // TODO add notification observer center
+      console.log(error)
+      return { data: ref(null), error }
+    }
+  }
+
+  async function fetchProduct(productSlug: string) {
+    try {
+      const { data, error, refresh, execute } = await useApiRequest<IProduct>(
+        `/api/product/items/${productSlug}`,
+        { server: false }
+      )
+
+      return { data, error, refresh, execute }
+    } catch (error) {
+      // TODO add notification observer center
+      console.log(error)
+      return { error, data: ref(null) }
     }
   }
 
   return {
     catalog,
     categories,
-    fetchProducts,
-    fetchProduct,
+
     fetchCategories,
-    fetchCategoryProduct
+    fetchFilters,
+    fetchAllProducts,
+    fetchCategoryProducts,
+    fetchProduct
   }
 })
