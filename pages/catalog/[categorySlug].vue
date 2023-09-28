@@ -1,40 +1,24 @@
 <script lang="ts" setup>
-// import { useCatalogController } from '@/composables/useCatalogController'
-// TODO сделать один компонент для всего этого который будет с гвардами на пустоту, на загрузку
-// также предусмотреть что его можно будет засунуть в свайпер для главной страницы
-import { storeToRefs } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
 import { useCartStore } from '@/store/cart'
-import { type ICategory, useCatalogStore } from '@/store/catalog'
+import {
+  type ICategoryProducts,
+  type IFilter,
+  useCatalogStore
+} from '@/store/catalog'
 
 const route = useRoute()
-const options = {
-  categorySlug: route.params.categorySlug as string,
-  withHashUrlState: true
-}
-const isCategoryPart = computed(() => !!options?.categorySlug)
+const currentCategorySlug = Array.isArray(route.params.categorySlug)
+  ? route.params.categorySlug[0]
+  : route.params.categorySlug
 
 const isLoading = ref(false)
 const catalogStore = useCatalogStore()
 
 isLoading.value = true
-await catalogStore.fetchCategories()
-isLoading.value = false
-
-const { categories }: { categories: Ref<ICategory[]> } =
-  storeToRefs(catalogStore)
-const currentCategory: Ref<ICategory> = computed(
-  () =>
-    (isCategoryPart.value &&
-      categories.value.find(
-        category => category.slug === options?.categorySlug
-      )) ||
-    categories.value[0]
-)
-const subcategories: Ref<ICategory['sub_categories']> = computed(
-  () => currentCategory.value?.sub_categories
-)
+const { data: apiFilters } = await catalogStore.fetchFilters()
+const subcategories: Ref<IFilter[]> = computed(() => apiFilters.value || [])
 const currentSubcategorySlug = ref(subcategories.value[0].slug)
 const currentSubcategory = computed(() =>
   subcategories.value.find(
@@ -42,77 +26,34 @@ const currentSubcategory = computed(() =>
   )
 )
 
-await catalogStore.fetchProducts({
-  ...(isCategoryPart.value ? { categorySlug: options!.categorySlug } : {}),
+const { data: apiProducts } = await catalogStore.fetchCategoryProducts({
+  categorySlug: currentCategorySlug,
   subcategorySlug: currentSubcategorySlug.value
 })
+isLoading.value = false
 
 const isProductsLoading = ref(false)
-const products = computed(() => catalogStore.catalog)
+const products: Ref<ICategoryProducts[]> = ref(
+  apiProducts.value?.length && apiProducts.value?.length > 0
+    ? apiProducts.value
+    : []
+)
 
-const setProducts = async () => {
+const onSubcategoryChange = async (slug: string) => {
+  currentSubcategorySlug.value = slug
   isProductsLoading.value = true
-  await catalogStore.fetchProducts({
-    ...(isCategoryPart.value ? { categorySlug: options!.categorySlug } : {}),
+
+  const { data: apiProducts } = await catalogStore.fetchCategoryProducts({
+    categorySlug: currentCategorySlug,
     subcategorySlug: currentSubcategorySlug.value
   })
 
+  products.value =
+    apiProducts.value?.length && apiProducts.value?.length > 0
+      ? apiProducts.value
+      : []
+
   isProductsLoading.value = false
-}
-
-const setCurrentSubcategorySlug = async (slug: string) => {
-  if (!subcategories.value?.length) {
-    return
-  }
-
-  const checkIsSubcatalogSlugValid = (slug: string) =>
-    slug && subcategories.value.some(subcategory => subcategory.slug === slug)
-
-  const DEFAULT_SLUG = subcategories.value[0].slug
-  const currentSlug = checkIsSubcatalogSlugValid(slug) ? slug : DEFAULT_SLUG
-  currentSubcategorySlug.value = currentSlug
-
-  await setProducts()
-}
-
-if (options?.withHashUrlState) {
-  const SUBCATEGORY_URL_QUERY = 'subcategory'
-
-  const parseSubcategoryFromUrl = () =>
-    (route.query[SUBCATEGORY_URL_QUERY] as string) ?? ''
-
-  const setSubcategorySlugToUrl = (slug: string) => {
-    const domainUrl = new URL(window.location.href)
-    domainUrl.searchParams.set(SUBCATEGORY_URL_QUERY, slug)
-
-    navigateTo(domainUrl.pathname + domainUrl.search)
-  }
-
-  const _subcategorySlugFromUrl = route.query[SUBCATEGORY_URL_QUERY]
-    ? parseSubcategoryFromUrl()
-    : currentSubcategorySlug.value
-
-  await setCurrentSubcategorySlug(_subcategorySlugFromUrl)
-
-  onMounted(() => {
-    nextTick(() => {
-      if (!(route.query instanceof Object)) {
-        return
-      }
-
-      if (!route.query[SUBCATEGORY_URL_QUERY]) {
-        setSubcategorySlugToUrl(currentSubcategorySlug.value)
-      }
-    })
-  })
-
-  watch(currentSubcategorySlug, newSlug => {
-    setSubcategorySlugToUrl(newSlug)
-  })
-}
-
-const onSubcatalogChange = async (slug: string) => {
-  await setCurrentSubcategorySlug(slug)
 }
 
 const cartStore = useCartStore()
@@ -171,7 +112,7 @@ const onAddProductToCart = async (id: number, priceId: number) => {
                   '!bg-black !text-white':
                     currentSubcategory!.slug === subcategory.slug
                 }"
-                @click="onSubcatalogChange(subcategory.slug)"
+                @click="onSubcategoryChange(subcategory.slug)"
               >
                 {{ subcategory.name }}
               </button>
@@ -188,6 +129,11 @@ const onAddProductToCart = async (id: number, priceId: number) => {
               v-for="product in products"
               :key="product.id"
               v-bind="product"
+              :name="product.name"
+              :vendor-code="product.vendorCode"
+              :slug="product.slug"
+              :prices="product.prices"
+              :image="product.image"
               :is-loading="
                 cartLoadingProductId === product.id
                   ? isCartStoreFetching

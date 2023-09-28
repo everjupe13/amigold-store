@@ -7,11 +7,14 @@ type PropsType = {
   vendorCode?: string
   slug?: string
   prices?: {
-    id: number
-    weight: string
-    textLabel: string
-    cost: string
-    product: number
+    id?: number
+    weight?: string
+    vendorCode?: number
+    textLabel?: string
+    product?: number
+    volume?: string
+    price?: string
+    at_store?: number
   }[]
   isLoading?: boolean
   isFinished?: boolean
@@ -35,8 +38,8 @@ const onAddClick = () => {
 
 const toLink = computed(() => `/product/${props.slug}`)
 const currentPrice = computed(() =>
-  props.prices[0]?.cost
-    ? `от ${formatRubles(Number(props.prices[0]?.cost))}`
+  props.prices[0]?.price
+    ? `от ${formatRubles(Number(props.prices[0]?.price))}`
     : ''
 )
 

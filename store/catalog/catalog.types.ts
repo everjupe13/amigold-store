@@ -4,27 +4,41 @@ export interface ICategory {
   image: string
   slug: string
   isActive: boolean
-  sub_categories: {
+  filters: {
+    id: number
     name: string
     slug: string
-    id: number
+    categories: number[]
   }[]
 }
 
-export interface ICatalogProducts {
+export interface ICategoryProducts {
   id: number
   name: string
   slug: string
+  vendorCode: string
   shortDescription: string
-  productType: ICategory[]
   image: string
   prices: {
     id: number
+    vendorCode: number
     weight: string
+    volume: string
     textLabel: string
-    cost: string
-    product: 0
+    price: string
+    at_store: number
+    product: number
+    isActive: boolean
   }[]
+  filters: {
+    id: number
+    name: string
+    slug: string
+    category: number
+  }[]
+  isNew: boolean
+  isDiscount: boolean
+  discount: number
 }
 
 export interface IProduct {
@@ -34,23 +48,28 @@ export interface IProduct {
     image: string
     imageThumb: string
     is_main: boolean
-    product: 0
+    product: number
   }[]
-  productType: {
+  filters: {
     id: number
     name: string
     slug: string
     category: number
   }[]
   prices: {
-    isActive: unknown
     id: number
+    vendorCode: number
     weight: string
+    volume: string
     textLabel: string
-    cost: string
-    product: 0
+    price: string
+    at_store: number
+    product: number
+    isActive: boolean
   }[]
   isActive: boolean
+  isNew: boolean
+  isDiscount: boolean
   isPromotionActive: boolean
   promotionText: string
   vendorCode: string
@@ -60,4 +79,13 @@ export interface IProduct {
   description: string
   feedingRate: string
   delivery: string
+  discount: number
+  category: number
+}
+
+export type IFilter = {
+  id: number
+  name: string
+  slug: string
+  categories: number[]
 }

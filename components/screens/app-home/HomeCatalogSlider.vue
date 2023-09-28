@@ -3,18 +3,20 @@ import 'swiper/css'
 import 'swiper/css/free-mode'
 
 // import { useCatalogController } from '@/composables/useCatalogController'
-import { storeToRefs } from 'pinia'
+// import { storeToRefs } from 'pinia'
 import type { Swiper as ISwiper } from 'swiper'
 import { FreeMode } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 
 import { useCartStore } from '@/store/cart'
-import { type ICategory, useCatalogStore } from '@/store/catalog'
+import {
+  type IFilter,
+  type IProduct,
+  useCatalogStore
+} from '@/store/catalog/index'
 
 const modules = [FreeMode]
-
-// TODO сделать фильтрацию по сабкаталогам, скелетон лоадер
 
 const isSwiperEnd = ref(false)
 const isSwiperBeginning = ref(true)
@@ -37,112 +39,99 @@ const swiperRef: Ref<typeof ISwiper | null> = ref(null)
 const swiperActiveIndex = ref(0)
 const swiperSlidesPerGroup = ref(1)
 
-const options = {
-  categorySlug: '',
-  withHashUrlState: true
-}
-const isCategoryPart = computed(() => !!options?.categorySlug)
+// const options = {
+//   categorySlug: '',
+//   withHashUrlState: true
+// }
 
 const isLoading = ref(false)
 const catalogStore = useCatalogStore()
 
 isLoading.value = true
-await catalogStore.fetchCategories()
+const { data: apiFilters } = await catalogStore.fetchFilters()
+const { data: apiProducts } = await catalogStore.fetchAllProducts()
 isLoading.value = false
 
-const { categories }: { categories: Ref<ICategory[]> } =
-  storeToRefs(catalogStore)
-const currentCategory: Ref<ICategory> = computed(
-  () =>
-    (isCategoryPart.value &&
-      categories.value.find(
-        category => category.slug === options?.categorySlug
-      )) ||
-    categories.value[0]
-)
-const subcategories: Ref<ICategory['sub_categories']> = computed(
-  () => currentCategory.value?.sub_categories
-)
-const currentSubcategorySlug = ref(subcategories.value[0].slug)
+const subcategories: Ref<IFilter[]> = computed(() => apiFilters.value || [])
+const currentSubcategorySlug = ref(subcategories.value?.[0]?.slug || '')
 const currentSubcategory = computed(() =>
   subcategories.value.find(
     subcategory => subcategory.slug === currentSubcategorySlug.value
   )
 )
 
-await catalogStore.fetchProducts({
-  ...(isCategoryPart.value ? { categorySlug: options!.categorySlug } : {}),
-  subcategorySlug: currentSubcategorySlug.value
-})
+const onSubcategoryChange = (slug: string) => {
+  currentSubcategorySlug.value = slug
+}
 
 const isProductsLoading = ref(false)
-const products = computed(() => catalogStore.catalog)
+const products: Ref<IProduct[]> = computed(() =>
+  apiProducts.value?.length && apiProducts.value?.length > 0
+    ? apiProducts.value?.filter(product =>
+        product.filters.some(
+          productFilter => productFilter.slug === currentSubcategorySlug.value
+        )
+      )
+    : []
+)
 
-const setProducts = async () => {
-  isProductsLoading.value = true
-  await catalogStore.fetchProducts({
-    ...(isCategoryPart.value ? { categorySlug: options!.categorySlug } : {}),
-    subcategorySlug: currentSubcategorySlug.value
-  })
+// const setProducts = async () => {
+//   isProductsLoading.value = true
 
-  isProductsLoading.value = false
-}
+//   isProductsLoading.value = false
+// }
 
-const setCurrentSubcategorySlug = async (slug: string) => {
-  if (!subcategories.value?.length) {
-    return
-  }
+// const setCurrentSubcategorySlug = async (slug: string) => {
+//   if (!subcategories.value?.length) {
+//     return
+//   }
 
-  const checkIsSubcatalogSlugValid = (slug: string) =>
-    slug && subcategories.value.some(subcategory => subcategory.slug === slug)
+//   const checkIsSubcatalogSlugValid = (slug: string) =>
+//     slug && subcategories.value.some(subcategory => subcategory.slug === slug)
 
-  const DEFAULT_SLUG = subcategories.value[0].slug
-  const currentSlug = checkIsSubcatalogSlugValid(slug) ? slug : DEFAULT_SLUG
-  currentSubcategorySlug.value = currentSlug
+//   const DEFAULT_SLUG = subcategories.value[0].slug
+//   const currentSlug = checkIsSubcatalogSlugValid(slug) ? slug : DEFAULT_SLUG
+//   currentSubcategorySlug.value = currentSlug
 
-  await setProducts()
-}
+//   await setProducts()
+// }
 
-if (options?.withHashUrlState) {
-  const route = useRoute()
-  const SUBCATEGORY_URL_QUERY = 'subcategory'
+// if (options?.withHashUrlState) {
+//   const route = useRoute()
+//   const SUBCATEGORY_URL_QUERY = 'subcategory'
 
-  const parseSubcategoryFromUrl = () =>
-    (route.query[SUBCATEGORY_URL_QUERY] as string) ?? ''
+//   const parseSubcategoryFromUrl = () =>
+//     (route.query[SUBCATEGORY_URL_QUERY] as string) ?? ''
 
-  const setSubcategorySlugToUrl = (slug: string) => {
-    const domainUrl = new URL(window.location.href)
-    domainUrl.searchParams.set(SUBCATEGORY_URL_QUERY, slug)
+//   const setSubcategorySlugToUrl = (slug: string) => {
+//     const domainUrl = new URL(window.location.href)
+//     domainUrl.searchParams.set(SUBCATEGORY_URL_QUERY, slug)
 
-    navigateTo(domainUrl.pathname + domainUrl.search)
-  }
+//     navigateTo(domainUrl.pathname + domainUrl.search)
+//   }
 
-  const _subcategorySlugFromUrl = route.query[SUBCATEGORY_URL_QUERY]
-    ? parseSubcategoryFromUrl()
-    : currentSubcategorySlug.value
+//   const _subcategorySlugFromUrl = route.query[SUBCATEGORY_URL_QUERY]
+//     ? parseSubcategoryFromUrl()
+//     : currentSubcategorySlug.value
 
-  await setCurrentSubcategorySlug(_subcategorySlugFromUrl)
+//   await setCurrentSubcategorySlug(_subcategorySlugFromUrl)
 
-  onMounted(() => {
-    nextTick(() => {
-      if (!(route.query instanceof Object)) {
-        return
-      }
+//   onMounted(() => {
+//     nextTick(() => {
+//       if (!(route.query instanceof Object)) {
+//         return
+//       }
 
-      if (!route.query[SUBCATEGORY_URL_QUERY]) {
-        setSubcategorySlugToUrl(currentSubcategorySlug.value)
-      }
-    })
-  })
+//       if (!route.query[SUBCATEGORY_URL_QUERY]) {
+//         setSubcategorySlugToUrl(currentSubcategorySlug.value)
+//       }
+//     })
+//   })
 
-  watch(currentSubcategorySlug, newSlug => {
-    setSubcategorySlugToUrl(newSlug)
-  })
-}
-
-const onSubcatalogChange = async (slug: string) => {
-  await setCurrentSubcategorySlug(slug)
-}
+//   watch(currentSubcategorySlug, newSlug => {
+//     setSubcategorySlugToUrl(newSlug)
+//   })
+// }
 
 const cartStore = useCartStore()
 const cartLoadingProductId = ref()
@@ -189,7 +178,24 @@ const onAddProductToCart = async (id: number, priceId: number) => {
           <div class="heading-title">
             <slot name="title"></slot>
           </div>
-          <div></div>
+          <div
+            class="filters flex items-center justify-center gap-10 md:flex-col md:items-start"
+          >
+            <template v-if="subcategories.length > 0">
+              <button
+                v-for="subcategory in subcategories"
+                :key="subcategory.id"
+                class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
+                :class="{
+                  '!bg-black !text-white':
+                    currentSubcategory!.slug === subcategory.slug
+                }"
+                @click="onSubcategoryChange(subcategory.slug)"
+              >
+                {{ subcategory.name }}
+              </button>
+            </template>
+          </div>
           <div
             class="controls self-center justify-self-end md:self-stretch md:justify-self-auto"
           >
@@ -212,7 +218,14 @@ const onAddProductToCart = async (id: number, priceId: number) => {
         class="max-w-[calc((100%-20px*4)/5)] md:max-w-full"
       >
         <AppProductCard
-          v-bind="product"
+          :name="product.name"
+          :vendor-code="product.vendorCode"
+          :slug="product.slug"
+          :prices="product.prices"
+          :image="
+            product.gallery.find(galleryItem => galleryItem.is_main)
+              ?.imageThumb || ''
+          "
           :is-loading="
             cartLoadingProductId === product.id
               ? isCartStoreFetching
@@ -244,7 +257,7 @@ const onAddProductToCart = async (id: number, priceId: number) => {
                 '!bg-black !text-white':
                   currentSubcategory!.slug === subcategory.slug
               }"
-              @click="onSubcatalogChange(subcategory.slug)"
+              @click="onSubcategoryChange(subcategory.slug)"
             >
               {{ subcategory.name }}
             </button>
