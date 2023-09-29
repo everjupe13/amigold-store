@@ -1,7 +1,9 @@
 <script lang="ts" setup>
+import BlogReadTimeIcon from '@/assets/svg/BlogReadTimeIcon.vue'
+
 type Props = {
   image?: string
-  readTime?: string
+  readTime?: string | null
   title?: string
   textBody?: string
   articleLabel?: string
@@ -9,7 +11,7 @@ type Props = {
 }
 const props = withDefaults(defineProps<Props>(), {
   image: '',
-  readTime: '5 минут',
+  readTime: '',
   slug: '',
   title: '',
   textBody: '',
@@ -33,7 +35,7 @@ const toLink = computed(() => `/topic/${props.slug}`)
       />
       <p
         v-if="props.articleLabel"
-        class="absolute left-30 top-30 z-[3] rounded-full bg-yellow px-14 py-10 leading-none text-white text-extrabold-16"
+        class="pointer-events-none absolute left-20 top-20 z-[3] rounded-full bg-yellow px-14 py-10 leading-none text-white text-extrabold-16"
       >
         {{ props.articleLabel }}
       </p>
