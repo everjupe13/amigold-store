@@ -218,7 +218,7 @@ async function decreaseCount() {
                     </div>
                   </div>
                   <AppButton
-                    class="h-52 w-[200px] whitespace-nowrap"
+                    class="h-52 min-w-[200px] whitespace-nowrap"
                     theme="black"
                     :disabled="isCartActionLoading || !isCartActionSuccess"
                     @click="addToCart"
@@ -230,11 +230,18 @@ async function decreaseCount() {
                       <AppSpinner :size="18" class="text-white" />
                     </div>
                     <template v-else>
-                      {{
-                        !isCartActionSuccess
-                          ? 'Товар добавлен'
-                          : 'Добавить в корзину'
-                      }}
+                      <template v-if="!isCartActionSuccess">
+                        Товар добавлен
+                      </template>
+                      <template v-else>
+                        {{
+                          `Добавить в корзину${
+                            currentProductCount > 0
+                              ? ` (${currentProductCount})`
+                              : ''
+                          }`
+                        }}
+                      </template>
                     </template>
                   </AppButton>
                   <AppButton class="h-52 whitespace-nowrap" theme="default">

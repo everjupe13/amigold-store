@@ -30,7 +30,7 @@ await blogStore.fetchBlog()
 await blogStore.fetchTopics()
 
 const news = computed(() => blogStore.blog?.slice(0, 3) || [])
-// const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
+const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
 </script>
 
 <template>
@@ -151,10 +151,13 @@ const news = computed(() => blogStore.blog?.slice(0, 3) || [])
       </AppContainer>
     </section>
 
-    <!-- <section class="py-[120px]">
+    <section class="py-[120px]">
       <AppContainer>
         <h2 class="title relative z-[2] mb-40">Полезное</h2>
-        <div class="mb-40 grid grid-cols-3 gap-20 md:grid-cols-1">
+        <div
+          v-if="Array.isArray(topics) && topics.length > 0"
+          class="mb-40 grid grid-cols-3 gap-20 md:grid-cols-1"
+        >
           <AppTopicCard
             v-for="data in topics"
             :key="data.id"
@@ -162,11 +165,14 @@ const news = computed(() => blogStore.blog?.slice(0, 3) || [])
             :read-time="data.readTime"
             :title="data.name"
             :text-body="data.shortDescription"
-            :article-label="data.category.name"
+            :article-label="data.category?.name || ''"
             :slug="data.slug"
           ></AppTopicCard>
         </div>
+        <div class="flex h-60 items-center justify-center">
+          <p class="py-30 text-center text-bold-24">Пусто</p>
+        </div>
       </AppContainer>
-    </section> -->
+    </section>
   </div>
 </template>

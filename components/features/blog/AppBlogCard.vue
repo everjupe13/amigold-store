@@ -2,7 +2,9 @@
 import AppCard from '@/components/shared/AppCard.vue'
 import { INews } from '@/store/blog/blog.types'
 
-const props = defineProps<INews>()
+type Props = Partial<INews>
+
+const props = defineProps<Props>()
 const componentProps = computed(() => ({
   image: props.image,
   date: props.createdAt,

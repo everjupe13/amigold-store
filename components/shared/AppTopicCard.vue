@@ -1,7 +1,9 @@
 <script lang="ts" setup>
+import BlogReadTimeIcon from '@/assets/svg/BlogReadTimeIcon.vue'
+
 type Props = {
   image?: string
-  readTime?: string
+  readTime?: string | null
   title?: string
   textBody?: string
   articleLabel?: string
@@ -9,7 +11,7 @@ type Props = {
 }
 const props = withDefaults(defineProps<Props>(), {
   image: '',
-  readTime: '5 минут',
+  readTime: '',
   slug: '',
   title: '',
   textBody: '',
@@ -33,7 +35,7 @@ const toLink = computed(() => `/topic/${props.slug}`)
       />
       <p
         v-if="props.articleLabel"
-        class="absolute left-30 top-30 z-[3] rounded-full bg-yellow px-14 py-10 leading-none text-white text-extrabold-16"
+        class="pointer-events-none absolute left-20 top-20 z-[3] rounded-full bg-yellow px-14 py-10 leading-none text-white text-extrabold-16"
       >
         {{ props.articleLabel }}
       </p>
@@ -45,44 +47,20 @@ const toLink = computed(() => `/topic/${props.slug}`)
     </div>
     <div>
       <div
-        v-if="props.readTime"
         class="mb-8 flex items-center gap-x-4 font-inter text-dark opacity-60 text-bold-14"
-        :class="{ 'pointer-events-none !opacity-0': !props.title }"
+        :class="[
+          { 'pointer-events-none !opacity-0': !props.title },
+          { 'h-21': !props.readTime }
+        ]"
       >
-        <span class="inline-flex h-18 w-18">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            fill="none"
-          >
-            <g clip-path="url(#clip0_75_326)">
-              <path
-                d="M9 16.5C13.1421 16.5 16.5 13.1421 16.5 9C16.5 4.85786 13.1421 1.5 9 1.5C4.85786 1.5 1.5 4.85786 1.5 9C1.5 13.1421 4.85786 16.5 9 16.5Z"
-                stroke="#8C8C91"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M9 4.5V9L12 10.5"
-                stroke="#8C8C91"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_75_326">
-                <rect width="18" height="18" fill="white" />
-              </clipPath>
-            </defs>
-          </svg>
-        </span>
-        <span>
-          {{ props.readTime }}
-        </span>
+        <template v-if="props.readTime">
+          <span class="inline-flex h-18 w-18">
+            <BlogReadTimeIcon />
+          </span>
+          <span>
+            {{ props.readTime }}
+          </span>
+        </template>
       </div>
       <h3
         :class="[
