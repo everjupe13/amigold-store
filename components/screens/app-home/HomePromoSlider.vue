@@ -6,6 +6,8 @@ import type { Swiper as ISwiper } from 'swiper'
 import { FreeMode } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 
+import type { TopBanner } from '@/store/home/useTopBanners'
+
 const modules = [FreeMode]
 
 const isSwiperEnd = ref(false)
@@ -29,11 +31,23 @@ const swiperRef: Ref<typeof ISwiper | null> = ref(null)
 const swiperActiveIndex = ref(0)
 const swiperSlidesPerView = ref(1)
 const swiperSlidesPerGroup = ref(1)
+
+type Props = {
+  banners: TopBanner[] | null
+}
+const props = withDefaults(defineProps<Props>(), {
+  banners: () => []
+})
 </script>
 
 <template>
   <div class="wrapper">
     <swiper
+      v-if="
+        props.banners &&
+        Array.isArray(props.banners) &&
+        props.banners.length > 0
+      "
       :style="{
         '--swiper-navigation-color': '#969EAB',
         '--swiper-pagination-color': '#969EAB'
@@ -49,55 +63,29 @@ const swiperSlidesPerGroup = ref(1)
     >
       <template #container-end>
         <div
-          class="absolute bottom-80 left-0 z-[4] flex items-center gap-x-20 md:flex-col-reverse md:items-start md:gap-20"
+          class="absolute bottom-82 left-[250px] z-[4] flex items-center gap-x-20 md:bottom-[150px] md:left-0 md:flex-col-reverse md:items-start md:gap-20"
         >
-          <slot name="controls"></slot>
-          <HomeSliderButtons />
+          <HomeSliderButtons v-if="props.banners.length > 0" />
         </div>
       </template>
-      <swiper-slide>
-        <HomoPromoSliderCard>
+      <swiper-slide v-for="banner in props.banners" :key="banner.id">
+        <HomoPromoSliderCard
+          :is-linked="banner.isButtonActionHyperlink"
+          :link="banner.url"
+        >
           <template #title>
-            <span class="text-yellow">Бесплатная консультация</span>
+            <span class="text-yellow">{{ banner.accentTitleText }}</span>
             <br />
-            ветеринарного врача
+            {{ banner.secondaryTitleText }}
           </template>
           <template #text>
-            Lorem ipsum dolor sit amet consectetur. Massa lectus massa malesuada
-            vulputate praesent cursus feugiat.
+            {{ banner.description }}
+          </template>
+          <template #buttonLabel>
+            {{ banner.buttonLabel }}
           </template>
           <template #image>
-            <img src="~/assets/img/home-page/slider/1.png" alt="" />
-          </template>
-        </HomoPromoSliderCard>
-      </swiper-slide>
-      <swiper-slide>
-        <HomoPromoSliderCard>
-          <template #title>
-            <span class="text-yellow">Консультация врача</span>
-          </template>
-          <template #text>
-            Lorem ipsum dolor sit amet consectetur. Massa lectus massa malesuada
-            vulputate praesent cursus feugiat.
-          </template>
-          <template #image>
-            <img src="~/assets/img/home-page/slider/1.png" alt="" />
-          </template>
-        </HomoPromoSliderCard>
-      </swiper-slide>
-      <swiper-slide>
-        <HomoPromoSliderCard>
-          <template #title>
-            <span class="text-yellow">Консультация</span>
-            <br />
-            ветеринарного врача
-          </template>
-          <template #text>
-            Lorem ipsum dolor sit amet consectetur. Massa lectus massa malesuada
-            vulputate praesent cursus feugiat.
-          </template>
-          <template #image>
-            <img src="~/assets/img/home-page/slider/1.png" alt="" />
+            <img :src="banner.image" alt="" />
           </template>
         </HomoPromoSliderCard>
       </swiper-slide>

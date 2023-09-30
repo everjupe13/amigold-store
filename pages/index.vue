@@ -4,6 +4,7 @@ import { useModal } from 'vue-final-modal'
 import FeedbackFormModal from '@/components/widgets/modals/feedback/FeedbackFormModal.vue'
 import { useBlogStore } from '@/store/blog/blog.store'
 import { useCatalogStore } from '@/store/catalog'
+import { useTopBanners } from '@/store/home/useTopBanners'
 
 useHead({
   title: 'Главная'
@@ -31,19 +32,17 @@ await blogStore.fetchTopics()
 
 const news = computed(() => blogStore.blog?.slice(0, 3) || [])
 const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
+
+const bannerStore = useTopBanners()
+
+await bannerStore.fetchBanners()
 </script>
 
 <template>
   <div>
     <section class="bg-gray">
       <AppContainer>
-        <HomePromoSlider>
-          <template #controls>
-            <AppButton theme="default" @click="openFeedbackModal">
-              Получить консультацию
-            </AppButton>
-          </template>
-        </HomePromoSlider>
+        <HomePromoSlider :banners="bannerStore.data" />
       </AppContainer>
     </section>
 
@@ -169,7 +168,7 @@ const topics = computed(() => blogStore.topics?.slice(0, 3) || [])
             :slug="data.slug"
           ></AppTopicCard>
         </div>
-        <div class="flex h-60 items-center justify-center">
+        <div v-else class="flex h-60 items-center justify-center">
           <p class="py-30 text-center text-bold-24">Пусто</p>
         </div>
       </AppContainer>
