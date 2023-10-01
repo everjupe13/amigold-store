@@ -19,7 +19,7 @@
             <NuxtLink to="/" class="tracking-[-0.36px]">Партнерам</NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/" class="tracking-[-0.36px]">
+            <NuxtLink to="/pay" class="tracking-[-0.36px]">
               Доставка и оплата
             </NuxtLink>
           </li>

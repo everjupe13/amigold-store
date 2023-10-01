@@ -32,8 +32,11 @@ const emits = defineEmits<{
   (e: 'add-product'): () => {}
 }>()
 
+const actionDisabled = true
 const onAddClick = () => {
-  emits('add-product')
+  if (!actionDisabled) {
+    emits('add-product')
+  }
 }
 
 const toLink = computed(() => `/product/${props.slug}`)
@@ -49,14 +52,14 @@ const isLoadedInner = computed<boolean>(() => !!props.slug && !!props.name)
 <template>
   <article>
     <div
-      class="group relative mb-15 flex aspect-square items-center justify-center overflow-hidden rounded-[24px] bg-button p-15"
+      class="group relative mb-15 flex aspect-square items-center justify-center overflow-hidden rounded-[24px] bg-button p-15 transition-all duration-200 hover:shadow-lg"
       :class="{ 'animate-pulse': !props.image }"
     >
       <img
         v-if="props.image"
         :src="props.image"
         :alt="props.name"
-        class="pointer-events-none relative z-[1] block h-full select-none object-cover transition duration-200 group-hover:scale-110"
+        class="pointer-events-none relative z-[1] block h-full select-none object-cover transition duration-200"
       />
       <NuxtLink
         :to="toLink"
@@ -86,19 +89,26 @@ const isLoadedInner = computed<boolean>(() => !!props.slug && !!props.name)
     </div>
     <div class="flex flex-col">
       <AppButton
+        class="relative"
         :class="{ 'pointer-events-none invisible': !isLoadedInner }"
         :theme="'default'"
         :disabled="props.isLoading === true || props.isFinished === false"
         @click="onAddClick"
       >
-        <div
-          v-if="props.isLoading === true"
-          class="flex items-center justify-center"
-        >
-          <AppSpinner :size="18" class="!text-white" />
-        </div>
+        <template v-if="actionDisabled">
+          <NuxtLink :to="toLink" class="absolute inset-0"></NuxtLink>
+          <span>Подробнее</span>
+        </template>
         <template v-else>
-          {{ props.isFinished === false ? 'Товар добавлен' : 'В корзину' }}
+          <div
+            v-if="props.isLoading === true"
+            class="flex items-center justify-center"
+          >
+            <AppSpinner :size="18" class="!text-white" />
+          </div>
+          <template v-else>
+            {{ props.isFinished === false ? 'Товар добавлен' : 'В корзину' }}
+          </template>
         </template>
       </AppButton>
     </div>
