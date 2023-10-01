@@ -32,14 +32,14 @@ const dateStamp = dayjs(props.date).format('D MMMM, YYYY')
 <template>
   <article class="article">
     <div
-      class="group relative mb-10 flex h-[320px] items-center justify-center overflow-hidden rounded-[24px] bg-[var(--skeleton-loader-bg,_rgb(238,239,239))]"
+      class="group relative mb-10 flex h-[320px] items-center justify-center overflow-hidden rounded-[24px] bg-[var(--skeleton-loader-bg,_rgb(238,239,239))] transition-all duration-200 hover:shadow-2xl"
       :class="{ 'animate-pulse': !props.image }"
     >
       <img
         v-if="props.image"
         :src="props.image"
         alt=""
-        class="pointer-events-none relative z-[1] block h-full w-full select-none object-cover transition duration-200 group-hover:scale-110"
+        class="pointer-events-none relative z-[1] block h-full w-full select-none object-cover transition duration-200"
       />
       <NuxtLink
         :to="props.toLinkFn()"
