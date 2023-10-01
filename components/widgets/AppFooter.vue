@@ -86,10 +86,10 @@ import AppLogo from '@/components/shared/AppLogo.vue'
               <p class="mb-20 text-bold-18">Покупателям</p>
               <ul class="flex flex-col gap-y-10 leading-tight">
                 <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Контакты</NuxtLink>
+                  <NuxtLink to="/contact">Контакты</NuxtLink>
                 </li>
                 <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Доставка и оплата</NuxtLink>
+                  <NuxtLink to="/pay">Доставка и оплата</NuxtLink>
                 </li>
                 <li class="font-inter tracking-[-0.28px] text-medium-14">
                   <NuxtLink to="/catalog">Спроси ветеринара</NuxtLink>
