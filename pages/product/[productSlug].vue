@@ -11,7 +11,7 @@ const isProductLoading = ref(true)
 const product = ref<IProduct | null>(null)
 const pricesArray = ref<IProduct['prices'] | []>([])
 const currentPriceIndex = ref()
-const tabs = ref<string[]>([])
+const tabs = ref<IProduct['tabs']>([])
 
 isProductLoading.value = true
 const { data } = await catalogStore.fetchProduct(
@@ -32,11 +32,7 @@ pricesArray.value = [...product.value!.prices]?.map(price => ({
 pricesArray.value[0].isActive = true
 currentPriceIndex.value = pricesArray.value.findIndex(price => price.isActive)
 
-tabs.value = [
-  product.value!.description,
-  product.value!.feedingRate,
-  product.value!.delivery
-]
+tabs.value = product.value?.tabs || []
 
 onMounted(() => {
   isProductLoading.value = false
@@ -60,8 +56,8 @@ const onWeightChange = (index: number) => {
   pricesArray.value[index].isActive = true
 }
 
-const currentTabIndex = ref(0)
-const onTabChange = (index: number) => (currentTabIndex.value = index)
+const currentTabId = ref(tabs.value?.length ? tabs.value[0].id : -1)
+const onTabChange = (index: number) => (currentTabId.value = index)
 
 const isCartActionLoading = ref(false)
 const isCartActionSuccess = ref(true)
@@ -83,6 +79,10 @@ const addToCart = async () => {
   }
 }
 
+onMounted(async () => {
+  await cartStore.fetchCartItems()
+})
+
 const currentProductCount = computed(() => {
   return (
     cartStore.cart?.products.find(
@@ -93,6 +93,7 @@ const currentProductCount = computed(() => {
     )?.amount || 0
   )
 })
+
 async function increaseCount() {
   if (!product.value) {
     return false
@@ -127,6 +128,21 @@ async function decreaseCount() {
   } finally {
     isCartActionLoading.value = false
   }
+}
+
+function changeCount() {
+  // if (!product.value) {
+  //   return false
+  // }
+  // isCartActionLoading.value = true
+  // try {
+  //   await cartStore.removeItem(
+  //     product.value.id,
+  //     pricesArray.value[currentPriceIndex.value].id
+  //   )
+  // } finally {
+  //   isCartActionLoading.value = false
+  // }
 }
 </script>
 
@@ -202,7 +218,10 @@ async function decreaseCount() {
                   {{ currentPrice }}
                 </div>
                 <div class="flex flex-wrap items-center gap-10">
-                  <div class="flex w-[130px] items-center">
+                  <div
+                    v-if="currentProductCount > 0"
+                    class="flex w-[130px] items-center"
+                  >
                     <div class="rounded-full border-2 border-black/20 p-12">
                       <ProductCounter
                         :amount="currentProductCount"
@@ -212,6 +231,7 @@ async function decreaseCount() {
                         "
                         button-classes="bg-yellow hover:border-yellow hover:bg-yellow"
                         wrapper-classes="h-24"
+                        @change="changeCount"
                         @decrease="decreaseCount"
                         @increase="increaseCount"
                       />
@@ -233,15 +253,13 @@ async function decreaseCount() {
                       <template v-if="!isCartActionSuccess">
                         Товар добавлен
                       </template>
-                      <template v-else>
-                        {{
-                          `Добавить в корзину${
-                            currentProductCount > 0
-                              ? ` (${currentProductCount})`
-                              : ''
-                          }`
-                        }}
+                      <template v-else-if="currentProductCount > 0">
+                        <span class="inline-flex flex-col items-center gap-x-5">
+                          <span>{{ `В корзине: ${currentProductCount}` }}</span>
+                          <span class="text-[14px] opacity-60">Перейти</span>
+                        </span>
                       </template>
+                      <template v-else>Добавить в корзину</template>
                     </template>
                   </AppButton>
                   <AppButton class="h-52 whitespace-nowrap" theme="default">
@@ -266,35 +284,285 @@ async function decreaseCount() {
             class="flex max-w-max items-center gap-x-10 rounded-full lg:rounded-[24px] md:flex-wrap"
           >
             <AppButton
+              v-for="tab in tabs"
+              :key="tab.id"
               theme="black"
-              :outlined="currentTabIndex !== 0"
+              :outlined="currentTabId !== tab.id"
               class="!border-transparent"
-              @click="() => onTabChange(0)"
+              @click="onTabChange(tab.id)"
             >
-              Описание товара, состав
+              {{ tab.label }}
             </AppButton>
             <AppButton
               theme="black"
-              :outlined="currentTabIndex !== 1"
+              :outlined="currentTabId !== -1"
               class="!border-transparent"
-              @click="() => onTabChange(1)"
-            >
-              Норма кормления
-            </AppButton>
-            <AppButton
-              theme="black"
-              :outlined="currentTabIndex !== 2"
-              class="!border-transparent"
-              @click="() => onTabChange(2)"
+              @click="onTabChange(-1)"
             >
               Доставка и оплата
             </AppButton>
           </div>
         </div>
         <div
+          v-if="currentTabId !== -1"
           class="tab-field min-h-[200px] max-w-[800px] pt-40"
-          v-html="tabs[currentTabIndex] || ''"
+          v-html="tabs.find(tab => tab.id === currentTabId)?.text || ''"
         ></div>
+        <div v-else class="tab-field min-h-[200px] max-w-[800px] pt-40">
+          <div
+            class="content font-inter leading-normal text-black/80 text-medium-16"
+          >
+            <p>
+              <u><strong>САМОВЫВОЗ СО СКЛАДА</strong></u>
+            </p>
+
+            <p>
+              Забрать заказ можно самовывозом со склада по адресу: г. Москва,
+              Южнобутовская 29, с левой стороны от 3 подьезда жилого дома,
+              коммерческое помещение с вывеской "АМИГО"&nbsp;
+            </p>
+
+            <p>&nbsp;</p>
+
+            <p>Время работы склада:</p>
+
+            <p>с 9:00 до 16:30 с понедельника по четверг</p>
+
+            <p>с 9:00 до 15:30 в пятницу</p>
+
+            <p>
+              <strong>Внимание!</strong>
+              &nbsp;СКЛАД И ОФИС НЕ РАБОТАЕТ&nbsp;В ВЫХОДНЫЕ И ПРАЗДНИЧНЫЕ ДНИ
+            </p>
+
+            <p>&nbsp;</p>
+
+            <p>
+              <u><strong>ДОСТАВКА</strong></u>
+            </p>
+
+            <p>
+              Доставка заказанного товара по России с учетом наиболее выгодного
+              варианта его получения. Расчет стоимости доставки осуществляется
+              согласно тарифам транспортных компаний.
+            </p>
+
+            <p>
+              1. Доставка на пункты выдачи курьерской службой&nbsp;(СДЭК)
+              возможна для заказов любой весовой категории.&nbsp;Стоимость
+              доставки будет озвучена менеджером&nbsp;при
+              подтверждении&nbsp;заказа.
+              <br />
+              Доставка в постаматы курьерских служб осуществляется при весе
+              товара до 1,5&nbsp;кг.
+            </p>
+
+            <p>
+              2. Заказы с доставкой курьерской службой до двери осуществляются в
+              любой город. Заказы с доставкой курьерской службой до двери
+              осуществляются только после предоплаты стоимости
+              доставки.&nbsp;Курьерская служба не осуществляет проверку работы
+              товара. Тарифы будут озвучены&nbsp;при оформлении заказа и зависят
+              от веса и дальности.
+            </p>
+
+            <p>
+              3.&nbsp;&nbsp;Заказы с отправкой Почтой России&nbsp;
+              рассчитываются по тарифам Почты России. Стоимость доставки будет
+              озвучена в процессе подтверждения вашего заказа. Срок отправки от
+              1 до 2 дней со дня отлаты Вашего заказа (если нет сезонных
+              ограничений по приему почты для Вашего региона).
+            </p>
+
+            <p>
+              4.&nbsp;Другие транспортные компании. Доставка возможна для
+              заказов на любую сумму, осуществляется индивидуально и по
+              договоренности. Транспортную компанию выбирает покупатель. Если
+              Вы&nbsp; затрудняетесь с выбором, наши менеджеры подберут
+              оптимальный вариант.&nbsp;
+            </p>
+
+            <p>
+              <strong>Внимание!</strong>
+              &nbsp;Отгрузка товаров производится только при 100% предоплате.
+            </p>
+
+            <p>&nbsp;</p>
+
+            <p>
+              <u><strong>ОПЛАТА</strong></u>
+            </p>
+
+            <p>
+              -оплата по счету (оплата безналичным расчетом для юридических лиц)
+              <br />
+              -оплата банковской картой (для физических лиц ).&nbsp;
+              <span>
+                Для&nbsp; оплаты товара банковской картой клиенту направляется
+                ссылка на оплату.
+              </span>
+            </p>
+
+            <p>
+              <strong>
+                Оплата банковской картой может не пройти, по нескольким
+                причинам:
+              </strong>
+              <br />
+              <br />
+              - Вы ввели неверные данные карты
+              <br />
+              <br />
+              - У карты закончился срок действия
+              <br />
+              <br />
+              - На карте недостаточно денег
+              <br />
+              <br />
+              - Нельзя подтвердить операцию по карте одноразовым паролем из СМС
+              <br />
+              <br />
+              - Банк установил запрет на оплату в интернете
+              <br />
+              <br />
+              <strong>Внимание!</strong>
+              &nbsp;Если оплата всё же не прошла:
+              <br />
+              <br />
+              - Повторите попытку через 20 минут
+              <br />
+              <br />
+              - Обратитесь в банк, выпустивший карту
+              <br />
+              <br />
+              - Попробуйте оплатить другой картой
+            </p>
+
+            <p>&nbsp;</p>
+
+            <p>
+              <u><strong>ВОЗВРАТ ТОВАРА</strong></u>
+            </p>
+
+            <p>
+              Возврат качественного товара: В соответствии с п. 4 ст. 26.1.
+              Закона РФ «О защите прав потребителей» от 07.02.1992 N 2300-1
+              (далее - Закон о защите прав потребителей). Потребитель вправе
+              отказаться от товара в любое время до его передачи, а после
+              передачи товара - в течение семи дней.
+            </p>
+
+            <p>
+              <span style="font-family: arial, sans-serif">
+                <strong><u>Непродовольственные товары.</u></strong>
+              </span>
+            </p>
+
+            <p>
+              <span style="font-family: arial, sans-serif">
+                Непродовольственные товары надлежающего качества не подлежат
+                обмену и возврату, согласно поставновлению Правительства РФ от
+                31.12.20202 № 2463.
+              </span>
+            </p>
+
+            <p>
+              <strong>
+                Перечень непродовольственных товаров надлежащего качества, не
+                подлежащих обмену:
+              </strong>
+            </p>
+
+            <p>
+              1. Товары для профилактики и лечения заболеваний в домашних
+              условиях (предметы санитарии и гигиены из металла, резины,
+              текстиля и других материалов, медицинские изделия, средства
+              гигиены полости рта, линзы очковые, предметы по уходу за детьми),
+              лекарственные препараты
+            </p>
+
+            <p>
+              2. Предметы личной гигиены (зубные щетки, расчески, заколки,
+              бигуди для волос, парики, шиньоны и другие аналогичные товары)
+            </p>
+
+            <p>3. Парфюмерно-косметические товары&nbsp;</p>
+
+            <p>
+              4. Текстильные товары (хлопчатобумажные, льняные, шелковые,
+              шерстяные и синтетические ткани, товары из нетканых материалов
+              типа тканей - ленты, тесьма, кружево и др.), кабельная продукция
+              (провода, шнуры, кабели), строительные и отделочные материалы
+              (линолеум, пленка, ковровые покрытия и др.) и другие товары, цена
+              которых определяется за единицу длины
+            </p>
+
+            <p>
+              5. Швейные и трикотажные изделия (изделия швейные и трикотажные
+              бельевые, изделия чулочноносочные)
+            </p>
+
+            <p>
+              6. Изделия и материалы, полностью или частично изготовленные из
+              полимерных материалов и контактирующие с пищевыми продуктами
+              (посуда и принадлежности столовые и кухонные, емкости и
+              упаковочные материалы для хранения и транспортирования пищевых
+              продуктов, в том числе для разового использования)
+            </p>
+
+            <p>7. Товары бытовой химии, пестициды и агрохимикаты</p>
+
+            <p>8. Мебельные гарнитуры бытового назначения</p>
+
+            <p>
+              9. Ювелирные и другие изделия из драгоценных металлов и (или)
+              драгоценных камней, ограненные драгоценные камни
+            </p>
+
+            <p>
+              10. Автомобили и мотовелотовары, прицепы к ним, номерные агрегаты
+              (двигатель, блок цилиндров двигателя, шасси (рама), кузов (кабина)
+              автотранспортного средства или самоходной машины, а также коробка
+              передач и мост самоходной машины) к автомобилям и мотовелотоварам,
+              мобильные средства малой механизации сельскохозяйственных работ,
+              прогулочные суда и иные плавсредства бытового назначения
+            </p>
+
+            <p>
+              11. Технически сложные товары бытового назначения, на которые
+              установлены гарантийные сроки не менее одного года
+            </p>
+
+            <p>
+              12. Гражданское оружие, основные части гражданского огнестрельного
+              оружия, патроны к гражданскому оружию, а также инициирующие и
+              воспламеняющие вещества и материалы для самостоятельного
+              снаряжения патронов к гражданскому огнестрельному длинноствольному
+              оружию 13. Животные и растения
+            </p>
+
+            <p>
+              14. Непериодические издания (книги, брошюры, альбомы,
+              картографические и нотные издания, листовые изоиздания, календари,
+              буклеты, издания, воспроизведенные на технических носителях
+              информации)
+            </p>
+
+            <p>
+              <br />
+              <strong><u>Продовольственные товары</u></strong>
+            </p>
+
+            <p>
+              <u>Корма для животных</u>
+              &nbsp;Корм для животных не является непродовольственным товаром,
+              вследствие чего потребитель не вправе предъявлять продавцу
+              требование обменять такой товар надлежащего качества на
+              аналогичный (ст. 502 ГК РФ, ст. 25 Закона N 2300-I), а в случае
+              отсутствия аналогичного товара - возвратить его.
+            </p>
+          </div>
+        </div>
       </div>
     </AppContainer>
   </section>

@@ -14,6 +14,10 @@ export default defineNuxtConfig({
     }
   },
 
+  routeRules: {
+    '/product/**': { ssr: false }
+  },
+
   modules: ['@nuxtjs/eslint-module', '@pinia/nuxt'],
 
   components: [
