@@ -76,11 +76,24 @@ export interface IProduct {
   name: string
   slug: string
   shortDescription: string
-  description: string
-  feedingRate: string
-  delivery: string
   discount: number
   category: number
+  tabs: { id: number; label: string; text: string; product: number }[] | []
+  feedbacks:
+    | {
+        id: number
+        images: [
+          {
+            id: number
+            image: string
+            feedback: number
+          }
+        ]
+        text: string
+        name: string
+        product: number
+      }[]
+    | []
 }
 
 export type IFilter = {

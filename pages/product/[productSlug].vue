@@ -11,7 +11,7 @@ const isProductLoading = ref(true)
 const product = ref<IProduct | null>(null)
 const pricesArray = ref<IProduct['prices'] | []>([])
 const currentPriceIndex = ref()
-const tabs = ref<string[]>([])
+const tabs = ref<IProduct['tabs']>([])
 
 isProductLoading.value = true
 const { data } = await catalogStore.fetchProduct(
@@ -32,11 +32,7 @@ pricesArray.value = [...product.value!.prices]?.map(price => ({
 pricesArray.value[0].isActive = true
 currentPriceIndex.value = pricesArray.value.findIndex(price => price.isActive)
 
-tabs.value = [
-  product.value!.description,
-  product.value!.feedingRate,
-  product.value!.delivery
-]
+tabs.value = product.value?.tabs || []
 
 onMounted(() => {
   isProductLoading.value = false
@@ -60,8 +56,8 @@ const onWeightChange = (index: number) => {
   pricesArray.value[index].isActive = true
 }
 
-const currentTabIndex = ref(0)
-const onTabChange = (index: number) => (currentTabIndex.value = index)
+const currentTabId = ref(tabs.value?.length ? tabs.value[0].id : -1)
+const onTabChange = (index: number) => (currentTabId.value = index)
 
 const isCartActionLoading = ref(false)
 const isCartActionSuccess = ref(true)
@@ -288,39 +284,31 @@ function changeCount() {
             class="flex max-w-max items-center gap-x-10 rounded-full lg:rounded-[24px] md:flex-wrap"
           >
             <AppButton
+              v-for="tab in tabs"
+              :key="tab.id"
               theme="black"
-              :outlined="currentTabIndex !== 0"
+              :outlined="currentTabId !== tab.id"
               class="!border-transparent"
-              @click="() => onTabChange(0)"
+              @click="onTabChange(tab.id)"
             >
-              Описание товара, состав
+              {{ tab.label }}
             </AppButton>
             <AppButton
               theme="black"
-              :outlined="currentTabIndex !== 1"
+              :outlined="currentTabId !== -1"
               class="!border-transparent"
-              @click="() => onTabChange(1)"
-            >
-              Норма кормления
-            </AppButton>
-            <AppButton
-              theme="black"
-              :outlined="currentTabIndex !== 2"
-              class="!border-transparent"
-              @click="() => onTabChange(2)"
+              @click="onTabChange(-1)"
             >
               Доставка и оплата
             </AppButton>
           </div>
         </div>
         <div
+          v-if="currentTabId !== -1"
           class="tab-field min-h-[200px] max-w-[800px] pt-40"
-          v-html="tabs[currentTabIndex] || ''"
+          v-html="tabs.find(tab => tab.id === currentTabId)?.text || ''"
         ></div>
-        <div
-          v-if="currentTabIndex === false"
-          class="tab-field min-h-[200px] max-w-[800px] pt-40"
-        >
+        <div v-else class="tab-field min-h-[200px] max-w-[800px] pt-40">
           <div
             class="content font-inter leading-normal text-black/80 text-medium-16"
           >
@@ -409,18 +397,7 @@ function changeCount() {
               -оплата по счету (оплата безналичным расчетом для юридических лиц)
               <br />
               -оплата банковской картой (для физических лиц ).&nbsp;
-              <span
-                style="
-                  background-color: rgb(255, 255, 255);
-                  color: rgb(51, 51, 51);
-                  font-family:
-                    sans-serif,
-                    arial,
-                    verdana,
-                    trebuchet ms;
-                  font-size: 13px;
-                "
-              >
+              <span>
                 Для&nbsp; оплаты товара банковской картой клиенту направляется
                 ссылка на оплату.
               </span>
