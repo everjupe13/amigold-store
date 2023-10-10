@@ -7,9 +7,10 @@ export const useApiRequest = <T>(url: string, options?: {}) => {
     token.value = localStorage.getItem(TOKEN_LOCAL_STORAGE_KEY)
   }
 
-  return useAsyncData(url, () =>
-    $fetch<T>(url, {
+  return useAsyncData<T>(url, () =>
+    $fetch(url, {
       ...options,
+      timeout: 5000,
       baseURL: config.public.baseUrl as string,
       headers: {
         Accept: 'application/json',
@@ -30,6 +31,7 @@ export const useFetchApiRequest = (url: string, options?: {}) => {
 
   return $fetch(url, {
     ...options,
+    timeout: 5000,
     baseURL: config.public.baseUrl as string,
     headers: {
       Accept: 'application/json',

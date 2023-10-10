@@ -113,8 +113,7 @@ export const useCartStore = defineStore('cart', () => {
     }
     try {
       const { data, error, refresh, execute } = await useApiRequest<ICart>(
-        `/api/cart/${userSession}`,
-        { server: false, immediate: false }
+        `/api/cart/${userSession}`
       )
 
       if (data?.value && !error.value) {
@@ -128,12 +127,13 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
-  async function addItem(id: number, weightId: number) {
+  async function addItem(id: number, weightId: number, amount = 1) {
     try {
       await useApiRequest(`/api/cart/update`, {
         method: 'POST',
         body: {
           session_id: userSession,
+          amount,
           action: 'add_amount',
           product_id: id,
           productPrice_id: weightId
@@ -148,12 +148,13 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
-  async function removeItem(id: number, weightId: number) {
+  async function removeItem(id: number, weightId: number, amount = 1) {
     try {
       await useApiRequest(`/api/cart/update`, {
         method: 'POST',
         body: {
           session_id: userSession,
+          amount,
           action: 'remove_amount',
           product_id: id,
           productPrice_id: weightId
@@ -168,12 +169,13 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
-  async function deleteItem(id: number, weightId: number) {
+  async function deleteItem(id: number, weightId: number, amount = 1) {
     try {
       await useApiRequest(`/api/cart/update`, {
         method: 'POST',
         body: {
           session_id: userSession,
+          amount,
           action: 'delete_product',
           product_id: id,
           productPrice_id: weightId

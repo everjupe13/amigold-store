@@ -21,6 +21,7 @@ const props = withDefaults(
 const emits = defineEmits<{
   (e: 'increase'): () => void
   (e: 'decrease'): () => void
+  (e: 'change'): () => void
 }>()
 
 const decreaseCount = () => {
@@ -30,6 +31,12 @@ const decreaseCount = () => {
 const increaseCount = () => {
   emits('increase')
 }
+
+const changeCount = () => {
+  emits('change')
+}
+
+changeCount()
 </script>
 
 <template>
