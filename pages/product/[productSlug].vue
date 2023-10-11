@@ -1,5 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
+import ProductCommentsSlider from '@/components/screens/app-product/ProductCommentsSlider.vue'
 import { useCartStore } from '@/store/cart'
 import { IProduct, useCatalogStore } from '@/store/catalog'
 import { formatRubles } from '@/utils/cost'
@@ -563,6 +564,18 @@ function changeCount() {
             </p>
           </div>
         </div>
+      </div>
+    </AppContainer>
+  </section>
+
+  <hr class="invisible py-10" aria-hidden />
+
+  <section>
+    <AppContainer>
+      <div class="mt-50">
+        <ProductCommentsSlider
+          :feedbacks="product?.feedbacks || []"
+        ></ProductCommentsSlider>
       </div>
     </AppContainer>
   </section>
