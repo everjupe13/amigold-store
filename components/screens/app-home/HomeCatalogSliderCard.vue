@@ -2,6 +2,7 @@
 import { formatRubles } from '@/utils/cost'
 
 type Props = {
+  productId?: string | number
   image?: string
   prices?: {
     id: number
@@ -15,6 +16,7 @@ type Props = {
   vendorCode?: string
 }
 const props = withDefaults(defineProps<Props>(), {
+  productId: '',
   image: '',
   vendorCode: '',
   prices: () => [],
@@ -22,14 +24,14 @@ const props = withDefaults(defineProps<Props>(), {
   slug: undefined
 })
 
-const toLink = computed(() => `/product/${props.slug}`)
+const toLink = computed(() => `/product/${props.productId}`)
 const currentPrice = computed(() =>
   props.prices[0]?.cost
     ? `от ${formatRubles(Number(props.prices[0]?.cost))}`
     : ''
 )
 
-const isLoaded = computed<boolean>(() => !!props.slug && !!props.name)
+const isLoaded = computed<boolean>(() => !!props.productId && !!props.name)
 </script>
 
 <template>

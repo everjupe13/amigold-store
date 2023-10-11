@@ -131,10 +131,10 @@ export const useCatalogStore = defineStore('catalog', () => {
     }
   }
 
-  async function fetchProduct(productSlug: string) {
+  async function fetchProduct(productId: string | number) {
     try {
       const { data, error, refresh, execute } = await useApiRequest<IProduct>(
-        `/api/product/items/${productSlug}`,
+        `/api/product/items/${productId}`,
         { server: false }
       )
 
