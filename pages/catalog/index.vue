@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 // import { useCatalogController } from '@/composables/useCatalogController'
+import { FiltersInterface } from 'store/catalog/catalog.types'
 import { computed, ref } from 'vue'
 
 import CatalogSorting from '@/components/screens/app-catalog/ui/CatalogSorting.vue'
@@ -19,6 +20,8 @@ const { data: apiFilters } = await catalogStore.fetchFilters()
 const { data: apiProducts } = await catalogStore.fetchAllProducts()
 isLoading.value = false
 
+const refApiProducts = ref(apiProducts.value)
+
 const subcategories: Ref<IFilter[]> = computed(() => apiFilters.value || [])
 const currentSubcategorySlug = ref(subcategories.value[0].slug)
 const currentSubcategory = computed(() =>
@@ -33,8 +36,8 @@ const onSubcategoryChange = (slug: string) => {
 
 const isProductsLoading = ref(false)
 const products: Ref<IProduct[]> = computed(() =>
-  apiProducts.value?.length && apiProducts.value?.length > 0
-    ? apiProducts.value?.filter(product =>
+  refApiProducts.value?.length && refApiProducts.value?.length > 0
+    ? refApiProducts.value?.filter(product =>
         product.filters.some(
           productFilter => productFilter.slug === currentSubcategorySlug.value
         )
@@ -63,8 +66,18 @@ const onAddProductToCart = async (id: number, priceId: number) => {
 }
 
 const activeSortingId = ref(1)
-const handleSortingChange = (id: number) => {
+const handleSortingChange = async (id: number) => {
   activeSortingId.value = id
+  const searchKey = SortList.find(item => item.id === id)?.sortKey || ''
+
+  isLoading.value = true
+  const { data: apiProducts } = await catalogStore.fetchAllProducts({
+    filters: searchKey as FiltersInterface
+  })
+
+  refApiProducts.value = apiProducts.value
+
+  isLoading.value = false
 }
 </script>
 
@@ -84,7 +97,9 @@ const handleSortingChange = (id: number) => {
   <template v-else>
     <section class="pb-100">
       <AppContainer>
-        <div class="header-grid mb-20 grid grid-cols-3">
+        <div
+          class="header-grid mb-20 grid grid-cols-3 md:grid-cols-2 md:gap-y-10"
+        >
           <div class="heading-title md:mb-20">
             <h1 class="title">Каталог</h1>
           </div>
@@ -107,7 +122,9 @@ const handleSortingChange = (id: number) => {
               </button>
             </template>
           </div>
-          <div class="controls self-center justify-self-end">
+          <div
+            class="controls relative z-[5] self-center justify-self-end md:justify-self-start"
+          >
             <CatalogSorting
               :items="SortList"
               :active-item-id="activeSortingId"
@@ -169,7 +186,7 @@ const handleSortingChange = (id: number) => {
 
 <style lang="scss" scoped>
 .header-grid {
-  grid-template-areas: 'a a' 'b c';
+  grid-template-areas: 'a a' 'b b' 'c c';
 
   .heading-title {
     @media (max-width: 991.99px) {
