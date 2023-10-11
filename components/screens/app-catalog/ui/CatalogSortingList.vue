@@ -23,7 +23,7 @@ const isItemActive = (id: number) => props.activeItemId === id
 
 <template>
   <div
-    class="absolute right-0 top-[calc(100%+10px)] min-h-[78px] w-[270px] rounded-[24px] bg-white p-14 shadow-[0px_5px_80px_0px_rgba(0,0,0,0.08)]"
+    class="absolute right-0 top-[calc(100%+10px)] z-[5] min-h-[78px] w-[270px] rounded-[24px] bg-white p-14 shadow-[0px_5px_80px_0px_rgba(0,0,0,0.08)] md:left-0 md:right-auto"
   >
     <template v-for="item in props.items" :key="item.id">
       <CatalogSortingListItem

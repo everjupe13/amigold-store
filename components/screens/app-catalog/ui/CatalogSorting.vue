@@ -36,7 +36,7 @@ const toggleMenuVisibility = () => {
   <div class="relative">
     <div
       :class="[
-        'relative flex h-48 cursor-pointer items-center justify-center rounded-full px-20 py-14 transition-all',
+        'relative z-[5] flex h-48 cursor-pointer items-center justify-center rounded-full px-20 py-14 transition-all',
         'border-2 border-transparent bg-[#EEEFEF]',
         'hover:border-yellow hover:bg-transparent',
         { '!border-yellow !bg-transparent': isVisible }
