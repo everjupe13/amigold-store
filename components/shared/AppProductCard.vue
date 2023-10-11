@@ -2,6 +2,7 @@
 import { formatRubles } from '@/utils/cost'
 
 type PropsType = {
+  productId?: string | number
   image?: string
   name?: string
   vendorCode?: string
@@ -21,6 +22,7 @@ type PropsType = {
 }
 
 const props = withDefaults(defineProps<PropsType>(), {
+  productId: '',
   image: '',
   vendorCode: '',
   slug: undefined,
@@ -39,14 +41,14 @@ const onAddClick = () => {
   }
 }
 
-const toLink = computed(() => `/product/${props.slug}`)
+const toLink = computed(() => `/product/${props.productId}`)
 const currentPrice = computed(() =>
   props.prices[0]?.price
     ? `от ${formatRubles(Number(props.prices[0]?.price))}`
     : ''
 )
 
-const isLoadedInner = computed<boolean>(() => !!props.slug && !!props.name)
+const isLoadedInner = computed<boolean>(() => !!props.productId && !!props.name)
 </script>
 
 <template>

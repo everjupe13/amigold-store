@@ -2,7 +2,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { useModal, useModalSlot } from 'vue-final-modal'
 
-import AppCheckbox from '@/components/shared/AppCheckbox.vue'
+// import AppCheckbox from '@/components/shared/AppCheckbox.vue'
 import AppModal from '@/components/widgets/AppModal.vue'
 import FeedbackFormModal from '@/components/widgets/modals/feedback/FeedbackFormModal.vue'
 import OrderConfirm from '@/components/widgets/OrderConfirm.vue'
@@ -74,12 +74,12 @@ const handleDeleteItem = async (itemId: number, weightId: number) => {
   await updateCartAction(() => cartStore.deleteItem(itemId, weightId))
 }
 
-const isAll = computed(
-  () => !!products.value?.every(product => product.isActive)
-)
-const handleChooseAllChange = (e: boolean) => {
-  products.value?.forEach(product => (product.isActive = e))
-}
+// const isAll = computed(
+//   () => !!products.value?.every(product => product.isActive)
+// )
+// const handleChooseAllChange = (e: boolean) => {
+//   products.value?.forEach(product => (product.isActive = e))
+// }
 
 const { open: openConfirmModal, close: closeConfirmModal } = useModal({
   component: AppModal,
@@ -151,11 +151,6 @@ const handleOrderCreate = async () => {
               >
                 Корзина
               </div>
-              <AppCheckbox
-                v-model="isAll"
-                label="Выбрать все"
-                @change="handleChooseAllChange"
-              ></AppCheckbox>
             </div>
 
             <template v-if="Array.isArray(products) && products.length > 0">
