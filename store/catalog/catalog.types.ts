@@ -102,3 +102,49 @@ export type IFilter = {
   slug: string
   categories: number[]
 }
+
+export type FiltersInterface =
+  | 'id'
+  | '-id'
+  | 'gallery'
+  | '-gallery'
+  | 'filters'
+  | '-filters'
+  | 'prices'
+  | '-prices'
+  | 'tabs'
+  | '-tabs'
+  | 'feedbacks'
+  | '-feedbacks'
+  | 'category'
+  | '-category'
+  | 'isAvailable'
+  | '-isAvailable'
+  | 'isActive'
+  | '-isActive'
+  | 'isNew'
+  | '-isNew'
+  | 'isDiscount'
+  | '-isDiscount'
+  | 'isPromotionActive'
+  | '-isPromotionActive'
+  | 'promotionText'
+  | '-promotionText'
+  | 'vendorCode'
+  | '-vendorCode'
+  | 'name'
+  | '-name'
+  | 'slug'
+  | '-slug'
+  | 'shortDescription'
+  | '-shortDescription'
+  | 'discount'
+  | '-discount'
+
+export type SortItemType = {
+  id: number
+  label: string
+  sortKey: FiltersInterface | ''
+}
+
+export type SortListType = SortItemType[]
