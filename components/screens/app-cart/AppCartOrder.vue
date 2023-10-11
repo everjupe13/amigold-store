@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 
-import AppCheckbox from '@/components/shared/AppCheckbox.vue'
+// import AppCheckbox from '@/components/shared/AppCheckbox.vue'
 import { CrossIcon } from '@/components/shared/icons'
 import { formatRubles } from '@/utils/cost'
 
@@ -14,7 +14,7 @@ interface ICartOrder {
     id: number
     weight: string
     textLabel: string
-    cost: string
+    price: string
     product: number
   }
   totalPrice: string
@@ -41,10 +41,10 @@ const totalPrice = computed<string>(() =>
   formatRubles(Number(props.totalPrice))
 )
 const priceForOne = computed<string>(
-  () => `${formatRubles(Number(props.price?.cost || 0))} за 1 шт`
+  () => `${formatRubles(Number(props.price?.price || 0))} за 1 шт`
 )
 
-const isActive = computed(() => props.isActive)
+// const isActive = computed(() => props.isActive)
 
 const incCount = () => {
   emit('incrementCount')
@@ -62,9 +62,11 @@ const toLink = computed(() => `/product/${props.slug}`)
 </script>
 
 <template>
-  <div class="relative rounded-[16px] border border-gray/20 p-20">
+  <div
+    class="relative rounded-[16px] border border-gray/20 p-20 md:p-5 md:pb-20"
+  >
     <div
-      class="relative flex items-stretch justify-between lg:flex-col lg:gap-y-20"
+      class="relative flex items-stretch justify-between lg:gap-y-20 md:flex-col"
     >
       <div class="flex flex-grow items-center gap-x-14 md:flex-col md:gap-y-10">
         <div
@@ -82,7 +84,7 @@ const toLink = computed(() => `/product/${props.slug}`)
 
           <NuxtLink :to="toLink" class="absolute inset-0 z-[2]"></NuxtLink>
         </div>
-        <div class="lg:pr-20">
+        <div class="pr-20 lg:pr-0">
           <p class="text-extrabold-18 lg:leading-tight lg:text-extrabold-18">
             {{ props.name }}
           </p>
@@ -92,41 +94,49 @@ const toLink = computed(() => `/product/${props.slug}`)
         </div>
       </div>
 
-      <div class="flex flex-grow items-center justify-between gap-x-20">
-        <ProductCounter
-          :amount="props.amount"
-          :is-disabled="props.isDisabled"
-          @decrease="decCount"
-          @increase="incCount"
-        />
-        <div>
-          <p
-            class="whitespace-nowrap text-center leading-none text-green text-extrabold-18"
-            :class="{ 'mb-5': props.amount > 1 }"
-          >
-            {{ totalPrice }}
-          </p>
-          <p
-            v-if="props.amount > 1"
-            class="whitespace-nowrap text-center leading-none text-bold-14"
-          >
-            {{ priceForOne }}
-          </p>
+      <div
+        class="md:flex-grow-1 flex flex-shrink-0 flex-grow-0 items-center justify-between gap-x-5"
+      >
+        <div
+          class="flex flex-col items-center justify-center gap-y-5 lg:pr-15 md:w-full md:flex-row md:justify-between"
+        >
+          <ProductCounter
+            :amount="props.amount"
+            :is-disabled="props.isDisabled"
+            @decrease="decCount"
+            @increase="incCount"
+          />
+          <div>
+            <p
+              class="whitespace-nowrap text-center leading-none text-green text-extrabold-18"
+              :class="{ 'mb-2': props.amount > 1 }"
+            >
+              {{ totalPrice }}
+            </p>
+            <p
+              v-if="props.amount > 1"
+              class="whitespace-nowrap text-center leading-none text-bold-14"
+            >
+              {{ priceForOne }}
+            </p>
+          </div>
         </div>
 
-        <div class="grid h-full grid-rows-3 lg:grid-rows-1 lg:items-center">
+        <div
+          class="grid h-full grid-rows-3 lg:grid-rows-1 lg:items-center md:flex-grow-0"
+        >
           <button
             class="flex h-24 w-24 items-center justify-center self-start bg-transparent transition hover:bg-[#EEEFEF] lg:absolute lg:right-0 lg:top-0"
             @click="onDeleteItem"
           >
             <CrossIcon />
           </button>
-          <AppCheckbox
+          <!-- <AppCheckbox
             v-model="isActive"
             :value="String(props.id)"
             class="self-center"
             @change="e => emit('changeActive', e)"
-          />
+          /> -->
         </div>
       </div>
     </div>

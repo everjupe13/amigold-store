@@ -218,6 +218,7 @@ const onAddProductToCart = async (id: number, priceId: number) => {
         class="max-w-[calc((100%-20px*4)/5)] md:max-w-full"
       >
         <AppProductCard
+          :product-id="product.id"
           :name="product.name"
           :vendor-code="product.vendorCode"
           :slug="product.slug"

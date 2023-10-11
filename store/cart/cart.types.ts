@@ -14,7 +14,7 @@ export interface ICart {
       id: number
       weight: string
       textLabel: string
-      cost: string
+      price: string
       product: number
     }
     amount: number
