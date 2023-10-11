@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import { useApiRequest } from '@/composables/useApiRequest'
 
 import {
+  FiltersInterface,
   ICategory,
   ICategoryProducts,
   IFilter,
@@ -98,7 +99,9 @@ export const useCatalogStore = defineStore('catalog', () => {
     }
   }
 
-  const fetchAllProducts = async () => {
+  const fetchAllProducts = async ({
+    _filters
+  }: { _filters?: FiltersInterface } = {}) => {
     try {
       const { data, error, refresh, execute, pending } = await useApiRequest<{
         count: number

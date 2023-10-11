@@ -2,7 +2,9 @@
 // import { useCatalogController } from '@/composables/useCatalogController'
 import { computed, ref } from 'vue'
 
+import CatalogSorting from '@/components/screens/app-catalog/ui/CatalogSorting.vue'
 import { useCartStore } from '@/store/cart'
+import { SortList } from '@/store/catalog/catalog.constants'
 import {
   type IFilter,
   type IProduct,
@@ -59,6 +61,11 @@ const onAddProductToCart = async (id: number, priceId: number) => {
     }, 1000)
   }
 }
+
+const activeSortingId = ref(1)
+const handleSortingChange = (id: number) => {
+  activeSortingId.value = id
+}
 </script>
 
 <template>
@@ -100,7 +107,13 @@ const onAddProductToCart = async (id: number, priceId: number) => {
               </button>
             </template>
           </div>
-          <div class="controls self-center justify-self-end"></div>
+          <div class="controls self-center justify-self-end">
+            <CatalogSorting
+              :items="SortList"
+              :active-item-id="activeSortingId"
+              @handle-change="handleSortingChange"
+            />
+          </div>
         </div>
         <template v-if="!isProductsLoading">
           <div
