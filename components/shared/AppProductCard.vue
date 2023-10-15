@@ -17,8 +17,12 @@ type PropsType = {
     price?: string
     at_store?: number
   }[]
+  isNew?: boolean
+  isDiscount?: boolean
+  isPromotionActive?: boolean
   isLoading?: boolean
   isFinished?: boolean
+  isLabelVisible?: boolean
 }
 
 const props = withDefaults(defineProps<PropsType>(), {
@@ -52,7 +56,7 @@ const isLoadedInner = computed<boolean>(() => !!props.productId && !!props.name)
 </script>
 
 <template>
-  <article>
+  <article class="flex flex-col">
     <div
       class="group relative mb-15 flex aspect-square items-center justify-center overflow-hidden rounded-[24px] bg-button p-15 transition-all duration-200 hover:shadow-lg"
       :class="{ 'animate-pulse': !props.image }"
@@ -63,13 +67,21 @@ const isLoadedInner = computed<boolean>(() => !!props.productId && !!props.name)
         :alt="props.name"
         class="pointer-events-none relative z-[1] block h-full select-none object-cover transition duration-200"
       />
+      <span class="absolute bottom-20 left-20 z-[2] flex items-center">
+        <CatalogCardBadge
+          :is-new="props.isNew"
+          :is-discount="props.isDiscount"
+          :is-promotion-active="props.isPromotionActive"
+          :is-visible="props.isLabelVisible"
+        />
+      </span>
       <NuxtLink
         :to="toLink"
-        class="absolute inset-0 z-[2] block transition duration-500"
+        class="absolute inset-0 z-[3] block transition duration-500"
         :class="{ 'group-hover:bg-black/5': props.image }"
       ></NuxtLink>
     </div>
-    <div class="mb-15" :title="props.name">
+    <div class="mb-10" :title="props.name">
       <p
         class="mb-8 leading-none text-yellow text-semibold-16"
         :class="{ 'h-24 animate-pulse rounded-[5px] bg-gray': !isLoadedInner }"
@@ -77,19 +89,19 @@ const isLoadedInner = computed<boolean>(() => !!props.productId && !!props.name)
         {{ currentPrice }}
       </p>
       <h3
-        class="mb-8 font-inter leading-tight text-medium-16"
+        class="font-inter leading-tight text-medium-16"
         :class="{ 'h-32 animate-pulse rounded-[5px] bg-gray': !isLoadedInner }"
       >
         <NuxtLink :to="toLink">{{ props.name }}</NuxtLink>
       </h3>
+    </div>
+    <div class="mt-auto flex flex-col">
       <div
         v-if="props.vendorCode"
-        class="mb-8 font-inter leading-none text-dark opacity-60 text-medium-12"
+        class="mb-15 font-inter leading-none text-dark opacity-60 text-medium-12"
       >
         {{ `Артикул ${props.vendorCode}` }}
       </div>
-    </div>
-    <div class="flex flex-col">
       <AppButton
         class="relative"
         :class="{ 'pointer-events-none invisible': !isLoadedInner }"

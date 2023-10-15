@@ -95,7 +95,7 @@ const currentProductCount = computed(() => {
   )
 })
 
-async function increaseCount() {
+async function increaseCount(amount?: number) {
   if (!product.value) {
     return false
   }
@@ -105,7 +105,8 @@ async function increaseCount() {
   try {
     await cartStore.addItem(
       product.value.id,
-      pricesArray.value[currentPriceIndex.value].id
+      pricesArray.value[currentPriceIndex.value].id,
+      amount || 1
     )
   } finally {
     isCartActionLoading.value = false
@@ -114,7 +115,7 @@ async function increaseCount() {
     }, 1000)
   }
 }
-async function decreaseCount() {
+async function decreaseCount(amount?: number) {
   if (!product.value) {
     return false
   }
@@ -124,26 +125,20 @@ async function decreaseCount() {
   try {
     await cartStore.removeItem(
       product.value.id,
-      pricesArray.value[currentPriceIndex.value].id
+      pricesArray.value[currentPriceIndex.value].id,
+      amount || 1
     )
   } finally {
     isCartActionLoading.value = false
   }
 }
 
-function changeCount() {
-  // if (!product.value) {
-  //   return false
-  // }
-  // isCartActionLoading.value = true
-  // try {
-  //   await cartStore.removeItem(
-  //     product.value.id,
-  //     pricesArray.value[currentPriceIndex.value].id
-  //   )
-  // } finally {
-  //   isCartActionLoading.value = false
-  // }
+function changeCount(count: number, sign: boolean) {
+  if (sign) {
+    increaseCount(count)
+  } else {
+    decreaseCount(count)
+  }
 }
 </script>
 
@@ -219,10 +214,7 @@ function changeCount() {
                   {{ currentPrice }}
                 </div>
                 <div class="flex flex-wrap items-center gap-10">
-                  <div
-                    v-if="currentProductCount > 0"
-                    class="flex w-[130px] items-center"
-                  >
+                  <div v-if="currentProductCount > 0" class="flex items-center">
                     <div class="rounded-full border-2 border-black/20 p-12">
                       <ProductCounter
                         :amount="currentProductCount"

@@ -1,47 +1,25 @@
 <script lang="ts" setup>
-// import { useCatalogController } from '@/composables/useCatalogController'
-import { FiltersInterface } from 'store/catalog/catalog.types'
+import type { FiltersInterface } from 'store/catalog/catalog.types'
 import { computed, ref } from 'vue'
 
 import CatalogSorting from '@/components/screens/app-catalog/ui/CatalogSorting.vue'
 import { useCartStore } from '@/store/cart'
 import { SortList } from '@/store/catalog/catalog.constants'
-import {
-  type IFilter,
-  type IProduct,
-  useCatalogStore
-} from '@/store/catalog/index'
+import { type IProduct, useCatalogStore } from '@/store/catalog/index'
 
 const isLoading = ref(false)
 const catalogStore = useCatalogStore()
 
 isLoading.value = true
-const { data: apiFilters } = await catalogStore.fetchFilters()
 const { data: apiProducts } = await catalogStore.fetchAllProducts()
 isLoading.value = false
 
 const refApiProducts = ref(apiProducts.value)
 
-const subcategories: Ref<IFilter[]> = computed(() => apiFilters.value || [])
-const currentSubcategorySlug = ref(subcategories.value[0].slug)
-const currentSubcategory = computed(() =>
-  subcategories.value.find(
-    subcategory => subcategory.slug === currentSubcategorySlug.value
-  )
-)
-
-const onSubcategoryChange = (slug: string) => {
-  currentSubcategorySlug.value = slug
-}
-
 const isProductsLoading = ref(false)
 const products: Ref<IProduct[]> = computed(() =>
   refApiProducts.value?.length && refApiProducts.value?.length > 0
-    ? refApiProducts.value?.filter(product =>
-        product.filters.some(
-          productFilter => productFilter.slug === currentSubcategorySlug.value
-        )
-      )
+    ? refApiProducts.value
     : []
 )
 
@@ -84,7 +62,7 @@ const handleSortingChange = async (id: number) => {
 <template>
   <section class="py-40">
     <AppContainer>
-      <AppBreadcrumbs :crumbs="[{ label: 'Каталог' }]"></AppBreadcrumbs>
+      <AppBreadcrumbs :crumbs="[{ label: 'Новинки' }]"></AppBreadcrumbs>
     </AppContainer>
   </section>
 
@@ -101,27 +79,12 @@ const handleSortingChange = async (id: number) => {
           class="header-grid mb-20 grid grid-cols-3 md:grid-cols-2 md:gap-y-10"
         >
           <div class="heading-title md:mb-20">
-            <h1 class="title">Каталог</h1>
+            <h1 class="title">Новинки</h1>
           </div>
 
           <div
             class="filters flex items-center justify-center gap-10 md:flex-col md:items-start"
-          >
-            <template v-if="subcategories.length > 0">
-              <button
-                v-for="subcategory in subcategories"
-                :key="subcategory.id"
-                class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-                :class="{
-                  '!bg-black !text-white':
-                    currentSubcategory!.slug === subcategory.slug
-                }"
-                @click="onSubcategoryChange(subcategory.slug)"
-              >
-                {{ subcategory.name }}
-              </button>
-            </template>
-          </div>
+          ></div>
           <div
             class="controls relative z-[5] self-center justify-self-end md:justify-self-start"
           >

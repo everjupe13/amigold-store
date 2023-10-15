@@ -1,12 +1,15 @@
 <script lang="ts" setup>
+// import type { FiltersInterface } from 'store/catalog/catalog.types'
 import { computed, ref } from 'vue'
 
+// import CatalogSorting from '@/components/screens/app-catalog/ui/CatalogSorting.vue'
 import { useCartStore } from '@/store/cart'
 import {
   type ICategoryProducts,
   type IFilter,
   useCatalogStore
 } from '@/store/catalog'
+// import { SortList } from '@/store/catalog/catalog.constants'
 
 const route = useRoute()
 const currentCategorySlug = Array.isArray(route.params.categorySlug)
@@ -14,7 +17,18 @@ const currentCategorySlug = Array.isArray(route.params.categorySlug)
   : route.params.categorySlug
 
 const isLoading = ref(false)
+const isMainCategoryFetching = ref(true)
+
 const catalogStore = useCatalogStore()
+await catalogStore.fetchCategories()
+
+isMainCategoryFetching.value = false
+
+const currentMainCategory = computed(() =>
+  catalogStore.categories.find(
+    category => category.slug === currentCategorySlug
+  )
+)
 
 isLoading.value = true
 const { data: apiFilters } = await catalogStore.fetchFilters()
@@ -75,13 +89,35 @@ const onAddProductToCart = async (id: number, priceId: number) => {
     }, 1000)
   }
 }
+
+// const refApiProducts = ref(apiProducts.value)
+// const activeSortingId = ref(1)
+// const handleSortingChange = async (id: number) => {
+//   activeSortingId.value = id
+//   const searchKey = SortList.find(item => item.id === id)?.sortKey || ''
+
+//   isLoading.value = true
+//   const { data: apiProducts } = await catalogStore.fetchAllProducts({
+//     filters: searchKey as FiltersInterface
+//   })
+
+//   refApiProducts.value = apiProducts.value
+
+//   isLoading.value = false
+// }
 </script>
 
 <template>
   <section class="py-40">
     <AppContainer>
       <AppBreadcrumbs
-        :crumbs="[{ label: 'Корма для животных' }]"
+        :crumbs="[
+          {
+            label: isMainCategoryFetching
+              ? 'Каталог'
+              : currentMainCategory?.name || 'Каталог'
+          }
+        ]"
       ></AppBreadcrumbs>
     </AppContainer>
   </section>
@@ -118,7 +154,15 @@ const onAddProductToCart = async (id: number, priceId: number) => {
               </button>
             </template>
           </div>
-          <div class="controls self-center justify-self-end"></div>
+          <div
+            class="controls relative z-[5] self-center justify-self-end md:justify-self-start"
+          >
+            <!-- <CatalogSorting
+              :items="SortList"
+              :active-item-id="activeSortingId"
+              @handle-change="handleSortingChange"
+            /> -->
+          </div>
         </div>
         <template v-if="!isProductsLoading">
           <div
