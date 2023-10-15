@@ -145,6 +145,10 @@ const handleSortingChange = async (id: number) => {
               :vendor-code="product.vendorCode"
               :slug="product.slug"
               :prices="product.prices"
+              :is-new="product.isNew"
+              :is-discount="product.isDiscount"
+              :is-promotion-active="product.isPromotionActive"
+              is-label-visible
               :image="
                 product.gallery.find(galleryItem => galleryItem.is_main)
                   ?.imageThumb || ''
