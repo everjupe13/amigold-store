@@ -25,15 +25,5 @@ export const SortList: SortListType = [
     id: 5,
     label: 'По размеру скидки',
     sortKey: '-discount'
-  },
-  {
-    id: 6,
-    label: 'Низкий рейтинг',
-    sortKey: 'feedbacks'
-  },
-  {
-    id: 7,
-    label: 'Высокий рейтинг',
-    sortKey: '-feedbacks'
   }
 ]
