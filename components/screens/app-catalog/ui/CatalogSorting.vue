@@ -60,15 +60,3 @@ const toggleMenuVisibility = () => {
     </Transition>
   </div>
 </template>
-
-<style lang="scss" setup>
-.fade-effect-enter-active,
-.fade-effect-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-effect-enter-from,
-.fade-effect-leave-to {
-  opacity: 0;
-}
-</style>

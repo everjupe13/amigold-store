@@ -63,12 +63,12 @@ const toLink = computed(() => `/product/${props.slug}`)
 
 <template>
   <div
-    class="relative rounded-[16px] border border-gray/20 p-20 md:p-5 md:pb-20"
+    class="relative rounded-[16px] border border-gray/20 p-20 md:p-0 md:pb-20"
   >
     <div
       class="relative flex items-stretch justify-between lg:gap-y-20 md:flex-col"
     >
-      <div class="flex flex-grow items-center gap-x-14 md:flex-col md:gap-y-10">
+      <div class="flex flex-grow items-center gap-x-14 md:gap-y-10 md:pr-20">
         <div
           class="group relative flex h-[140px] w-[140px] items-center justify-center rounded-[10px] bg-button-dark p-10 lg:h-[100px] lg:w-[100px] lg:flex-shrink-0"
         >
@@ -85,17 +85,17 @@ const toLink = computed(() => `/product/${props.slug}`)
           <NuxtLink :to="toLink" class="absolute inset-0 z-[2]"></NuxtLink>
         </div>
         <div class="pr-20 lg:pr-0">
-          <p class="text-extrabold-18 lg:leading-tight lg:text-extrabold-18">
+          <p class="text-[18px] font-extrabold lg:leading-tight md:text-[16px]">
             {{ props.name }}
           </p>
-          <div class="text-black text-regular-16">
+          <div class="text-[16px] text-black md:text-[14px]">
             {{ `${props.price?.textLabel}` }}
           </div>
         </div>
       </div>
 
       <div
-        class="md:flex-grow-1 flex flex-shrink-0 flex-grow-0 items-center justify-between gap-x-5"
+        class="flex flex-shrink-0 flex-grow-0 items-center justify-between gap-x-5 md:flex-grow"
       >
         <div
           class="flex flex-col items-center justify-center gap-y-5 lg:pr-15 md:w-full md:flex-row md:justify-between"
@@ -123,10 +123,10 @@ const toLink = computed(() => `/product/${props.slug}`)
         </div>
 
         <div
-          class="grid h-full grid-rows-3 lg:grid-rows-1 lg:items-center md:flex-grow-0"
+          class="grid h-full grid-rows-1 lg:grid-rows-1 lg:items-center md:flex-grow-0"
         >
           <button
-            class="flex h-24 w-24 items-center justify-center self-start bg-transparent transition hover:bg-[#EEEFEF] lg:absolute lg:right-0 lg:top-0"
+            class="flex h-24 w-24 items-center justify-center self-center justify-self-end bg-transparent transition hover:bg-[#EEEFEF] lg:absolute lg:right-0 lg:top-0"
             @click="onDeleteItem"
           >
             <CrossIcon />
