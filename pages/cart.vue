@@ -4,17 +4,18 @@ import { email, required } from '@vuelidate/validators'
 import { v4 as uuidv4 } from 'uuid'
 import { useModal, useModalSlot } from 'vue-final-modal'
 
-// import AppCheckbox from '@/components/shared/AppCheckbox.vue'
 import AppModal from '@/components/widgets/AppModal.vue'
 import FeedbackFormModal from '@/components/widgets/modals/feedback/FeedbackFormModal.vue'
 import OrderConfirm from '@/components/widgets/OrderConfirm.vue'
 import { type ICart, useCartStore } from '@/store/cart'
 import { LOCAL_STORAGE_SESSION_KEY } from '@/store/cart/cart.store'
-// import { useUserStore } from '@/store/user/useUserStore'
+import { useDeliveryStore } from '@/store/cart/delivery/index'
+import { usePaymentStore } from '@/store/cart/payment/index'
+import { useUserStore } from '@/store/user/useUserStore'
 import { formatRubles } from '@/utils/cost'
 
 const cartStore = useCartStore()
-// const userStore = useUserStore()
+const userStore = useUserStore()
 const config = useRuntimeConfig()
 const products: Ref<ICart['products'] | never[]> = computed(() =>
   cartStore.cart?.products && cartStore.cart?.products.length > 0
@@ -107,10 +108,8 @@ const { open: openConfirmModal, close: closeConfirmModal } = useModal({
 const { open: _openFeedbackModal, close: closeFeedbackModal } = useModal({
   component: FeedbackFormModal,
   attrs: {
-    async onConfirm() {
+    onConfirm() {
       closeFeedbackModal()
-
-      await cartStore.createOrder()
       openConfirmModal()
     }
   }
@@ -123,32 +122,28 @@ onMounted(() => {
 })
 
 const handleOrderCreate = async () => {
-  // if (!userStore.isAuth) {
-  //   openFeedbackModal()
-  //   return
-  // }
-
-  // await cartStore.createOrder()
-  // openConfirmModal()
-
   await useScroll('#checkout-user-data', -20)
 }
 
 const formData = reactive({
   email: '',
   phone: '',
-  userName: '',
+  customerName: '',
   orderComment: '',
+  deliveryTypeId: undefined as undefined | number | string,
   deliveryAddress: '',
-  deliveryComment: ''
+  deliveryComment: '',
+  paymentTypeId: undefined as undefined | number
 })
 const rules = {
   email: { required, email },
   phone: { required },
-  userName: { required },
-  orderComment: {},
-  deliveryAddress: {},
-  deliveryComment: {}
+  customerName: { required },
+  orderComment: { required },
+  deliveryTypeId: { required },
+  deliveryAddress: { required },
+  deliveryComment: { required },
+  paymentTypeId: { required }
 }
 
 const v$ = useVuelidate(rules, formData)
@@ -160,48 +155,60 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
   }
 }
 
-const deliveryTypeId = ref(0)
+const deliveryStore = useDeliveryStore()
+await deliveryStore.fetchDeliveryTypes()
+
+const selfDeliveryType = deliveryStore.deliveryTypes?.find(
+  type => type.isSelfDelivery
+)
+const selfDeliveryTypeId = selfDeliveryType?.id
+formData.deliveryTypeId = selfDeliveryTypeId
+
+const deliveryTabTypeId = ref(selfDeliveryTypeId)
 const handleDeliveryTypeChange = (idx: number) => {
-  deliveryTypeId.value = idx
-}
-
-const deliveryCompanies = [
-  {
-    id: 0,
-    name: 'СДЭК до пункта доставки'
-  },
-  {
-    id: 1,
-    name: 'СДЭК до двери'
-  },
-  {
-    id: 2,
-    name: 'Почта России до отделения'
-  },
-  {
-    id: 3,
-    name: 'Деловые линии'
-  },
-  {
-    id: 4,
-    name: 'Курьер по Москве (в пределах МКАД)'
-  },
-  {
-    id: 5,
-    name: 'Другое'
+  if (idx !== -1) {
+    formData.deliveryTypeId = idx
   }
-]
-const deliveryCompany = ref<{ id: number; name: string }>()
-const handleDeliveryCompanyChange = (id: number) => {
-  deliveryCompany.value = deliveryCompanies.find(company => company.id === id)
+  deliveryTabTypeId.value = idx
 }
 
-const paymentTypeId = ref(0)
+const deliveryCompanyId = ref<number>()
+const handleDeliveryCompanyChange = (id: number) => {
+  deliveryCompanyId.value = id
+}
+
+const paymentStore = usePaymentStore()
+await paymentStore.fetchPaymentTypes()
+
+const paymentTypeId = ref(paymentStore.paymentTypes?.[0]?.id || -1)
+formData.paymentTypeId = paymentStore.paymentTypes?.[0]?.id
 const handlePaymentTypeChange = (idx: number) => {
+  formData.paymentTypeId = idx
   paymentTypeId.value = idx
 }
 
 const isLgScreen = inject('isLgScreen')
+const isCartDisabled = computed(
+  () => !Number(cartStore.cart?.totalPrice) || isCartLoading.value
+)
+
+const handleOrderSubmit = async () => {
+  const { status } = await cartStore.createOrder({
+    phone: formData.phone,
+    email: formData.email,
+    customerName: formData.customerName,
+    orderComment: formData.orderComment,
+    deliveryTypeId: formData.deliveryTypeId,
+    deliveryAddress: formData.deliveryAddress,
+    deliveryComment: formData.deliveryComment,
+    paymentTypeId: formData.paymentTypeId,
+    isNewUser: !userStore.isAuth
+  })
+
+  if (status) {
+    openConfirmModal()
+  }
+}
 </script>
 
 <template>
@@ -306,11 +313,11 @@ const isLgScreen = inject('isLgScreen')
                       </p>
                     </div>
                     <AppInput
-                      v-model="v$.userName.$model"
+                      v-model="v$.customerName.$model"
                       placeholder="ФИО / Название организации"
                       class="mb-15"
                       :disabled="isCartLoading"
-                      v-bind="inputPropsMapper(v$.userName)"
+                      v-bind="inputPropsMapper(v$.customerName)"
                     />
 
                     <div>
@@ -340,52 +347,69 @@ const isLgScreen = inject('isLgScreen')
               <div>
                 <div class="mb-20 flex gap-10 md:flex-wrap">
                   <button
+                    v-if="selfDeliveryType"
                     class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
                     :class="{
-                      '!bg-black !text-white': deliveryTypeId === 0
+                      '!bg-black !text-white':
+                        deliveryTabTypeId === selfDeliveryTypeId
                     }"
-                    @click="handleDeliveryTypeChange(0)"
+                    @click="
+                      handleDeliveryTypeChange(selfDeliveryTypeId as number)
+                    "
                   >
                     Самовывоз заказа
                   </button>
                   <button
                     class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
                     :class="{
-                      '!bg-black !text-white': deliveryTypeId === 1
+                      '!bg-black !text-white': deliveryTabTypeId === -1
                     }"
-                    @click="handleDeliveryTypeChange(1)"
+                    @click="handleDeliveryTypeChange(-1)"
                   >
                     Доставка заказа
                   </button>
                 </div>
                 <div>
-                  <div v-if="deliveryTypeId === 0" :key="0">
+                  <div
+                    v-if="
+                      deliveryTabTypeId === selfDeliveryTypeId &&
+                      selfDeliveryTypeId
+                    "
+                    :key="0"
+                  >
                     <p class="px-5 text-[14px] leading-tight text-black">
-                      Вы сможете забрать ваш заказ после оплаты по адресу:
-                      <br />
-                      г. Москва, ул. Ратчина дом 10, офис 2010
+                      {{ selfDeliveryType?.description || '' }}
                     </p>
                   </div>
-                  <div v-else-if="deliveryTypeId === 1" :key="1">
+                  <div v-else-if="deliveryTabTypeId === -1" :key="1">
                     <div
                       class="mb-25 grid grid-cols-3 gap-10 md:grid-cols-2 sm:grid-cols-1"
                     >
                       <div
-                        v-for="company in deliveryCompanies"
+                        v-for="company in deliveryStore.deliveryTypes?.filter(
+                          company => company.id !== selfDeliveryTypeId
+                        )"
                         :key="company.id"
-                        class="min-h-75 flex cursor-pointer items-center gap-x-8 rounded-[12px] bg-[#D9D9D9] p-15 pr-13 transition-all"
+                        class="flex min-h-[75px] cursor-pointer items-center gap-x-8 rounded-[12px] bg-[#D9D9D9] p-15 pr-13 transition-all"
                         :class="{
-                          '!bg-yellow': deliveryCompany?.id === company.id
+                          '!bg-yellow': deliveryCompanyId === company.id
                         }"
                         @click="handleDeliveryCompanyChange(company.id)"
                       >
                         <div
+                          v-if="company.image"
                           class="h-40 w-50 flex-shrink-0 flex-grow-0 rounded-[5px] bg-dark"
-                        ></div>
+                        >
+                          <img
+                            :src="company.image"
+                            :alt="company.name"
+                            class="pointer-events-none block h-full w-full select-none object-cover"
+                          />
+                        </div>
                         <div
                           class="select-none text-[14px] leading-tight text-black transition-all"
                           :class="{
-                            'text-white': deliveryCompany?.id === company.id
+                            'text-white': deliveryCompanyId === company.id
                           }"
                         >
                           {{ company.name }}
@@ -396,9 +420,11 @@ const isLgScreen = inject('isLgScreen')
                       <p
                         class="mb-30 px-5 text-[12px] leading-tight text-[#878686]"
                       >
-                        Доставка СДЭКом до пункта выдачи рассчитывается после
-                        <br />
-                        согласования заказа с менеджером
+                        {{
+                          deliveryStore.deliveryTypes?.find(
+                            company => company.id === deliveryCompanyId
+                          )?.description || ''
+                        }}
                       </p>
                       <div>
                         <div class="mb-15">
@@ -445,46 +471,23 @@ const isLgScreen = inject('isLgScreen')
               </div>
               <div class="mb-20 flex flex-wrap gap-10">
                 <button
+                  v-for="paymentType in paymentStore.paymentTypes"
+                  :key="paymentType.id"
                   class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-button px-15 py-16 leading-none transition text-bold-16 active:translate-y-2"
                   :class="{
-                    '!bg-black !text-white': paymentTypeId === 0
+                    '!bg-black !text-white': paymentTypeId === paymentType.id
                   }"
-                  @click="handlePaymentTypeChange(0)"
+                  @click="handlePaymentTypeChange(paymentType.id)"
                 >
-                  Наличными
-                </button>
-                <button
-                  class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-button px-15 py-16 leading-none transition text-bold-16 active:translate-y-2"
-                  :class="{
-                    '!bg-black !text-white': paymentTypeId === 1
-                  }"
-                  @click="handlePaymentTypeChange(1)"
-                >
-                  Банковской картой
-                </button>
-                <button
-                  class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-button px-15 py-16 leading-none transition text-bold-16 active:translate-y-2"
-                  :class="{
-                    '!bg-black !text-white': paymentTypeId === 2
-                  }"
-                  @click="handlePaymentTypeChange(2)"
-                >
-                  Через СБП
-                </button>
-                <button
-                  class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-button px-15 py-16 leading-none transition text-bold-16 active:translate-y-2"
-                  :class="{
-                    '!bg-black !text-white': paymentTypeId === 3
-                  }"
-                  @click="handlePaymentTypeChange(3)"
-                >
-                  Безналичная оплата
+                  {{ paymentType.name }}
                 </button>
               </div>
               <p class="px-5 text-[14px] leading-tight text-black">
-                Вы сможете забрать ваш заказ после оплаты по адресу:
-                <br />
-                г. Москва, ул. Ратчина дом 10, офис 2010
+                {{
+                  paymentStore.paymentTypes?.find(
+                    paymentType => paymentType.id === paymentTypeId
+                  )?.description || ''
+                }}
               </p>
             </div>
 
@@ -493,7 +496,8 @@ const isLgScreen = inject('isLgScreen')
                 v-if="isLgScreen"
                 type="submit"
                 class="h-65 w-full !rounded-[8px]"
-                :disabled="isCartLoading"
+                :disabled="isCartDisabled"
+                @click="handleOrderSubmit"
               >
                 <div
                   v-if="isCartLoading"
