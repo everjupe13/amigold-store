@@ -18,7 +18,7 @@ const toLink = computed(() => `/catalog${props.slug ? `/${props.slug}` : ''}`)
     class="group relative flex h-[210px] flex-col justify-between overflow-hidden rounded-[24px] bg-white p-20 md:aspect-auto md:h-[180px]"
     :class="{
       'animate-pulse !bg-[var(--skeleton-loader-bg,_rgb(238,239,239))]':
-        !props.name || !props.image,
+        !props.name && !props.image,
       'transition hover:bg-yellow': props.name || props.image
     }"
   >

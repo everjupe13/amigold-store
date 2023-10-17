@@ -190,19 +190,54 @@ export const useCartStore = defineStore('cart', () => {
     }
   }
 
-  async function createOrder() {
+  async function createOrder({
+    phone,
+    email,
+    customerName,
+    orderComment,
+    deliveryTypeId,
+    deliveryAddress,
+    deliveryComment,
+    paymentTypeId,
+    isNewUser
+  }: {
+    phone: string
+    email: string
+    customerName: string
+    orderComment: string
+    deliveryTypeId: number | string | undefined
+    deliveryAddress: string
+    deliveryComment: string
+    paymentTypeId: number | string | undefined
+    isNewUser: boolean
+  }) {
     try {
-      await useApiRequest('/api/order/create', {
+      const { error } = await useApiRequest('/api/order/create', {
         method: 'POST',
         body: {
-          session_id: userSession
+          session_id: userSession,
+          phone,
+          email,
+          customer_name: customerName,
+          order_comment: orderComment,
+          delivery_type_id: deliveryTypeId,
+          delivery_address: deliveryAddress,
+          delivery_comment: deliveryComment,
+          payment_type_id: paymentTypeId,
+          new_user: isNewUser
         }
       })
 
+      if (error.value) {
+        return { status: false, error }
+      }
+
       cart.value = undefined
-      return cart.value
+      return { status: true, error }
     } catch (error) {
       console.log(error)
+
+      return { error, status: false }
     }
   }
 
