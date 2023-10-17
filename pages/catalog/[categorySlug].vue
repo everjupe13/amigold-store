@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-// import type { FiltersInterface } from 'store/catalog/catalog.types'
+import type { FiltersInterface } from 'store/catalog/catalog.types'
 import { computed, ref } from 'vue'
 
-// import CatalogSorting from '@/components/screens/app-catalog/ui/CatalogSorting.vue'
+import CatalogSorting from '@/components/screens/app-catalog/ui/CatalogSorting.vue'
 import { useCartStore } from '@/store/cart'
+import { SortList } from '@/store/catalog/catalog.constants'
 import {
-  type ICategoryProducts,
   type IFilter,
+  type IProduct,
   useCatalogStore
-} from '@/store/catalog'
-// import { SortList } from '@/store/catalog/catalog.constants'
+} from '@/store/catalog/index'
 
 const route = useRoute()
 const currentCategorySlug = Array.isArray(route.params.categorySlug)
@@ -18,10 +18,9 @@ const currentCategorySlug = Array.isArray(route.params.categorySlug)
 
 const isLoading = ref(false)
 const isMainCategoryFetching = ref(true)
-
 const catalogStore = useCatalogStore()
-await catalogStore.fetchCategories()
 
+await catalogStore.fetchCategories()
 isMainCategoryFetching.value = false
 
 const currentMainCategory = computed(() =>
@@ -32,42 +31,32 @@ const currentMainCategory = computed(() =>
 
 isLoading.value = true
 const { data: apiFilters } = await catalogStore.fetchFilters()
-const subcategories: Ref<IFilter[]> = computed(() => apiFilters.value || [])
-const currentSubcategorySlug = ref(subcategories.value[0].slug)
-const currentSubcategory = computed(() =>
-  subcategories.value.find(
-    subcategory => subcategory.slug === currentSubcategorySlug.value
-  )
-)
-
-const { data: apiProducts } = await catalogStore.fetchCategoryProducts({
-  categorySlug: currentCategorySlug,
-  subcategorySlug: currentSubcategorySlug.value
+const { data: apiProducts } = await catalogStore.fetchAllProducts({
+  categorySlug: currentCategorySlug
 })
 isLoading.value = false
+isMainCategoryFetching.value = false
+
+const refApiProducts = ref(apiProducts.value)
+
+const subcategories: Ref<IFilter[]> = computed(() => apiFilters.value || [])
+const currentSubcategorySlug = ref('all')
 
 const isProductsLoading = ref(false)
-const products: Ref<ICategoryProducts[]> = ref(
-  apiProducts.value?.length && apiProducts.value?.length > 0
-    ? apiProducts.value
+const products: Ref<IProduct[]> = computed(() =>
+  refApiProducts.value?.length && refApiProducts.value?.length > 0
+    ? currentSubcategorySlug.value === 'all'
+      ? refApiProducts.value
+      : refApiProducts.value?.filter(product =>
+          product.filters.some(
+            productFilter => productFilter.slug === currentSubcategorySlug.value
+          )
+        )
     : []
 )
 
-const onSubcategoryChange = async (slug: string) => {
+const onSubcategoryChange = (slug: string) => {
   currentSubcategorySlug.value = slug
-  isProductsLoading.value = true
-
-  const { data: apiProducts } = await catalogStore.fetchCategoryProducts({
-    categorySlug: currentCategorySlug,
-    subcategorySlug: currentSubcategorySlug.value
-  })
-
-  products.value =
-    apiProducts.value?.length && apiProducts.value?.length > 0
-      ? apiProducts.value
-      : []
-
-  isProductsLoading.value = false
 }
 
 const cartStore = useCartStore()
@@ -90,21 +79,20 @@ const onAddProductToCart = async (id: number, priceId: number) => {
   }
 }
 
-// const refApiProducts = ref(apiProducts.value)
-// const activeSortingId = ref(1)
-// const handleSortingChange = async (id: number) => {
-//   activeSortingId.value = id
-//   const searchKey = SortList.find(item => item.id === id)?.sortKey || ''
+const activeSortingId = ref(1)
+const handleSortingChange = async (id: number) => {
+  activeSortingId.value = id
+  const searchKey = SortList.find(item => item.id === id)?.sortKey || ''
 
-//   isLoading.value = true
-//   const { data: apiProducts } = await catalogStore.fetchAllProducts({
-//     filters: searchKey as FiltersInterface
-//   })
+  isLoading.value = true
+  const { data: apiProducts } = await catalogStore.fetchAllProducts({
+    filters: searchKey as FiltersInterface
+  })
 
-//   refApiProducts.value = apiProducts.value
+  refApiProducts.value = apiProducts.value
 
-//   isLoading.value = false
-// }
+  isLoading.value = false
+}
 </script>
 
 <template>
@@ -139,6 +127,15 @@ const onAddProductToCart = async (id: number, priceId: number) => {
           <div
             class="filters flex items-center justify-center gap-10 md:flex-col md:items-start"
           >
+            <button
+              class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
+              :class="{
+                '!bg-black !text-white': currentSubcategorySlug === 'all'
+              }"
+              @click="onSubcategoryChange('all')"
+            >
+              Все товары
+            </button>
             <template v-if="subcategories.length > 0">
               <button
                 v-for="subcategory in subcategories"
@@ -146,7 +143,7 @@ const onAddProductToCart = async (id: number, priceId: number) => {
                 class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16"
                 :class="{
                   '!bg-black !text-white':
-                    currentSubcategory!.slug === subcategory.slug
+                    currentSubcategorySlug === subcategory.slug
                 }"
                 @click="onSubcategoryChange(subcategory.slug)"
               >
@@ -157,59 +154,71 @@ const onAddProductToCart = async (id: number, priceId: number) => {
           <div
             class="controls relative z-[5] self-center justify-self-end md:justify-self-start"
           >
-            <!-- <CatalogSorting
+            <CatalogSorting
               :items="SortList"
               :active-item-id="activeSortingId"
               @handle-change="handleSortingChange"
-            /> -->
+            />
           </div>
         </div>
-        <template v-if="!isProductsLoading">
-          <div
-            v-if="products.length > 0"
-            class="grid grid-cols-5 gap-x-20 gap-y-60 md:grid-cols-2"
-          >
-            <AppProductCard
-              v-for="product in products"
-              :key="product.id"
-              :product-id="product.id"
-              :name="product.name"
-              :vendor-code="product.vendorCode"
-              :slug="product.slug"
-              :prices="product.prices"
-              :is-new="product.isNew"
-              :is-discount="product.isDiscount"
-              :image="product.image"
-              :is-loading="
-                cartLoadingProductId === product.id
-                  ? isCartStoreFetching
-                  : undefined
-              "
-              :is-finished="
-                cartLoadingProductId === product.id
-                  ? isCartStoreFinish
-                  : undefined
-              "
-              @add-product="
-                onAddProductToCart(product.id, product.prices[0].id)
-              "
-            ></AppProductCard>
-          </div>
+        <div class="mb-60 md:mb-30">
+          <template v-if="!isProductsLoading">
+            <div
+              v-if="products.length > 0"
+              class="grid grid-cols-5 gap-x-20 gap-y-60 md:grid-cols-2"
+            >
+              <AppProductCard
+                v-for="product in products"
+                :key="product.id"
+                :product-id="product.id"
+                :name="product.name"
+                :vendor-code="product.vendorCode"
+                :slug="product.slug"
+                :prices="product.prices"
+                :is-new="product.isNew"
+                :is-discount="product.isDiscount"
+                :image="
+                  product.gallery.find(galleryItem => galleryItem.is_main)
+                    ?.imageThumb || ''
+                "
+                :is-loading="
+                  cartLoadingProductId === product.id
+                    ? isCartStoreFetching
+                    : undefined
+                "
+                :is-finished="
+                  cartLoadingProductId === product.id
+                    ? isCartStoreFinish
+                    : undefined
+                "
+                @add-product="
+                  onAddProductToCart(product.id, product.prices[0].id)
+                "
+              ></AppProductCard>
+            </div>
+            <template v-else>
+              <div class="flex h-60 items-center justify-center">
+                <p class="py-30 text-center text-bold-24">Пусто</p>
+              </div>
+            </template>
+          </template>
           <template v-else>
-            <div class="flex h-60 items-center justify-center">
-              <p class="py-30 text-center text-bold-24">Пусто</p>
+            <div class="grid grid-cols-5 gap-x-20 gap-y-60 md:grid-cols-2">
+              <AppProductCard></AppProductCard>
+              <AppProductCard></AppProductCard>
+              <AppProductCard></AppProductCard>
+              <AppProductCard></AppProductCard>
+              <AppProductCard></AppProductCard>
             </div>
           </template>
-        </template>
-        <template v-else>
-          <div class="grid grid-cols-5 gap-x-20 gap-y-60 md:grid-cols-2">
-            <AppProductCard></AppProductCard>
-            <AppProductCard></AppProductCard>
-            <AppProductCard></AppProductCard>
-            <AppProductCard></AppProductCard>
-            <AppProductCard></AppProductCard>
-          </div>
-        </template>
+        </div>
+        <div v-if="products.length > 0" class="flex justify-end">
+          <span
+            class="flex flex-grow-0 cursor-default items-center justify-center whitespace-nowrap rounded-full bg-button px-20 py-16 leading-none transition-all text-bold-16"
+          >
+            {{ `Показано: ${products.length}` }}
+          </span>
+        </div>
       </AppContainer>
     </section>
   </template>

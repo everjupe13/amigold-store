@@ -100,15 +100,22 @@ export const useCatalogStore = defineStore('catalog', () => {
   }
 
   const fetchAllProducts = async ({
-    filters
-  }: { filters?: FiltersInterface } = {}) => {
+    filters,
+    categorySlug
+  }: { filters?: FiltersInterface; categorySlug?: string } = {}) => {
     try {
       const { data, error, refresh, execute, pending } = await useApiRequest<{
         count: number
         next: string
         previous: string
         results: IProduct[]
-      }>(`/api/product/items${filters ? `?ordering=${filters}` : ''}`)
+      }>(`/api/product/items${filters ? `?ordering=${filters}` : ''}`, {
+        params: {
+          page_size: 50,
+          ...(filters ? { ordering: filters } : {}),
+          ...(categorySlug ? { category__slug: categorySlug } : {})
+        }
+      })
 
       if (!error.value) {
         return {
