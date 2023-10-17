@@ -3,13 +3,12 @@
 <template>
   <section class="pb-100 pt-25">
     <AppContainer>
-      <AppBreadcrumbs
-        :crumbs="[{ label: 'Главная', toLink: '/' }, { label: 'Контакты' }]"
-        class="mb-40"
-      />
+      <AppBreadcrumbs :crumbs="[{ label: 'Контакты' }]" class="mb-40" />
 
       <div class="m-auto max-w-[800px]">
-        <h1 class="mb-10 leading-tight text-extrabold-64">Контакты</h1>
+        <h1 class="mb-10 leading-tight text-extrabold-64 md:text-extrabold-48">
+          Контакты
+        </h1>
 
         <div
           class="my-40 flex h-[300px] items-center justify-center overflow-hidden rounded-[14px] bg-button"
