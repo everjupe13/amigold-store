@@ -4,19 +4,9 @@
       <nav class="flex items-center justify-between">
         <ul class="flex items-center gap-x-20">
           <li>
-            <NuxtLink to="/" class="tracking-[-0.36px]">Новости</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/" class="tracking-[-0.36px]">Отзывы</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/" class="tracking-[-0.36px]">Где помыть</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/" class="tracking-[-0.36px]">Статьи</NuxtLink>
-          </li>
-          <li>
-            <NuxtLink to="/" class="tracking-[-0.36px]">Партнерам</NuxtLink>
+            <NuxtLink to="/contact" class="tracking-[-0.36px]">
+              Контакты
+            </NuxtLink>
           </li>
           <li>
             <NuxtLink to="/pay" class="tracking-[-0.36px]">
@@ -24,7 +14,12 @@
             </NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/" class="tracking-[-0.36px]">Видеоуроки</NuxtLink>
+            <NuxtLink to="/partner" class="tracking-[-0.36px]">
+              Партнерам
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink to="/about" class="tracking-[-0.36px]">О нас</NuxtLink>
           </li>
         </ul>
         <ul class="flex items-center gap-x-10">

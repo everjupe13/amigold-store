@@ -48,7 +48,7 @@ const { open: openLogout, close: closeLogout } = useModal({
         class="flex items-center justify-between md:flex-col-reverse md:items-start md:justify-start"
       >
         <div>
-          <AppBreadcrumbs :crumbs="[{ label: 'Новости' }]"></AppBreadcrumbs>
+          <AppBreadcrumbs :crumbs="[{ label: 'Профиль' }]"></AppBreadcrumbs>
         </div>
         <div class="md:mb-10 md:ml-auto">
           <AppButton size="sm" class="!rounded-[8px]" @click="openLogout">
