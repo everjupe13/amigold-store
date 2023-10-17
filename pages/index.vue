@@ -95,9 +95,9 @@ await servicesBannerStore.fetchBanners()
           >
             <div class="relative z-[2] flex flex-grow flex-col justify-between">
               <button
-                class="group mt-auto flex max-w-max items-center gap-x-8 text-white transition-all duration-500 hover:translate-x-[10px] md:hover:translate-x-0"
+                class="group relative mt-auto flex max-w-max items-center gap-x-8 text-white transition-all duration-500 hover:translate-x-[10px] md:hover:translate-x-0"
               >
-                <span>
+                <span class="relative z-[1]">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="32"
@@ -114,9 +114,14 @@ await servicesBannerStore.fetchBanners()
                     />
                   </svg>
                 </span>
-                <span class="text-[18px] font-bold leading-none">
+                <span class="relative z-[1] text-[18px] font-bold leading-none">
                   Подробнее
                 </span>
+                <a
+                  v-if="banner.url"
+                  :href="banner.url"
+                  class="absolute inset-0 z-[2] block"
+                ></a>
               </button>
             </div>
 
