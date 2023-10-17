@@ -172,11 +172,13 @@ const onAddProductToCart = async (id: number, priceId: number) => {
             <AppProductCard
               v-for="product in products"
               :key="product.id"
-              v-bind="product"
+              :product-id="product.id"
               :name="product.name"
               :vendor-code="product.vendorCode"
               :slug="product.slug"
               :prices="product.prices"
+              :is-new="product.isNew"
+              :is-discount="product.isDiscount"
               :image="product.image"
               :is-loading="
                 cartLoadingProductId === product.id
