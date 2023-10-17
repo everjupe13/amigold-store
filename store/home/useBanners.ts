@@ -27,9 +27,8 @@ const ApiMapper = {
 const BannerService = {
   async getAll() {
     try {
-      const { data, error } = await useApiRequest<BannerResponseType[]>(
-        `/api/data/top_banners`
-      )
+      const { data, error } =
+        await useApiRequest<BannerResponseType[]>(`/api/data/banners`)
 
       if (Array.isArray(data?.value) && !error.value) {
         return {
