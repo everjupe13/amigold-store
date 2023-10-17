@@ -27,6 +27,10 @@ dayjs.extend(customParseFormat)
 dayjs.extend(advancedFormat)
 
 const dateStamp = dayjs(props.date).format('D MMMM, YYYY')
+
+const isSkeletonLoaderVisible = computed(
+  () => !props.image && !props.title && !props.textBody
+)
 </script>
 
 <template>
@@ -50,7 +54,7 @@ const dateStamp = dayjs(props.date).format('D MMMM, YYYY')
     <div>
       <div
         class="mb-8 font-inter text-dark opacity-60 text-bold-14"
-        :class="{ 'pointer-events-none !opacity-0': !props.title }"
+        :class="{ 'pointer-events-none !opacity-0': isSkeletonLoaderVisible }"
       >
         {{ dateStamp }}
       </div>
@@ -58,7 +62,7 @@ const dateStamp = dayjs(props.date).format('D MMMM, YYYY')
         class="mb-5 text-extrabold-24"
         :class="{
           '!mb-10 h-32 animate-pulse rounded-[5px] bg-[var(--skeleton-loader-bg,_rgb(238,239,239))]':
-            !props.title
+            isSkeletonLoaderVisible
         }"
       >
         <NuxtLink :to="props.toLinkFn()" class="">{{ props.title }}</NuxtLink>
@@ -67,7 +71,7 @@ const dateStamp = dayjs(props.date).format('D MMMM, YYYY')
         class="font-inter text-dark text-medium-16"
         :class="{
           'h-48 animate-pulse rounded-[5px] bg-[var(--skeleton-loader-bg,_rgb(238,239,239))]':
-            !props.textBody
+            isSkeletonLoaderVisible
         }"
       >
         {{ props.textBody }}
