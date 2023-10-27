@@ -4,6 +4,7 @@ import { email, required } from '@vuelidate/validators'
 import { v4 as uuidv4 } from 'uuid'
 import { useModal, useModalSlot } from 'vue-final-modal'
 
+import ProfileFormInput from '@/components/features/profile/ProfileFormInput.vue'
 import AppModal from '@/components/widgets/AppModal.vue'
 import FeedbackFormModal from '@/components/widgets/modals/feedback/FeedbackFormModal.vue'
 import OrderConfirm from '@/components/widgets/OrderConfirm.vue'
@@ -157,6 +158,11 @@ const inputPropsMapper = (props: { [x: string]: any }) => {
 
 const deliveryStore = useDeliveryStore()
 await deliveryStore.fetchDeliveryTypes()
+const sortedDeliveryTypes = computed(() =>
+  [...(deliveryStore.deliveryTypes || [])].sort((a, _b) =>
+    a.isSelfDelivery ? -1 : 1
+  )
+)
 
 const selfDeliveryType = deliveryStore.deliveryTypes?.find(
   type => type.isSelfDelivery
@@ -164,15 +170,9 @@ const selfDeliveryType = deliveryStore.deliveryTypes?.find(
 const selfDeliveryTypeId = selfDeliveryType?.id
 formData.deliveryTypeId = selfDeliveryTypeId
 
-const deliveryTabTypeId = ref(selfDeliveryTypeId)
-const handleDeliveryTypeChange = (idx: number) => {
-  if (idx !== -1) {
-    formData.deliveryTypeId = idx
-  }
-  deliveryTabTypeId.value = idx
-}
-
-const deliveryCompanyId = ref<number>()
+const deliveryCompanyId = ref<number | undefined>(
+  selfDeliveryTypeId || undefined
+)
 const handleDeliveryCompanyChange = (id: number) => {
   deliveryCompanyId.value = id
 }
@@ -292,7 +292,7 @@ const handleOrderSubmit = async () => {
               <div class="max-w-[500px]">
                 <form @submit.prevent="">
                   <div class="">
-                    <AppInput
+                    <ProfileFormInput
                       v-model="v$.email.$model"
                       placeholder="E-mail"
                       class="mb-15"
@@ -300,7 +300,7 @@ const handleOrderSubmit = async () => {
                       v-bind="inputPropsMapper(v$.email)"
                     />
                     <div class="mb-15">
-                      <AppInput
+                      <ProfileFormInput
                         v-model="v$.phone.$model"
                         placeholder="Телефон"
                         class="mb-5"
@@ -312,7 +312,7 @@ const handleOrderSubmit = async () => {
                         как после оформления заказа с вами свяжется наш менеджер
                       </p>
                     </div>
-                    <AppInput
+                    <ProfileFormInput
                       v-model="v$.customerName.$model"
                       placeholder="ФИО / Название организации"
                       class="mb-15"
@@ -321,7 +321,7 @@ const handleOrderSubmit = async () => {
                     />
 
                     <div>
-                      <AppInput
+                      <ProfileFormInput
                         v-model="v$.orderComment.$model"
                         placeholder="Комментарий к заказу"
                         class="mb-5"
@@ -345,50 +345,13 @@ const handleOrderSubmit = async () => {
                 Доставка
               </h2>
               <div>
-                <div class="mb-20 flex gap-10 md:flex-wrap">
-                  <button
-                    v-if="selfDeliveryType"
-                    class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-                    :class="{
-                      '!bg-black !text-white':
-                        deliveryTabTypeId === selfDeliveryTypeId
-                    }"
-                    @click="
-                      handleDeliveryTypeChange(selfDeliveryTypeId as number)
-                    "
-                  >
-                    Самовывоз заказа
-                  </button>
-                  <button
-                    class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-                    :class="{
-                      '!bg-black !text-white': deliveryTabTypeId === -1
-                    }"
-                    @click="handleDeliveryTypeChange(-1)"
-                  >
-                    Доставка заказа
-                  </button>
-                </div>
                 <div>
-                  <div
-                    v-if="
-                      deliveryTabTypeId === selfDeliveryTypeId &&
-                      selfDeliveryTypeId
-                    "
-                    :key="0"
-                  >
-                    <p class="px-5 text-[14px] leading-tight text-black">
-                      {{ selfDeliveryType?.description || '' }}
-                    </p>
-                  </div>
-                  <div v-else-if="deliveryTabTypeId === -1" :key="1">
+                  <div>
                     <div
                       class="mb-25 grid grid-cols-3 gap-10 md:grid-cols-2 sm:grid-cols-1"
                     >
                       <div
-                        v-for="company in deliveryStore.deliveryTypes?.filter(
-                          company => company.id !== selfDeliveryTypeId
-                        )"
+                        v-for="company in sortedDeliveryTypes"
                         :key="company.id"
                         class="flex min-h-[75px] cursor-pointer items-center gap-x-8 rounded-[12px] bg-[#D9D9D9] p-15 pr-13 transition-all"
                         :class="{
@@ -407,7 +370,7 @@ const handleOrderSubmit = async () => {
                           />
                         </div>
                         <div
-                          class="select-none text-[14px] leading-tight text-black transition-all"
+                          class="select-none text-[16px] font-bold leading-tight text-black transition-all"
                           :class="{
                             'text-white': deliveryCompanyId === company.id
                           }"
@@ -418,7 +381,7 @@ const handleOrderSubmit = async () => {
                     </div>
                     <div class="max-w-[550px]">
                       <p
-                        class="mb-30 px-5 text-[12px] leading-tight text-[#878686]"
+                        class="mb-30 px-5 text-[14px] leading-tight text-[#878686]"
                       >
                         {{
                           deliveryStore.deliveryTypes?.find(
@@ -426,9 +389,9 @@ const handleOrderSubmit = async () => {
                           )?.description || ''
                         }}
                       </p>
-                      <div>
+                      <div v-if="selfDeliveryTypeId !== deliveryCompanyId">
                         <div class="mb-15">
-                          <AppInput
+                          <ProfileFormInput
                             v-model="v$.deliveryAddress.$model"
                             placeholder="Адрес доставки \ пункта выдачи"
                             class="mb-5"
@@ -437,7 +400,7 @@ const handleOrderSubmit = async () => {
                           />
                         </div>
                         <div>
-                          <AppInput
+                          <ProfileFormInput
                             v-model="v$.deliveryComment.$model"
                             placeholder="Комментарий к доставке"
                             class="mb-5"
@@ -473,7 +436,7 @@ const handleOrderSubmit = async () => {
                 <button
                   v-for="paymentType in paymentStore.paymentTypes"
                   :key="paymentType.id"
-                  class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-button px-15 py-16 leading-none transition text-bold-16 active:translate-y-2"
+                  class="flex items-center justify-center whitespace-nowrap rounded-[100px] border-2 border-black bg-transparent px-15 py-16 leading-none transition text-bold-16 active:translate-y-2"
                   :class="{
                     '!bg-black !text-white': paymentTypeId === paymentType.id
                   }"

@@ -49,8 +49,13 @@ const onCreateOrder = () => {
           <div v-if="props.isLoading" class="flex items-center justify-center">
             <AppSpinner :size="18" />
           </div>
-          <div v-else class="leading-none text-black text-bold-18">
-            Бесплатная
+          <div
+            v-else
+            class="text-right text-[14px] font-medium leading-none text-black"
+          >
+            рассчитывается после
+            <br />
+            оформления заказа
           </div>
         </div>
 
