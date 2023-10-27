@@ -170,15 +170,18 @@ module.exports = {
       dark: '#3F3F47',
       yellow: '#ED7622',
 
-      gray: '#EEEFEF',
+      gray: {
+        DEFAULT: '#EEEFEF',
+        light: '#e2e4e4'
+      },
       milky: '#F3F1EC',
       green: '#336F3F',
       pale: '#FFDD82',
       red: '#e35050',
 
       button: {
-        DEFAULT: '#EEEFEF',
-        dark: '#E2E3E3'
+        DEFAULT: '#E2E3E3',
+        dark: '#dddddd'
       },
 
       tapestry: '#fcf9ed'
