@@ -57,13 +57,9 @@ const dateStamp = computed(() =>
           {{ dateStamp }}
         </div>
 
-        <h1 class="mb-10 leading-tight text-extrabold-64">
+        <h1 class="mb-10 leading-[1.1] text-extrabold-48">
           {{ articleData?.name || '' }}
         </h1>
-
-        <p class="max-w-[350px] font-inter text-dark text-medium-16">
-          {{ articleData?.shortDescription || '' }}
-        </p>
 
         <div
           class="my-40 flex aspect-[calc(800/450)] max-h-[450px] items-center justify-center overflow-hidden rounded-[14px] bg-button"

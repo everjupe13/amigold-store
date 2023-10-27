@@ -61,7 +61,7 @@ const isSkeletonLoaderVisible = computed(
       <h3
         class="mb-5 text-extrabold-24"
         :class="{
-          '!mb-10 h-32 animate-pulse rounded-[5px] bg-[var(--skeleton-loader-bg,_rgb(238,239,239))]':
+          '!mb-10 h-32 animate-pulse rounded-[5px] bg-[var(--skeleton-loader-bg,_rgb(238,239,239))] leading-[1.1]':
             isSkeletonLoaderVisible
         }"
       >
