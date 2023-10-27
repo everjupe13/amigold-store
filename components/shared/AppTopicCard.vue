@@ -64,7 +64,7 @@ const toLink = computed(() => `/topic/${props.slug}`)
       </div>
       <h3
         :class="[
-          'mb-5 text-extrabold-24',
+          'mb-5 leading-[1.1] text-extrabold-24',
           { '!mb-10 h-32 animate-pulse rounded-[5px] bg-gray': !props.title }
         ]"
       >

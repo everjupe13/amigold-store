@@ -59,7 +59,7 @@ const handleSearchInput = debounce(e => {
                   <RouterLink to="/catalog">Каталог</RouterLink>
                 </li>
                 <li class="px-3 py-5 text-bold-18 md:mb-20 md:text-bold-22">
-                  <RouterLink to="/novelty">Новинки</RouterLink>
+                  <RouterLink to="/novinki">Новинки</RouterLink>
                 </li>
               </ul>
             </nav>

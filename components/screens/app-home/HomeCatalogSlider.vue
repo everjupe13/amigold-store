@@ -204,7 +204,7 @@ const onAddProductToCart = async (id: number, priceId: number) => {
             >
               <NuxtLink
                 class="flex rounded-full border-2 border-gray bg-gray px-20 py-16 font-inter leading-none text-bold-16"
-                to="/catalog"
+                to="/novinki"
               >
                 Показать все
               </NuxtLink>
