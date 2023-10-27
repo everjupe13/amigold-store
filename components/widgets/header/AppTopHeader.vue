@@ -21,6 +21,9 @@
           <li>
             <NuxtLink to="/about" class="tracking-[-0.36px]">О нас</NuxtLink>
           </li>
+          <li>
+            <NuxtLink to="/news" class="tracking-[-0.36px]">Новинки</NuxtLink>
+          </li>
         </ul>
         <ul class="flex items-center gap-x-10">
           <li>
