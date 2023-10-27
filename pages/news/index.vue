@@ -15,36 +15,10 @@ await blogStore.fetchBlog()
   <section class="pb-100">
     <AppContainer>
       <div
-        class="header-grid relative z-[2] mb-40 grid grid-cols-3 md:grid-cols-[1fr_auto]"
+        class="header-grid relative z-[2] mb-40 grid grid-cols-1 md:grid-cols-[1fr_auto]"
       >
         <div class="heading-title md:mb-20">
           <h1 class="title">Новости</h1>
-        </div>
-        <div
-          class="filters flex items-center justify-center gap-10 md:flex-col md:items-start md:justify-normal"
-        >
-          <button
-            class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-          >
-            Собаки
-          </button>
-          <button
-            class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-          >
-            Кошки
-          </button>
-          <button
-            class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-          >
-            Попугаи
-          </button>
-        </div>
-        <div
-          class="controls self-center justify-self-end md:self-stretch md:justify-self-auto"
-        >
-          <div
-            class="flex items-center gap-x-20 md:h-full md:flex-col-reverse md:justify-between md:gap-y-10"
-          ></div>
         </div>
       </div>
 
