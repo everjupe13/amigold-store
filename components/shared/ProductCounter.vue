@@ -76,7 +76,6 @@ function setInputFilter(
       this.value = ''
     }
 
-    console.log(this.value)
     fakeAmount.value = this.value
   }
 
