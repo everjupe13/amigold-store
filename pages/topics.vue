@@ -22,23 +22,7 @@ await blogStore.fetchBlog()
         </div>
         <div
           class="filters flex items-center justify-center gap-10 md:flex-col md:items-start md:justify-normal"
-        >
-          <button
-            class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-          >
-            Собаки
-          </button>
-          <button
-            class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-          >
-            Кошки
-          </button>
-          <button
-            class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-          >
-            Попугаи
-          </button>
-        </div>
+        ></div>
         <div
           class="controls self-center justify-self-end md:self-stretch md:justify-self-auto"
         >
@@ -52,14 +36,19 @@ await blogStore.fetchBlog()
         <div class="self-center justify-self-end"></div>
       </div>
       <template
-        v-if="Array.isArray(blogStore.blog) && blogStore.blog.length > 0"
+        v-if="Array.isArray(blogStore.topics) && blogStore.topics.length > 0"
       >
         <div class="grid grid-cols-3 gap-x-20 gap-y-60 md:grid-cols-1">
-          <AppBlogCard
-            v-for="blog in blogStore.blog"
-            :key="blog.id"
-            v-bind="blog"
-          ></AppBlogCard>
+          <AppTopicCard
+            v-for="data in blogStore.topics"
+            :key="data.id"
+            :image="data.image"
+            :read-time="data.readTime"
+            :title="data.name"
+            :text-body="data.shortDescription"
+            :article-label="data.category?.name || ''"
+            :slug="data.slug"
+          ></AppTopicCard>
         </div>
       </template>
     </AppContainer>

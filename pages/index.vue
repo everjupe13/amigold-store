@@ -161,7 +161,15 @@ await servicesBannerStore.fetchBanners()
 
     <section class="py-[120px]">
       <AppContainer>
-        <h2 class="title relative z-[2] mb-40">Полезное</h2>
+        <div class="mb-40 flex items-center justify-between gap-10">
+          <h2 class="title relative z-[2]">Статьи</h2>
+          <NuxtLink
+            class="flex rounded-full border-2 border-gray bg-gray px-20 py-16 font-inter leading-none text-bold-16 active:translate-y-2"
+            to="/topics"
+          >
+            Показать все
+          </NuxtLink>
+        </div>
         <div
           v-if="Array.isArray(topics) && topics.length > 0"
           class="mb-40 grid grid-cols-3 gap-20 md:grid-cols-1"
