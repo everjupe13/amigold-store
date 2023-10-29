@@ -12,6 +12,8 @@ import {
   useCatalogStore
 } from '@/store/catalog/index'
 
+await navigateTo('/')
+
 const isLoading = ref(false)
 const catalogStore = useCatalogStore()
 

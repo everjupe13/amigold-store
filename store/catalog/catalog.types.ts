@@ -71,6 +71,7 @@ export interface IProduct {
   isNew: boolean
   isDiscount: boolean
   isPromotionActive: boolean
+  isAvailable: boolean
   promotionText: string
   vendorCode: string
   name: string

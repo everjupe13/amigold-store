@@ -2,19 +2,13 @@
 import 'swiper/css'
 import 'swiper/css/free-mode'
 
-// import { useCatalogController } from '@/composables/useCatalogController'
-// import { storeToRefs } from 'pinia'
 import type { Swiper as ISwiper } from 'swiper'
 import { FreeMode } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import { useCartStore } from '@/store/cart'
-import {
-  type IFilter,
-  type IProduct,
-  useCatalogStore
-} from '@/store/catalog/index'
+import { type IProduct, useCatalogStore } from '@/store/catalog/index'
 
 const modules = [FreeMode]
 
@@ -39,99 +33,38 @@ const swiperRef: Ref<typeof ISwiper | null> = ref(null)
 const swiperActiveIndex = ref(0)
 const swiperSlidesPerGroup = ref(1)
 
-// const options = {
-//   categorySlug: '',
-//   withHashUrlState: true
-// }
-
-const isLoading = ref(false)
+const isLoading = ref(true)
 const catalogStore = useCatalogStore()
+const refApiProducts = ref<IProduct[]>([])
 
-isLoading.value = true
-const { data: apiFilters } = await catalogStore.fetchFilters()
-const { data: apiProducts } = await catalogStore.fetchAllProducts()
-isLoading.value = false
+onMounted(async () => {
+  const { data: apiProducts, count } = await catalogStore.fetchAllProducts()
+  refApiProducts.value = apiProducts.value
 
-const subcategories: Ref<IFilter[]> = computed(() => apiFilters.value || [])
-const currentSubcategorySlug = ref(subcategories.value?.[0]?.slug || '')
-const currentSubcategory = computed(() =>
-  subcategories.value.find(
-    subcategory => subcategory.slug === currentSubcategorySlug.value
-  )
-)
+  if (count) {
+    const pageSize = 50
+    const pages = Math.ceil(Number(count) / pageSize)
 
-const onSubcategoryChange = (slug: string) => {
-  currentSubcategorySlug.value = slug
-}
+    for (let i = 2; i <= pages; i++) {
+      const { data: apiProducts } = await catalogStore.fetchAllProducts({
+        page: i
+      })
+
+      if (apiProducts.value?.length && apiProducts.value?.length > 0) {
+        refApiProducts.value?.push?.(...apiProducts.value)
+      }
+    }
+  }
+
+  isLoading.value = false
+})
 
 const isProductsLoading = ref(false)
 const products: Ref<IProduct[]> = computed(() =>
-  apiProducts.value?.length && apiProducts.value?.length > 0
-    ? apiProducts.value?.filter(product =>
-        product.filters.some(
-          productFilter => productFilter.slug === currentSubcategorySlug.value
-        )
-      )
+  refApiProducts.value?.length && refApiProducts.value?.length > 0
+    ? refApiProducts.value.filter(product => product.isNew && product.isActive)
     : []
 )
-
-// const setProducts = async () => {
-//   isProductsLoading.value = true
-
-//   isProductsLoading.value = false
-// }
-
-// const setCurrentSubcategorySlug = async (slug: string) => {
-//   if (!subcategories.value?.length) {
-//     return
-//   }
-
-//   const checkIsSubcatalogSlugValid = (slug: string) =>
-//     slug && subcategories.value.some(subcategory => subcategory.slug === slug)
-
-//   const DEFAULT_SLUG = subcategories.value[0].slug
-//   const currentSlug = checkIsSubcatalogSlugValid(slug) ? slug : DEFAULT_SLUG
-//   currentSubcategorySlug.value = currentSlug
-
-//   await setProducts()
-// }
-
-// if (options?.withHashUrlState) {
-//   const route = useRoute()
-//   const SUBCATEGORY_URL_QUERY = 'subcategory'
-
-//   const parseSubcategoryFromUrl = () =>
-//     (route.query[SUBCATEGORY_URL_QUERY] as string) ?? ''
-
-//   const setSubcategorySlugToUrl = (slug: string) => {
-//     const domainUrl = new URL(window.location.href)
-//     domainUrl.searchParams.set(SUBCATEGORY_URL_QUERY, slug)
-
-//     navigateTo(domainUrl.pathname + domainUrl.search)
-//   }
-
-//   const _subcategorySlugFromUrl = route.query[SUBCATEGORY_URL_QUERY]
-//     ? parseSubcategoryFromUrl()
-//     : currentSubcategorySlug.value
-
-//   await setCurrentSubcategorySlug(_subcategorySlugFromUrl)
-
-//   onMounted(() => {
-//     nextTick(() => {
-//       if (!(route.query instanceof Object)) {
-//         return
-//       }
-
-//       if (!route.query[SUBCATEGORY_URL_QUERY]) {
-//         setSubcategorySlugToUrl(currentSubcategorySlug.value)
-//       }
-//     })
-//   })
-
-//   watch(currentSubcategorySlug, newSlug => {
-//     setSubcategorySlugToUrl(newSlug)
-//   })
-// }
 
 const cartStore = useCartStore()
 const cartLoadingProductId = ref()
@@ -180,22 +113,7 @@ const onAddProductToCart = async (id: number, priceId: number) => {
           </div>
           <div
             class="filters flex items-center justify-center gap-10 md:flex-col md:items-start"
-          >
-            <template v-if="subcategories.length > 0">
-              <button
-                v-for="subcategory in subcategories"
-                :key="subcategory.id"
-                class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16 active:translate-y-2"
-                :class="{
-                  '!bg-black !text-white':
-                    currentSubcategory!.slug === subcategory.slug
-                }"
-                @click="onSubcategoryChange(subcategory.slug)"
-              >
-                {{ subcategory.name }}
-              </button>
-            </template>
-          </div>
+          ></div>
           <div
             class="controls self-center justify-self-end md:self-stretch md:justify-self-auto"
           >
@@ -248,22 +166,7 @@ const onAddProductToCart = async (id: number, priceId: number) => {
         </div>
         <div
           class="filters flex items-center justify-center gap-10 md:flex-col md:items-start md:justify-normal"
-        >
-          <template v-if="subcategories.length > 0">
-            <button
-              v-for="subcategory in subcategories"
-              :key="subcategory.id"
-              class="flex items-center justify-center whitespace-nowrap rounded-[100px] bg-button px-20 py-16 leading-none transition text-bold-16"
-              :class="{
-                '!bg-black !text-white':
-                  currentSubcategory!.slug === subcategory.slug
-              }"
-              @click="onSubcategoryChange(subcategory.slug)"
-            >
-              {{ subcategory.name }}
-            </button>
-          </template>
-        </div>
+        ></div>
         <div
           class="controls self-center justify-self-end md:self-stretch md:justify-self-auto"
         >

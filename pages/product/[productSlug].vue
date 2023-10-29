@@ -214,52 +214,64 @@ function changeCount(count: number, sign: boolean) {
                   {{ currentPrice }}
                 </div>
                 <div class="flex flex-wrap items-center gap-10">
-                  <div v-if="currentProductCount > 0" class="flex items-center">
-                    <div class="rounded-full border-2 border-black/20 p-12">
-                      <ProductCounter
-                        :amount="currentProductCount"
-                        :disabled-when-count="0"
-                        :is-disabled="
-                          isCartActionLoading || !isCartActionSuccess
-                        "
-                        button-classes="bg-yellow hover:border-yellow hover:bg-yellow"
-                        wrapper-classes="h-24"
-                        @change="changeCount"
-                        @decrease="decreaseCount"
-                        @increase="increaseCount"
-                      />
-                    </div>
-                  </div>
-                  <AppButton
-                    class="h-52 min-w-[200px] whitespace-nowrap"
-                    theme="black"
-                    :disabled="isCartActionLoading || !isCartActionSuccess"
-                    @click="addToCart"
-                  >
+                  <template v-if="product?.isAvailable === false">
+                    <p class="opacity-80 text-bold-16">Продукт недоступен</p>
+                  </template>
+                  <template v-else>
                     <div
-                      v-if="isCartActionLoading"
-                      class="flex items-center justify-center"
+                      v-if="currentProductCount > 0"
+                      class="flex items-center"
                     >
-                      <AppSpinner :size="18" class="text-white" />
+                      <div class="rounded-full border-2 border-black/20 p-12">
+                        <ProductCounter
+                          :amount="currentProductCount"
+                          :disabled-when-count="0"
+                          :is-disabled="
+                            isCartActionLoading || !isCartActionSuccess
+                          "
+                          button-classes="bg-yellow hover:border-yellow hover:bg-yellow"
+                          wrapper-classes="h-24"
+                          @change="changeCount"
+                          @decrease="decreaseCount"
+                          @increase="increaseCount"
+                        />
+                      </div>
                     </div>
-                    <template v-else>
-                      <template v-if="!isCartActionSuccess">
-                        Товар добавлен
+                    <AppButton
+                      class="h-52 min-w-[200px] whitespace-nowrap"
+                      theme="black"
+                      :disabled="isCartActionLoading || !isCartActionSuccess"
+                      @click="addToCart"
+                    >
+                      <div
+                        v-if="isCartActionLoading"
+                        class="flex items-center justify-center"
+                      >
+                        <AppSpinner :size="18" class="text-white" />
+                      </div>
+                      <template v-else>
+                        <template v-if="!isCartActionSuccess">
+                          Товар добавлен
+                        </template>
+                        <template v-else-if="currentProductCount > 0">
+                          <span
+                            class="inline-flex flex-col items-center gap-x-5"
+                          >
+                            <span>
+                              {{ `В корзине: ${currentProductCount}` }}
+                            </span>
+                            <span class="text-[14px] opacity-60">Перейти</span>
+                          </span>
+                        </template>
+                        <template v-else>Добавить в корзину</template>
                       </template>
-                      <template v-else-if="currentProductCount > 0">
-                        <span class="inline-flex flex-col items-center gap-x-5">
-                          <span>{{ `В корзине: ${currentProductCount}` }}</span>
-                          <span class="text-[14px] opacity-60">Перейти</span>
-                        </span>
-                      </template>
-                      <template v-else>Добавить в корзину</template>
-                    </template>
-                  </AppButton>
-                  <AppButton class="h-52 whitespace-nowrap" theme="default">
-                    <RouterLink to="/cart" class="block h-full w-full">
-                      Перейти в корзину
-                    </RouterLink>
-                  </AppButton>
+                    </AppButton>
+                    <AppButton class="h-52 whitespace-nowrap" theme="default">
+                      <RouterLink to="/cart" class="block h-full w-full">
+                        Перейти в корзину
+                      </RouterLink>
+                    </AppButton>
+                  </template>
                 </div>
               </div>
             </div>
