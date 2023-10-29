@@ -22,13 +22,16 @@
             <NuxtLink to="/about" class="tracking-[-0.36px]">О нас</NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/news" class="tracking-[-0.36px]">Новинки</NuxtLink>
+            <NuxtLink to="/news" class="tracking-[-0.36px]">Новости</NuxtLink>
+          </li>
+          <li>
+            <NuxtLink to="/topics" class="tracking-[-0.36px]">Статьи</NuxtLink>
           </li>
         </ul>
         <ul class="flex items-center gap-x-10">
           <li>
             <a
-              href=""
+              href="https://dzen.ru/amigovetpet"
               target="_blank"
               rel="noopener norefferer nofollow"
               class="flex items-center justify-center"
@@ -42,7 +45,7 @@
           </li>
           <li>
             <a
-              href=""
+              href="https://vk.com/amigovetpet"
               target="_blank"
               rel="noopener norefferer nofollow"
               class="flex items-center justify-center"
@@ -56,7 +59,7 @@
           </li>
           <li>
             <a
-              href=""
+              href="https://t.me/s/amigovetpet"
               target="_blank"
               rel="noopener norefferer nofollow"
               class="flex items-center justify-center"
@@ -66,7 +69,7 @@
           </li>
           <li>
             <a
-              href=""
+              href="https://www.youtube.com/channel/UCT3rLmCWXA1aYT5tbwKXNxQ"
               target="_blank"
               rel="noopener norefferer nofollow"
               class="flex items-center justify-center"

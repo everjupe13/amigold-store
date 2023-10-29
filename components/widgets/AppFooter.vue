@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import AppLogo from '@/components/shared/AppLogo.vue'
+import { useCatalogStore } from '@/store/catalog'
+
+const catalogStore = useCatalogStore()
+await catalogStore.fetchCategories()
 </script>
 
 <template>
@@ -14,43 +18,16 @@ import AppLogo from '@/components/shared/AppLogo.vue'
             <nav>
               <p class="mb-20 text-bold-18">Каталог</p>
               <ul class="flex flex-col gap-y-10 leading-tight">
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Корма для животных</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">
-                    Шампуни для улучшения шерсти
+                <li
+                  v-for="category in catalogStore.categories"
+                  :key="category.id"
+                  class="font-inter tracking-[-0.28px] text-medium-14"
+                >
+                  <NuxtLink
+                    :to="`/catalog${category.slug ? `/${category.slug}` : ''}`"
+                  >
+                    {{ category.name }}
                   </NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Косметические шампуни</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">
-                    Ополаскиватели и кондиционеры для шерсти
-                  </NuxtLink>
-                </li>
-
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Заключительный этап стрижки</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Дезинфицирующие средства</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Аксессуары</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Тесты для животных</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Инструменты для груминга</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Креатив: краски</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Гигиена</NuxtLink>
                 </li>
               </ul>
             </nav>
@@ -60,23 +37,13 @@ import AppLogo from '@/components/shared/AppLogo.vue'
               <p class="mb-20 text-bold-18">Деятельность</p>
               <ul class="flex flex-col gap-y-10 leading-tight">
                 <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Новости</NuxtLink>
+                  <NuxtLink to="/news">Новости</NuxtLink>
                 </li>
                 <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Отзывы</NuxtLink>
+                  <NuxtLink to="/about">О нас</NuxtLink>
                 </li>
                 <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Где помыть</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Статьи</NuxtLink>
-                </li>
-
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Видеоуроки</NuxtLink>
-                </li>
-                <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Партнерам</NuxtLink>
+                  <NuxtLink to="/topics">Статьи</NuxtLink>
                 </li>
               </ul>
             </nav>
@@ -92,7 +59,7 @@ import AppLogo from '@/components/shared/AppLogo.vue'
                   <NuxtLink to="/pay">Доставка и оплата</NuxtLink>
                 </li>
                 <li class="font-inter tracking-[-0.28px] text-medium-14">
-                  <NuxtLink to="/catalog">Спроси ветеринара</NuxtLink>
+                  <NuxtLink to="/partner">Партнерам</NuxtLink>
                 </li>
               </ul>
             </nav>
