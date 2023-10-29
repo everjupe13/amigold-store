@@ -3,6 +3,8 @@ import { fileURLToPath } from 'node:url'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: false },
+  ssr: false,
+  spaLoadingTemplate: '~/spa-loading-template.html',
 
   experimental: {
     renderJsonPayloads: false
@@ -15,7 +17,8 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/product/**': { ssr: false }
+    '/product/**': { ssr: false },
+    '/novinki': { ssr: false }
   },
 
   modules: ['@nuxtjs/eslint-module', '@pinia/nuxt'],

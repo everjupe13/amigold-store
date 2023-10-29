@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useVuelidate } from '@vuelidate/core'
-import { email, required } from '@vuelidate/validators'
+import { email, helpers, required } from '@vuelidate/validators'
 import { v4 as uuidv4 } from 'uuid'
 import { useModal, useModalSlot } from 'vue-final-modal'
 
@@ -137,14 +137,29 @@ const formData = reactive({
   paymentTypeId: undefined as undefined | number
 })
 const rules = {
-  email: { required, email },
-  phone: { required },
-  customerName: { required },
-  orderComment: { required },
-  deliveryTypeId: { required },
-  deliveryAddress: { required },
-  deliveryComment: { required },
-  paymentTypeId: { required }
+  email: {
+    requiredIf: helpers.withMessage('Обязательное поле', required),
+    email: helpers.withMessage('Введите корректный email', email)
+  },
+  phone: {
+    requiredIf: helpers.withMessage('Обязательное поле', required)
+  },
+  customerName: {
+    requiredIf: helpers.withMessage('Обязательное поле', required)
+  },
+  orderComment: {},
+  deliveryTypeId: {
+    requiredIf: helpers.withMessage('Обязательное поле', required)
+  },
+  deliveryAddress: {
+    requiredIf: helpers.withMessage('Обязательное поле', value =>
+      value !== selfDeliveryTypeId ? !!value : false
+    )
+  },
+  deliveryComment: {},
+  paymentTypeId: {
+    requiredIf: helpers.withMessage('Обязательное поле', required)
+  }
 }
 
 const v$ = useVuelidate(rules, formData)
@@ -382,13 +397,12 @@ const handleOrderSubmit = async () => {
                     <div class="max-w-[550px]">
                       <p
                         class="mb-30 px-5 text-[14px] leading-tight text-[#878686]"
-                      >
-                        {{
+                        v-html="
                           deliveryStore.deliveryTypes?.find(
                             company => company.id === deliveryCompanyId
                           )?.description || ''
-                        }}
-                      </p>
+                        "
+                      ></p>
                       <div v-if="selfDeliveryTypeId !== deliveryCompanyId">
                         <div class="mb-15">
                           <ProfileFormInput

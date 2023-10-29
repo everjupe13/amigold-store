@@ -1,25 +1,42 @@
 <script lang="ts" setup>
 import type { FiltersInterface } from 'store/catalog/catalog.types'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import CatalogSorting from '@/components/screens/app-catalog/ui/CatalogSorting.vue'
 import { useCartStore } from '@/store/cart'
 import { SortList } from '@/store/catalog/catalog.constants'
 import { type IProduct, useCatalogStore } from '@/store/catalog/index'
 
-const isLoading = ref(false)
+const isLoading = ref(true)
 const catalogStore = useCatalogStore()
+const refApiProducts = ref<IProduct[]>([])
 
-isLoading.value = true
-const { data: apiProducts } = await catalogStore.fetchAllProducts()
-isLoading.value = false
+onMounted(async () => {
+  const { data: apiProducts, count } = await catalogStore.fetchAllProducts()
+  refApiProducts.value = apiProducts.value
 
-const refApiProducts = ref(apiProducts.value)
+  if (count) {
+    const pageSize = 50
+    const pages = Math.ceil(Number(count) / pageSize)
+
+    for (let i = 2; i <= pages; i++) {
+      const { data: apiProducts } = await catalogStore.fetchAllProducts({
+        page: i
+      })
+
+      if (apiProducts.value?.length && apiProducts.value?.length > 0) {
+        refApiProducts.value?.push?.(...apiProducts.value)
+      }
+    }
+  }
+
+  isLoading.value = false
+})
 
 const isProductsLoading = ref(false)
 const products: Ref<IProduct[]> = computed(() =>
   refApiProducts.value?.length && refApiProducts.value?.length > 0
-    ? refApiProducts.value
+    ? refApiProducts.value.filter(product => product.isNew && product.isActive)
     : []
 )
 

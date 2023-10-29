@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { FiltersInterface } from 'store/catalog/catalog.types'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 import CatalogSorting from '@/components/screens/app-catalog/ui/CatalogSorting.vue'
 import { useCartStore } from '@/store/cart'
@@ -16,9 +16,10 @@ const currentCategorySlug = Array.isArray(route.params.categorySlug)
   ? route.params.categorySlug[0]
   : route.params.categorySlug
 
-const isLoading = ref(false)
+const isLoading = ref(true)
 const isMainCategoryFetching = ref(true)
 const catalogStore = useCatalogStore()
+const refApiProducts = ref<IProduct[]>([])
 
 await catalogStore.fetchCategories()
 isMainCategoryFetching.value = false
@@ -28,16 +29,34 @@ const currentMainCategory = computed(() =>
     category => category.slug === currentCategorySlug
   )
 )
-
-isLoading.value = true
 const { data: apiFilters } = await catalogStore.fetchFilters()
-const { data: apiProducts } = await catalogStore.fetchAllProducts({
-  categorySlug: currentCategorySlug
-})
-isLoading.value = false
-isMainCategoryFetching.value = false
 
-const refApiProducts = ref(apiProducts.value)
+onMounted(async () => {
+  const { data: apiProducts, count } = await catalogStore.fetchAllProducts({
+    categorySlug: currentCategorySlug
+  })
+  refApiProducts.value = apiProducts.value
+
+  if (count) {
+    const pageSize = 50
+    const pages = Math.ceil(Number(count) / pageSize)
+
+    for (let i = 2; i <= pages; i++) {
+      const { data: apiProducts } = await catalogStore.fetchAllProducts({
+        page: i,
+        categorySlug: currentCategorySlug
+      })
+
+      if (apiProducts.value?.length && apiProducts.value?.length > 0) {
+        refApiProducts.value?.push?.(...apiProducts.value)
+        console.log(refApiProducts.value)
+      }
+    }
+  }
+
+  isLoading.value = false
+  isMainCategoryFetching.value = false
+})
 
 const subcategories: Ref<IFilter[]> = computed(() => apiFilters.value || [])
 const currentSubcategorySlug = ref('all')
@@ -46,11 +65,13 @@ const isProductsLoading = ref(false)
 const products: Ref<IProduct[]> = computed(() =>
   refApiProducts.value?.length && refApiProducts.value?.length > 0
     ? currentSubcategorySlug.value === 'all'
-      ? refApiProducts.value
-      : refApiProducts.value?.filter(product =>
-          product.filters.some(
-            productFilter => productFilter.slug === currentSubcategorySlug.value
-          )
+      ? refApiProducts.value.filter(product => product.isActive)
+      : refApiProducts.value?.filter(
+          product =>
+            product.filters.some(
+              productFilter =>
+                productFilter.slug === currentSubcategorySlug.value
+            ) && product.isActive
         )
     : []
 )
@@ -85,12 +106,30 @@ const handleSortingChange = async (id: number) => {
   const searchKey = SortList.find(item => item.id === id)?.sortKey || ''
 
   isLoading.value = true
-  const { data: apiProducts } = await catalogStore.fetchAllProducts({
+  const { data: apiProducts, count } = await catalogStore.fetchAllProducts({
+    categorySlug: currentCategorySlug,
     filters: searchKey as FiltersInterface
   })
-
   refApiProducts.value = apiProducts.value
 
+  if (count) {
+    const pageSize = 50
+    const pages = Math.ceil(Number(count) / pageSize)
+
+    for (let i = 2; i <= pages; i++) {
+      const { data: apiProducts } = await catalogStore.fetchAllProducts({
+        page: i,
+        categorySlug: currentCategorySlug,
+        filters: searchKey as FiltersInterface
+      })
+
+      if (apiProducts.value?.length && apiProducts.value?.length > 0) {
+        refApiProducts.value?.push?.(...apiProducts.value)
+      }
+    }
+  }
+
+  refApiProducts.value = apiProducts.value
   isLoading.value = false
 }
 </script>
